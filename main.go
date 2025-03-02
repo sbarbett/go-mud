@@ -108,15 +108,24 @@ func playGame(player *Player, reader *bufio.Reader) {
 			continue
 		}
 
-		switch input {
+		// Split the input into command and arguments
+		parts := strings.Fields(input)
+		if len(parts) == 0 {
+			continue
+		}
+
+		command := parts[0]
+		args := parts[1:]
+
+		switch command {
 		case "quit":
 			player.Conn.Write([]byte("Goodbye!\r\n"))
 			return
 
 		case "look":
-			player.Conn.Write([]byte(fmt.Sprintf("%s\n", DescribeRoom(player.Room, player))))
+			result := HandleLook(player, args)
+			player.Conn.Write([]byte(result + "\r\n"))
 
-		// Handle movement commands
 		case "north", "south", "east", "west", "up", "down",
 			"n", "s", "e", "w", "u", "d":
 			if err := HandleMovement(player, input); err != nil {

@@ -21,23 +21,23 @@ func MovePlayer(player *Player, direction string) (*Room, error) {
 		currentRoom.ID, currentRoom.Name, currentRoom.Area)
 
 	// Check if the exit in the specified direction exists
-	newRoomData, exists := currentRoom.Exits[direction]
+	exit, exists := currentRoom.Exits[direction]
 	if !exists {
 		return currentRoom, fmt.Errorf("you can't go that way")
 	}
 
 	// Debug logging
 	fmt.Printf("Debug - MovePlayer: Moving from Room %d to %v\n",
-		currentRoom.ID, newRoomData)
+		currentRoom.ID, exit)
 
-	// Handle different types of room movement
-	switch newRoomData := newRoomData.(type) {
+	// Handle different types of room movement based on exit ID type
+	switch exitID := exit.ID.(type) {
 	case int:
-		newRoom, err := GetRoom(newRoomData)
+		newRoom, err := GetRoom(exitID)
 		if err != nil {
 			return currentRoom, err
 		}
-		err = UpdatePlayerRoom(player.Name, newRoomData)
+		err = UpdatePlayerRoom(player.Name, exitID)
 		if err != nil {
 			return currentRoom, err
 		}
@@ -47,7 +47,7 @@ func MovePlayer(player *Player, direction string) (*Room, error) {
 
 	case string:
 		// Handle cross-area movement
-		roomInfo := strings.Split(newRoomData, ":")
+		roomInfo := strings.Split(exitID, ":")
 		if len(roomInfo) != 2 {
 			return currentRoom, fmt.Errorf("invalid room reference")
 		}

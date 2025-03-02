@@ -3,15 +3,35 @@ name: Midgaard
 rooms:
   3001:
     name: "The Temple of Mota"
-    description: "You are in the southern end of the temple hall in the Temple of Mota."
+    description: |
+      You are in the southern end of the temple hall in the Temple of Mota.
+      The temple has been constructed from giant marble blocks, eternal in
+      appearance, and most of the walls are covered by ancient wall paintings
+      picturing gods, giants and peasants.
+        Large steps lead down through the grand temple gate, descending the huge
+      mound upon which the temple is built and ends on the temple square below.
+        Equally large steps lead UP through a small door into the ENTRANCE to MUD 
+      SCHOOL.  (type 'up' to go to MUD SCHOOL.)  A small plaque is on this wall.
     exits:
-      north: 3054
-      east: 3005
-      west: 3700
-      up: "mud_school.yml:1"
+      north:
+        id: 3054
+        description: "The temple hall continues northward, where you can see a large altar."
+      east:
+        id: 3005
+        description: "Through the eastern archway, you can see the temple square."
+      west:
+        id: 3700
+        description: "A side passage leads west into a dimly lit corridor."
+      up:
+        id: "mud_school.yml:1"
+        description: "Large stone steps lead upward to the entrance of MUD School."
   3005:
     name: "Temple Square"
     description: "You are standing on the temple square."
     exits:
-      west: 3001
-      east: 3014
+      west:
+        id: 3001
+        description: "The grand temple entrance stands majestically to the west."
+      east:
+        id: 3014
+        description: "A busy street extends to the east."

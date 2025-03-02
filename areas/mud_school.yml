@@ -5,22 +5,36 @@ rooms:
     name: "The Entrance to Mud School"
     description: "You stand at the entrance of the Mud School, a place for new adventurers."
     exits:
-      north: 2
-      down: "midgaard.yml:3001"
+      north:
+        id: 2
+        description: "A well-lit hallway extends northward, where you can hear the sounds of training."
+      down:
+        id: "midgaard.yml:3001"
+        description: "The temple of Mota lies below, accessible via a grand staircase."
   2:
     name: "Mud School Hallway"
     description: "A long hallway with training dummies lined along the walls."
     exits:
-      south: 1
-      north: 3
+      south:
+        id: 1
+        description: "The entrance to Mud School lies to the south."
+      north:
+        id: 3
+        description: "You can see the final training room ahead."
   3:
     name: "Final Training Room"
     description: "The last test before you graduate from Mud School."
     exits:
-      south: 2
-      east: 4
+      south:
+        id: 2
+        description: "The training hallway stretches back to the south."
+      east:
+        id: 4
+        description: "A faint outline of a secret door can be seen in the eastern wall."
   4:
     name: "Secret Room"
     description: "A hidden chamber only accessible to those who dare."
     exits:
-      west: 3
+      west:
+        id: 3
+        description: "The secret door leads back to the final training room."

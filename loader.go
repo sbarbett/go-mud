@@ -12,13 +12,28 @@ import (
 	"gopkg.in/yaml.v3" // Package for parsing YAML files
 )
 
-// Area represents a collection of rooms.
+// Exit represents a direction-specific exit from a room
+type Exit struct {
+	ID          interface{} `yaml:"id"`          // Can be int or string (for cross-area references)
+	Description string      `yaml:"description"` // Optional description of what's visible in that direction
+}
+
+// Room represents a location in the game
+type Room struct {
+	ID          int              `yaml:"-"`
+	Name        string           `yaml:"name"`
+	Description string           `yaml:"description"`
+	Area        string           `yaml:"-"`
+	Exits       map[string]*Exit `yaml:"exits"` // Updated to use Exit struct
+}
+
+// Area represents a collection of rooms
 type Area struct {
 	Name  string        `yaml:"name"`  // Name of the area as defined in YAML
 	Rooms map[int]*Room `yaml:"rooms"` // A map of room IDs to Room pointers
 }
 
-// Global storage for rooms, initialized as an empty map.
+// Global storage for rooms, initialized as an empty map
 var rooms = make(map[int]*Room)
 
 // LoadAreas loads all YAML files from the "areas" folder.
