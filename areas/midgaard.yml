@@ -1,0 +1,17 @@
+---
+name: Midgaard
+rooms:
+  3001:
+    name: "The Temple of Mota"
+    description: "You are in the southern end of the temple hall in the Temple of Mota."
+    exits:
+      north: 3054
+      east: 3005
+      west: 3700
+      up: "mud_school.yml:1"
+  3005:
+    name: "Temple Square"
+    description: "You are standing on the temple square."
+    exits:
+      west: 3001
+      east: 3014

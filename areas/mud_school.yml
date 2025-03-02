@@ -1,0 +1,26 @@
+---
+name: Mud School
+rooms:
+  1:
+    name: "The Entrance to Mud School"
+    description: "You stand at the entrance of the Mud School, a place for new adventurers."
+    exits:
+      north: 2
+      down: "midgaard.yml:3001"
+  2:
+    name: "Mud School Hallway"
+    description: "A long hallway with training dummies lined along the walls."
+    exits:
+      south: 1
+      north: 3
+  3:
+    name: "Final Training Room"
+    description: "The last test before you graduate from Mud School."
+    exits:
+      south: 2
+      east: 4
+  4:
+    name: "Secret Room"
+    description: "A hidden chamber only accessible to those who dare."
+    exits:
+      west: 3
