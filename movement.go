@@ -16,55 +16,117 @@ import (
 //
 //	A pointer to the new Room the player is moving to, or an error if movement is not possible
 func MovePlayer(player *Player, direction string) (*Room, error) {
-	currentRoom := player.Room // Get the player's current room
+	currentRoom := player.Room
+	fmt.Printf("Debug - Current Room: ID=%d, Name=%s, Area=%s\n",
+		currentRoom.ID, currentRoom.Name, currentRoom.Area)
 
 	// Check if the exit in the specified direction exists
 	newRoomData, exists := currentRoom.Exits[direction]
 	if !exists {
-		// Return the current room and an error if there is no exit in the desired direction
 		return currentRoom, fmt.Errorf("you can't go that way")
 	}
 
+	// Debug logging
+	fmt.Printf("Debug - MovePlayer: Moving from Room %d to %v\n",
+		currentRoom.ID, newRoomData)
+
 	// Handle different types of room movement
 	switch newRoomData := newRoomData.(type) {
-	case int: // Normal in-area movement, where newRoomData is an integer
-		newRoomID := newRoomData           // Store the new room ID
-		newRoom, err := GetRoom(newRoomID) // Retrieve the new room using the ID
+	case int:
+		newRoom, err := GetRoom(newRoomData)
 		if err != nil {
-			// Return current room and error if getting the new room fails
 			return currentRoom, err
 		}
-		// Update the player's current room to the new room ID
-		err = UpdatePlayerRoom(player.Name, newRoomID)
-		return newRoom, err // Return the new room and any error encountered
+		err = UpdatePlayerRoom(player.Name, newRoomData)
+		if err != nil {
+			return currentRoom, err
+		}
+		fmt.Printf("Debug - Moved to Room: ID=%d, Name=%s, Area=%s\n",
+			newRoom.ID, newRoom.Name, newRoom.Area)
+		return newRoom, nil
 
-	case string: // Cross-area movement, where newRoomData is a formatted string
-		roomInfo := strings.Split(newRoomData, ":") // Split the string into area file and room ID parts
+	case string:
+		// Handle cross-area movement
+		roomInfo := strings.Split(newRoomData, ":")
 		if len(roomInfo) != 2 {
-			// Return current room and an error if the room info is improperly formatted
-			return currentRoom, fmt.Errorf("invalid room reference: %s", newRoomData)
+			return currentRoom, fmt.Errorf("invalid room reference")
 		}
 
-		areaFile, roomIDStr := roomInfo[0], roomInfo[1] // Extract area file and room ID string
-		roomID, err := strconv.Atoi(roomIDStr)          // Convert room ID string to an integer
+		roomID, err := strconv.Atoi(roomInfo[1])
 		if err != nil {
-			// Return current room and an error if room ID conversion fails
-			return currentRoom, fmt.Errorf("invalid room ID in reference: %s", newRoomData)
+			return currentRoom, fmt.Errorf("invalid room ID")
 		}
 
-		// Call function to load the new area file. Ensure the path is correct.
-		loadArea("areas/" + areaFile)
-
-		newRoom, err := GetRoom(roomID) // Retrieve the new room by its ID
+		newRoom, err := GetRoom(roomID)
 		if err != nil {
-			// Return current room and error if getting the new room fails
 			return currentRoom, err
 		}
-		// Update the player's room to the new room ID
+
 		err = UpdatePlayerRoom(player.Name, roomID)
-		return newRoom, err // Return the new room and any error encountered
+		if err != nil {
+			return currentRoom, err
+		}
+		fmt.Printf("Debug - Moved to Room (cross-area): ID=%d, Name=%s, Area=%s\n",
+			newRoom.ID, newRoom.Name, newRoom.Area)
+		return newRoom, nil
 	}
 
-	// Return current room and error if the exit data type is invalid
-	return currentRoom, fmt.Errorf("invalid exit data type")
+	return currentRoom, fmt.Errorf("invalid exit type")
+}
+
+// DirectionAliases maps shorthand commands to full direction names
+var DirectionAliases = map[string]string{
+	"n": "north",
+	"s": "south",
+	"e": "east",
+	"w": "west",
+	"u": "up",
+	"d": "down",
+}
+
+// HandleMovement processes movement commands and executes the movement
+func HandleMovement(player *Player, command string) error {
+	// Check if the command is a shorthand direction and convert it
+	if fullDirection, isAlias := DirectionAliases[command]; isAlias {
+		command = fullDirection
+	}
+
+	// Store the old room for notifications
+	oldRoom := player.Room
+
+	// Attempt to move the player
+	newRoom, err := MovePlayer(player, command)
+	if err != nil {
+		return err
+	}
+
+	// Debug logging
+	fmt.Printf("Debug - Movement: Player %s moving from Room %d (Area: %s) to Room %d (Area: %s)\n",
+		player.Name, oldRoom.ID, oldRoom.Area, newRoom.ID, newRoom.Area)
+
+	// Notify players in the old room about departure
+	playersMutex.Lock()
+	for _, p := range activePlayers {
+		if p != player && p.Room == oldRoom {
+			p.Conn.Write([]byte(fmt.Sprintf("%s leaves %s.\r\n", player.Name, command)))
+		}
+	}
+	playersMutex.Unlock()
+
+	// Update player's room
+	player.Room = newRoom
+
+	// Send room description to moving player
+	player.Conn.Write([]byte(fmt.Sprintf("You move %s.\r\n%s\r\n", command, DescribeRoom(newRoom, player))))
+
+	// Notify players in the new room about arrival
+	playersMutex.Lock()
+	for _, p := range activePlayers {
+		if p != player && p.Room == newRoom {
+			p.Conn.Write([]byte(fmt.Sprintf("%s arrives.\r\n", player.Name)))
+		}
+	}
+	playersMutex.Unlock()
+
+	return nil
 }

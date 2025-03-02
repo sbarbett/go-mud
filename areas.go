@@ -3,13 +3,47 @@ package main
 import (
 	"fmt"     // Importing the fmt package for formatted I/O operations
 	"strconv" // Importing the strconv package for converting strings to integers
+	"strings" // Importing the strings package for joining strings
 )
 
 // DescribeRoom prints the description of the current room
 // It takes a pointer to a Room object and returns a formatted string
-func DescribeRoom(room *Room) string {
-	// Return a formatted string combining the room's name and description
-	return fmt.Sprintf("%s\n%s", room.Name, room.Description)
+func DescribeRoom(room *Room, viewer *Player) string {
+	// Get available exits
+	var exits []string
+	for direction := range room.Exits {
+		exits = append(exits, direction)
+	}
+
+	// Get list of other players in the room (excluding the viewer)
+	playersMutex.Lock()
+	var otherPlayers []string
+	for _, p := range activePlayers {
+		// Debug logging to help understand what's happening
+		fmt.Printf("Debug - Comparing rooms: Viewer Room ID: %d, Player %s Room ID: %d, Same pointer: %v\n",
+			viewer.Room.ID, p.Name, p.Room.ID, viewer.Room == p.Room)
+
+		// Only add players who are in exactly the same room instance
+		if p != viewer && // Not the viewing player
+			p.Room != nil && viewer.Room != nil && // Both rooms exist
+			p.Room == viewer.Room { // Exact same room instance
+			otherPlayers = append(otherPlayers, p.Name)
+		}
+	}
+	playersMutex.Unlock()
+
+	// Build the room description
+	description := fmt.Sprintf("%s\n%s\nAvailable exits: [%s]",
+		room.Name,
+		room.Description,
+		strings.Join(exits, ", "))
+
+	// Add other players if present
+	if len(otherPlayers) > 0 {
+		description += fmt.Sprintf("\nAlso here: %s", strings.Join(otherPlayers, ", "))
+	}
+
+	return description
 }
 
 // CanMove checks if the player can move in a specified direction

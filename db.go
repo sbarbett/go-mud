@@ -10,12 +10,13 @@ import (
 // Global variable to hold the database connection
 var db *sql.DB
 
-// Room represents a room in the game world, containing details about each room.
+// Room represents a room in the game world
 type Room struct {
-	ID          int                    // Unique identifier for the room
-	Name        string                 // Name of the room
-	Description string                 // Description providing details about the room
-	Exits       map[string]interface{} // Exits available from the room, stored as a map to allow flexible exit types
+	ID          int                    `yaml:"-"`     // Unique identifier for the room
+	Name        string                 `yaml:"name"`  // Name of the room
+	Description string                 `yaml:"desc"`  // Description providing details about the room
+	Exits       map[string]interface{} `yaml:"exits"` // Exits available from the room
+	Area        string                 `yaml:"-"`     // Name of the area this room belongs to
 }
 
 // InitDB initializes the database connection and creates the players table if it doesn't exist

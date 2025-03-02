@@ -8,14 +8,8 @@ import (
 	"strings"
 )
 
-// Player represents an active player session with attributes like name, race, class, current room, and connection.
-type Player struct {
-	Name  string   // Player's name
-	Race  string   // Player's race
-	Class string   // Player's class
-	Room  *Room    // Current room the player is in
-	Conn  net.Conn // Network connection for the player
-}
+// Global variables
+var oocManager *OOCManager
 
 // handleConnection manages player login and the overall lifecycle of the player's session
 func handleConnection(conn net.Conn) {
@@ -48,7 +42,21 @@ func handleConnection(conn net.Conn) {
 
 		// Notify the player of the successful character creation
 		conn.Write([]byte(fmt.Sprintf("Character created! Welcome, %s the %s %s!\r\n", player.Name, player.Race, player.Class)))
+
+		// After successful player creation or loading, use AddPlayer
+		AddPlayer(player)
+
+		// Broadcast player join
+		oocManager.BroadcastMessage(fmt.Sprintf("[OOC] %s has connected.", player.Name), player)
+
+		// Send initial room description to the player
+		player.Conn.Write([]byte(fmt.Sprintf("%s\r\n", DescribeRoom(player.Room, player))))
+
 		playGame(player, reader) // Start the game for the newly created player
+
+		// When player disconnects, use RemovePlayer
+		RemovePlayer(player)
+		oocManager.BroadcastMessage(fmt.Sprintf("[OOC] %s has disconnected.", player.Name), player)
 		return
 	}
 
@@ -69,38 +77,54 @@ func handleConnection(conn net.Conn) {
 	// Initialize the player object with loaded data
 	player := &Player{Name: name, Race: race, Class: class, Room: room, Conn: conn}
 
-	// Welcome the player back and describe the room
-	conn.Write([]byte(fmt.Sprintf("Welcome back, %s!\r\n%s\r\n", name, room.Description)))
+	// Welcome the player back
+	conn.Write([]byte(fmt.Sprintf("Welcome back, %s!\r\n", name)))
+
+	// After successful player creation or loading, use AddPlayer
+	AddPlayer(player)
+
+	// Broadcast player join
+	oocManager.BroadcastMessage(fmt.Sprintf("[OOC] %s has connected.", player.Name), player)
+
+	// Send initial room description to the player
+	player.Conn.Write([]byte(fmt.Sprintf("%s\r\n", DescribeRoom(player.Room, player))))
+
 	playGame(player, reader) // Start the game for the existing player
+
+	// When player disconnects, use RemovePlayer
+	RemovePlayer(player)
+	oocManager.BroadcastMessage(fmt.Sprintf("[OOC] %s has disconnected.", player.Name), player)
 }
 
 // playGame handles gameplay commands and maintains the player's session state
 func playGame(player *Player, reader *bufio.Reader) {
 	for {
-		player.Conn.Write([]byte("> "))                   // Prompt the player for input
-		input, _ := reader.ReadString('\n')               // Read the player's input
-		input = strings.TrimSpace(strings.ToLower(input)) // Normalize the input to lowercase
+		player.Conn.Write([]byte("> "))
+		input, _ := reader.ReadString('\n')
+		input = strings.TrimSpace(strings.ToLower(input))
+
+		if input == "ooc" || strings.HasPrefix(input, "ooc ") {
+			oocManager.HandleOOCCommand(player, input)
+			continue
+		}
 
 		switch input {
-		case "quit": // If the player wants to quit
-			player.Conn.Write([]byte("Goodbye!\r\n")) // Send a farewell message
-			return                                    // Properly exit the loop
+		case "quit":
+			player.Conn.Write([]byte("Goodbye!\r\n"))
+			return
 
-		case "look": // Player wants to look around
-			player.Conn.Write([]byte(fmt.Sprintf("%s\n", DescribeRoom(player.Room)))) // Describe the room
+		case "look":
+			player.Conn.Write([]byte(fmt.Sprintf("%s\n", DescribeRoom(player.Room, player))))
 
-		// Handle movement commands (directional)
-		case "north", "south", "east", "west", "down", "up":
-			newRoom, err := MovePlayer(player, input) // Attempt to move the player
-			if err != nil {
-				player.Conn.Write([]byte(err.Error() + "\n")) // Notify player of movement errors
-			} else {
-				player.Room = newRoom                                                                        // Update player's current room
-				player.Conn.Write([]byte(fmt.Sprintf("You move %s.\r\n%s\r\n", input, newRoom.Description))) // Describe the new room
+		// Handle movement commands
+		case "north", "south", "east", "west", "up", "down",
+			"n", "s", "e", "w", "u", "d":
+			if err := HandleMovement(player, input); err != nil {
+				player.Conn.Write([]byte(err.Error() + "\n"))
 			}
 
 		default:
-			player.Conn.Write([]byte("Unknown command.\r\n")) // Handle unrecognized commands
+			player.Conn.Write([]byte("Unknown command.\r\n"))
 		}
 	}
 }
@@ -109,6 +133,9 @@ func playGame(player *Player, reader *bufio.Reader) {
 func main() {
 	// Initialize the database
 	InitDB()
+
+	// Initialize OOC manager with the player mutex and active players map
+	oocManager = NewOOCManager(&playersMutex, activePlayers)
 
 	// Load all areas from YAML
 	fmt.Println("Loading areas...")
