@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"strconv"
 	"strings"
 )
 
@@ -60,7 +61,7 @@ func handleConnection(conn net.Conn) {
 		return
 	}
 	// Player already exists; load their existing information from the database
-	race, class, roomID, str, dex, con, int_, wis, pre, err := LoadPlayer(name)
+	race, class, roomID, str, dex, con, int_, wis, pre, level, xp, nextLevelXP, hp, maxHP, mp, maxMP, err := LoadPlayer(name)
 	if err != nil {
 		conn.Write([]byte("Error loading character.\r\n")) // Handle loading errors
 		return
@@ -75,17 +76,24 @@ func handleConnection(conn net.Conn) {
 
 	// Initialize the player object with loaded data
 	player := &Player{
-		Name:  name,
-		Race:  race,
-		Class: class,
-		Room:  room,
-		Conn:  conn,
-		STR:   str,
-		DEX:   dex,
-		CON:   con,
-		INT:   int_,
-		WIS:   wis,
-		PRE:   pre,
+		Name:        name,
+		Race:        race,
+		Class:       class,
+		Room:        room,
+		Conn:        conn,
+		STR:         str,
+		DEX:         dex,
+		CON:         con,
+		INT:         int_,
+		WIS:         wis,
+		PRE:         pre,
+		Level:       level,
+		XP:          xp,
+		NextLevelXP: nextLevelXP,
+		HP:          hp,
+		MaxHP:       maxHP,
+		MP:          mp,
+		MaxMP:       maxMP,
 	}
 
 	// Welcome the player back
@@ -142,6 +150,20 @@ func playGame(player *Player, reader *bufio.Reader) {
 			if err := HandleMovement(player, input); err != nil {
 				player.Conn.Write([]byte(err.Error() + "\n"))
 			}
+
+		case "gainxp":
+			if len(args) > 0 {
+				if amount, err := strconv.Atoi(args[0]); err == nil {
+					player.GainXP(amount)
+				}
+			}
+
+		case "stats":
+			player.Conn.Write([]byte(fmt.Sprintf(
+				"HP: %d/%d\nMP: %d/%d\nLevel: %d\nXP: %d/%d\n",
+				player.HP, player.MaxHP,
+				player.MP, player.MaxMP,
+				player.Level, player.XP, player.NextLevelXP)))
 
 		default:
 			player.Conn.Write([]byte("Unknown command.\r\n"))

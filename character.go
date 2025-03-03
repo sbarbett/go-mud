@@ -20,8 +20,16 @@ func CreateNewCharacter(conn net.Conn, reader *bufio.Reader, name string) (*Play
 	var race string
 	for {
 		conn.Write([]byte("Enter your choice (1-4): "))
-		input, _ := reader.ReadString('\n')
+		input, err := reader.ReadString('\n')
+		if err != nil {
+			return nil, fmt.Errorf("connection error during race selection: %v", err)
+		}
+
 		choice := strings.TrimSpace(input)
+		if choice == "" {
+			return nil, fmt.Errorf("connection closed during race selection")
+		}
+
 		if num := choice[0] - '0'; num >= 1 && num <= 4 {
 			race = races[num-1]
 			break
@@ -40,8 +48,16 @@ func CreateNewCharacter(conn net.Conn, reader *bufio.Reader, name string) (*Play
 	var class string
 	for {
 		conn.Write([]byte("Enter your choice (1-4): "))
-		input, _ := reader.ReadString('\n')
+		input, err := reader.ReadString('\n')
+		if err != nil {
+			return nil, fmt.Errorf("connection error during class selection: %v", err)
+		}
+
 		choice := strings.TrimSpace(input)
+		if choice == "" {
+			return nil, fmt.Errorf("connection closed during class selection")
+		}
+
 		if num := choice[0] - '0'; num >= 1 && num <= 4 {
 			class = classes[num-1]
 			break
@@ -66,8 +82,15 @@ func CreateNewCharacter(conn net.Conn, reader *bufio.Reader, name string) (*Play
 	for remainingPoints > 0 {
 		conn.Write([]byte(fmt.Sprintf("\nRemaining points: %d\n", remainingPoints)))
 		conn.Write([]byte("Enter stat to increase (STR/DEX/CON/INT/WIS/PRE) or 'done' to finish: "))
-		input, _ := reader.ReadString('\n')
+		input, err := reader.ReadString('\n')
+		if err != nil {
+			return nil, fmt.Errorf("connection error during stat allocation: %v", err)
+		}
+
 		input = strings.TrimSpace(strings.ToUpper(input))
+		if input == "" {
+			return nil, fmt.Errorf("connection closed during stat allocation")
+		}
 
 		if input == "DONE" {
 			break
@@ -100,7 +123,7 @@ func CreateNewCharacter(conn net.Conn, reader *bufio.Reader, name string) (*Play
 	}
 
 	// Create and return the player object
-	return &Player{
+	player := &Player{
 		Name:  name,
 		Race:  race,
 		Class: class,
@@ -112,5 +135,32 @@ func CreateNewCharacter(conn net.Conn, reader *bufio.Reader, name string) (*Play
 		INT:   stats["INT"],
 		WIS:   stats["WIS"],
 		PRE:   stats["PRE"],
-	}, nil
+		Level: 1,
+	}
+
+	// Calculate derived stats based on class and base stats
+	switch class {
+	case "Warrior":
+		player.MaxHP = 20 + (player.CON * 2)
+		player.MaxMP = 10 + player.WIS
+	case "Mage":
+		player.MaxHP = 15 + player.CON
+		player.MaxMP = 20 + (player.INT * 2)
+	case "Rogue":
+		player.MaxHP = 18 + (player.CON+player.DEX)/2
+		player.MaxMP = 15 + player.INT
+	case "Cleric":
+		player.MaxHP = 18 + (player.CON+player.WIS)/2
+		player.MaxMP = 18 + (player.WIS+player.INT)/2
+	}
+
+	// Set current HP/MP to maximum
+	player.HP = player.MaxHP
+	player.MP = player.MaxMP
+
+	// Set initial XP thresholds
+	player.XP = 0
+	player.NextLevelXP = 1000 // Base XP needed for level 2
+
+	return player, nil
 }
