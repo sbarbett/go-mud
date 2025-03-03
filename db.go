@@ -27,7 +27,13 @@ func InitDB() {
 		name TEXT UNIQUE NOT NULL,
 		race TEXT NOT NULL,
 		class TEXT NOT NULL,
-		room_id INTEGER NOT NULL DEFAULT 1
+		room_id INTEGER NOT NULL DEFAULT 1,
+		str INTEGER NOT NULL DEFAULT 10,
+		dex INTEGER NOT NULL DEFAULT 10,
+		con INTEGER NOT NULL DEFAULT 10,
+		int INTEGER NOT NULL DEFAULT 10,
+		wis INTEGER NOT NULL DEFAULT 10,
+		pre INTEGER NOT NULL DEFAULT 10
 	);
 	`)
 	if err != nil {
@@ -36,11 +42,15 @@ func InitDB() {
 	}
 }
 
-// CreatePlayer adds a new player to the players table in the database
-func CreatePlayer(name, race, class string) error {
-	// Insert the new player's details into the players table
-	_, err := db.Exec("INSERT INTO players (name, race, class, room_id) VALUES (?, ?, ?, ?)", name, race, class, 1)
-	return err // Return any error encountered during the process
+// CreatePlayer adds a new player to the database with their stats
+func CreatePlayer(name, race, class string, stats map[string]int) error {
+	_, err := db.Exec(`
+		INSERT INTO players (name, race, class, str, dex, con, int, wis, pre) 
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		name, race, class,
+		stats["STR"], stats["DEX"], stats["CON"],
+		stats["INT"], stats["WIS"], stats["PRE"])
+	return err
 }
 
 // PlayerExists checks if a player with the given name exists in the database
@@ -52,18 +62,18 @@ func PlayerExists(name string) bool {
 	return err == nil && exists
 }
 
-// LoadPlayer retrieves a player's race, class, and room ID from the database using their name
-func LoadPlayer(name string) (string, string, int, error) {
+// LoadPlayer retrieves a player's information from the database
+func LoadPlayer(name string) (string, string, int, int, int, int, int, int, int, error) {
 	var race, class string
-	var roomID int
-	// Execute a query to get the race, class, and room_id for the specified player name
-	err := db.QueryRow("SELECT race, class, room_id FROM players WHERE name = ?", name).Scan(&race, &class, &roomID)
+	var roomID, str, dex, con, int_, wis, pre int
+	err := db.QueryRow(`
+		SELECT race, class, room_id, str, dex, con, int, wis, pre 
+		FROM players WHERE name = ?`, name).Scan(
+		&race, &class, &roomID, &str, &dex, &con, &int_, &wis, &pre)
 	if err != nil {
-		// Return an error if the query fails, along with empty strings and 0 for the roomID
-		return "", "", 0, err
+		return "", "", 0, 0, 0, 0, 0, 0, 0, err
 	}
-	// Return the retrieved details: race, class, and roomID
-	return race, class, roomID, nil
+	return race, class, roomID, str, dex, con, int_, wis, pre, nil
 }
 
 // UpdatePlayerRoom updates the room ID for a player, moving them to a new room

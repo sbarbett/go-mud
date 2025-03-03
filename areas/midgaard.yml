@@ -20,7 +20,7 @@ rooms:
         id: 3005
         description: "You see the temple square."
       up:
-        id: "mud_school.yml:1"
+        id: "mud_school.yml:3700"
         description: "You see the entrance to Mud School."
     environment:
       - keywords: ["plaque", "placard"]

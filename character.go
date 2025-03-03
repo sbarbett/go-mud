@@ -2,72 +2,115 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"net"
 	"strings"
 )
 
-// CreateNewCharacter function prompts the player to select a race and a class for their new character.
-// It takes a network connection, a buffered reader for input, and the character name as arguments.
-// It returns a pointer to a Player struct and an error if any occurs during character creation.
+// Character creation and customization functions
 func CreateNewCharacter(conn net.Conn, reader *bufio.Reader, name string) (*Player, error) {
-	// Define available races
+	// Present race options
 	races := []string{"Human", "Elf", "Dwarf", "Orc"}
-	// Send message to the client to choose a race
-	conn.Write([]byte("Choose your race: [Human, Elf, Dwarf, Orc]\r\n"))
+	conn.Write([]byte("\nChoose your race:\n"))
+	for i, race := range races {
+		conn.Write([]byte(fmt.Sprintf("%d. %s\n", i+1, race)))
+	}
+
+	// Get race selection
 	var race string
-	// Loop until a valid race is chosen
 	for {
-		// Prompt for input
-		conn.Write([]byte("> "))
-		// Read the input from the player
-		raceInput, _ := reader.ReadString('\n')
-		// Trim whitespace and capitalize the first letter of the input
-		race = strings.TrimSpace(strings.Title(raceInput))
-
-		// Check if the chosen race is valid
-		if stringInSlice(race, races) {
-			break // Exit loop if valid race
+		conn.Write([]byte("Enter your choice (1-4): "))
+		input, _ := reader.ReadString('\n')
+		choice := strings.TrimSpace(input)
+		if num := choice[0] - '0'; num >= 1 && num <= 4 {
+			race = races[num-1]
+			break
 		}
-		// Inform the user if the input was invalid
-		conn.Write([]byte("Invalid race. Choose from: Human, Elf, Dwarf, Orc.\r\n"))
+		conn.Write([]byte("Invalid choice. Please try again.\n"))
 	}
 
-	// Define available classes
-	classes := []string{"Warrior", "Mage", "Thief", "Cleric"}
-	// Send message to the client to choose a class
-	conn.Write([]byte("Choose your class: [Warrior, Mage, Thief, Cleric]\r\n"))
+	// Present class options
+	classes := []string{"Warrior", "Mage", "Rogue", "Cleric"}
+	conn.Write([]byte("\nChoose your class:\n"))
+	for i, class := range classes {
+		conn.Write([]byte(fmt.Sprintf("%d. %s\n", i+1, class)))
+	}
+
+	// Get class selection
 	var class string
-	// Loop until a valid class is selected
 	for {
-		// Prompt for input
-		conn.Write([]byte("> "))
-		// Read the input from the player
-		classInput, _ := reader.ReadString('\n')
-		// Trim whitespace and capitalize the first letter of the input
-		class = strings.TrimSpace(strings.Title(classInput))
-
-		// Check if the chosen class is valid
-		if stringInSlice(class, classes) {
-			break // Exit loop if valid class
+		conn.Write([]byte("Enter your choice (1-4): "))
+		input, _ := reader.ReadString('\n')
+		choice := strings.TrimSpace(input)
+		if num := choice[0] - '0'; num >= 1 && num <= 4 {
+			class = classes[num-1]
+			break
 		}
-		// Inform the user if the input was invalid
-		conn.Write([]byte("Invalid class. Choose from: Warrior, Mage, Thief, Cleric.\r\n"))
+		conn.Write([]byte("Invalid choice. Please try again.\n"))
 	}
 
-	// Attempt to save the new character to the database
-	err := CreatePlayer(name, race, class)
+	// Get base stats for the selected race
+	stats := GetBaseStats(race)
+
+	// Handle bonus point allocation
+	remainingPoints := BONUS_POINTS
+	conn.Write([]byte(fmt.Sprintf("\nYou have %d bonus points to allocate to your stats.\n", remainingPoints)))
+	conn.Write([]byte("Current stats based on your race:\n"))
+
+	statNames := []string{"STR", "DEX", "CON", "INT", "WIS", "PRE"}
+	for _, stat := range statNames {
+		conn.Write([]byte(fmt.Sprintf("%s: %d\n", stat, stats[stat])))
+	}
+
+	// Allocate bonus points
+	for remainingPoints > 0 {
+		conn.Write([]byte(fmt.Sprintf("\nRemaining points: %d\n", remainingPoints)))
+		conn.Write([]byte("Enter stat to increase (STR/DEX/CON/INT/WIS/PRE) or 'done' to finish: "))
+		input, _ := reader.ReadString('\n')
+		input = strings.TrimSpace(strings.ToUpper(input))
+
+		if input == "DONE" {
+			break
+		}
+
+		if _, exists := stats[input]; !exists {
+			conn.Write([]byte("Invalid stat. Please try again.\n"))
+			continue
+		}
+
+		if !ValidateStat(stats[input] + 1) {
+			conn.Write([]byte("Cannot increase stat above 18.\n"))
+			continue
+		}
+
+		stats[input]++
+		remainingPoints--
+	}
+
+	// Create the character in the database
+	err := CreatePlayer(name, race, class, stats)
 	if err != nil {
-		// Return nil and the error if the player could not be created
 		return nil, err
 	}
 
-	// Load the initial room for the player, starting in room 3700 (Mud School)
+	// Load the initial room
 	room, err := GetRoom(3700)
 	if err != nil {
-		// Return nil and the error if the room could not be retrieved
 		return nil, err
 	}
 
-	// Return a new Player struct with the player's information
-	return &Player{Name: name, Race: race, Class: class, Room: room, Conn: conn}, nil
+	// Create and return the player object
+	return &Player{
+		Name:  name,
+		Race:  race,
+		Class: class,
+		Room:  room,
+		Conn:  conn,
+		STR:   stats["STR"],
+		DEX:   stats["DEX"],
+		CON:   stats["CON"],
+		INT:   stats["INT"],
+		WIS:   stats["WIS"],
+		PRE:   stats["PRE"],
+	}, nil
 }

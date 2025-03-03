@@ -59,9 +59,8 @@ func handleConnection(conn net.Conn) {
 		oocManager.BroadcastMessage(fmt.Sprintf("[OOC] %s has disconnected.", player.Name), player)
 		return
 	}
-
 	// Player already exists; load their existing information from the database
-	race, class, roomID, err := LoadPlayer(name)
+	race, class, roomID, str, dex, con, int_, wis, pre, err := LoadPlayer(name)
 	if err != nil {
 		conn.Write([]byte("Error loading character.\r\n")) // Handle loading errors
 		return
@@ -75,7 +74,19 @@ func handleConnection(conn net.Conn) {
 	}
 
 	// Initialize the player object with loaded data
-	player := &Player{Name: name, Race: race, Class: class, Room: room, Conn: conn}
+	player := &Player{
+		Name:  name,
+		Race:  race,
+		Class: class,
+		Room:  room,
+		Conn:  conn,
+		STR:   str,
+		DEX:   dex,
+		CON:   con,
+		INT:   int_,
+		WIS:   wis,
+		PRE:   pre,
+	}
 
 	// Welcome the player back
 	conn.Write([]byte(fmt.Sprintf("Welcome back, %s!\r\n", name)))
