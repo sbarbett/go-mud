@@ -5,11 +5,15 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"os"
+	"os/signal"
 	"strings"
+	"syscall"
 )
 
 // Global variables
 var oocManager *OOCManager
+var timeManager *TimeManager
 
 // handleConnection manages player login and the overall lifecycle of the player's session
 func handleConnection(conn net.Conn) {
@@ -148,13 +152,72 @@ func playGame(player *Player, reader *bufio.Reader) {
 	}
 }
 
+// setupSignalHandler sets up a signal handler for graceful shutdown
+func setupSignalHandler() {
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+
+	go func() {
+		<-c
+		fmt.Println("Shutting down server...")
+
+		// Stop the time manager
+		if timeManager != nil {
+			timeManager.Stop()
+		}
+
+		// Close database connection
+		if db != nil {
+			db.Close()
+		}
+
+		fmt.Println("Server shutdown complete")
+		os.Exit(0)
+	}()
+}
+
 // main initializes the MUD server and starts listening for connections
 func main() {
+	// Setup signal handler for graceful shutdown
+	setupSignalHandler()
+
 	// Initialize the database
 	InitDB()
 
 	// Initialize OOC manager with the player mutex and active players map
 	oocManager = NewOOCManager(&playersMutex, activePlayers)
+
+	// Initialize and start the time manager
+	timeManager = NewTimeManager()
+
+	// Register debug functions if in debug mode
+	// Uncomment these for debugging
+	// timeManager.RegisterTickFunc(DebugTick)
+	// timeManager.RegisterPulseFunc(DebugPulse)
+	// timeManager.RegisterHeartbeatFunc(DebugHeartbeat)
+
+	// Register player regeneration on tick
+	timeManager.RegisterTickFunc(func() {
+		playersMutex.Lock()
+		defer playersMutex.Unlock()
+
+		for _, player := range activePlayers {
+			player.RegenTick()
+		}
+	})
+
+	// Register player pulse updates
+	timeManager.RegisterPulseFunc(func() {
+		playersMutex.Lock()
+		defer playersMutex.Unlock()
+
+		for _, player := range activePlayers {
+			player.PulseUpdate()
+		}
+	})
+
+	// Start the time manager
+	timeManager.Start()
 
 	// Load all areas from YAML
 	fmt.Println("Loading areas...")

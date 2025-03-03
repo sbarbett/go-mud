@@ -244,3 +244,46 @@ func (p *Player) ModifyAttribute(attribute string, amount int) error {
 	// Note: We'll need to create this function in db.go
 	return UpdatePlayerAttributes(p.Name, p.STR, p.DEX, p.CON, p.INT, p.WIS, p.PRE)
 }
+
+// RegenTick handles player regeneration on each game tick (1 minute)
+func (p *Player) RegenTick() {
+	// Only regenerate if player is alive
+	if p.HP <= 0 {
+		return
+	}
+
+	// Calculate regeneration amounts
+	hpRegen := p.CON / 2
+	if hpRegen < 1 {
+		hpRegen = 1
+	}
+
+	mpRegen := (p.INT + p.WIS) / 4
+	if mpRegen < 1 {
+		mpRegen = 1
+	}
+
+	staminaRegen := 10 // 10% stamina per minute
+
+	// Apply regeneration
+	if p.HP < p.MaxHP {
+		p.Heal(hpRegen)
+	}
+
+	if p.MP < p.MaxMP {
+		p.RestoreMana(mpRegen)
+	}
+
+	if p.Stamina < p.MaxStamina {
+		p.RestoreStamina(staminaRegen)
+	}
+}
+
+// PulseUpdate handles updates that occur every second
+func (p *Player) PulseUpdate() {
+	// This could handle things like spell durations, cooldowns, etc.
+	// For now, we'll just implement a simple notification for low health
+	if p.HP > 0 && p.HP < p.MaxHP/5 {
+		p.Conn.Write([]byte("\r\n*Your health is critically low!*\r\n"))
+	}
+}
