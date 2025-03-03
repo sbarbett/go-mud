@@ -25,3 +25,7 @@ docker compose up --build
 
 ## Why?
 I wanted to recreate the experience of old-school MUDs while learning Go at the same time. This project is primarily for **fun and nostalgia**—but if it turns into something functional, cool.
+
+## License
+
+[MIT](LICENSE}
