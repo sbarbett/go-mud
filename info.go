@@ -87,3 +87,41 @@ func LookDirection(room *Room, direction string) string {
 
 	return fmt.Sprintf("You see a passage leading %s.", direction)
 }
+
+// GetScorecard returns a formatted string containing the player's complete stats
+func GetScorecard(player *Player) string {
+	// Update derived stats before displaying
+	player.UpdateDerivedStats()
+
+	// Format status effects (placeholder for now)
+	status := "[No active effects]"
+
+	// Build the scorecard using strings.Builder for efficiency
+	var sb strings.Builder
+
+	// Use consistent width and simple borders
+	sb.WriteString("-------------------------------------------------\n")
+	sb.WriteString("                CHARACTER SCORECARD               \n")
+	sb.WriteString("-------------------------------------------------\n")
+	sb.WriteString(fmt.Sprintf(" Name:         %-12s  Level:     %-6d\n", player.Name, player.Level))
+	sb.WriteString(fmt.Sprintf(" Race:         %-12s  Class:     %-6s\n", player.Race, player.Class))
+	sb.WriteString(fmt.Sprintf(" XP:           %-12s  Gold:      %-6d\n", fmt.Sprintf("%d / %d", player.XP, player.NextLevelXP), player.Gold))
+	sb.WriteString(fmt.Sprintf(" Status:       %-32s\n", status))
+	sb.WriteString("-------------------------------------------------\n")
+	sb.WriteString("                   ATTRIBUTES                     \n")
+	sb.WriteString("-------------------------------------------------\n")
+	sb.WriteString(fmt.Sprintf(" Strength:     %-8d  Dexterity:    %-8d\n", player.STR, player.DEX))
+	sb.WriteString(fmt.Sprintf(" Constitution: %-8d  Intelligence: %-8d\n", player.CON, player.INT))
+	sb.WriteString(fmt.Sprintf(" Wisdom:       %-8d  Presence:     %-8d\n", player.WIS, player.PRE))
+	sb.WriteString("-------------------------------------------------\n")
+	sb.WriteString("                  COMBAT STATS                    \n")
+	sb.WriteString("-------------------------------------------------\n")
+	sb.WriteString(fmt.Sprintf(" HP:           %-12s  MP:          %-12s\n", fmt.Sprintf("%d / %d", player.HP, player.MaxHP), fmt.Sprintf("%d / %d", player.MP, player.MaxMP)))
+	sb.WriteString(fmt.Sprintf(" Stamina:      %-12s  Hit%%:        %-12s\n", fmt.Sprintf("%d%%", player.Stamina), fmt.Sprintf("%.1f%%", player.HitChance)))
+	sb.WriteString(fmt.Sprintf(" Evasion:      %-12s  Crit%%:       %-12s\n", fmt.Sprintf("%.1f%%", player.EvasionChance), fmt.Sprintf("%.1f%%", player.CritChance)))
+	sb.WriteString(fmt.Sprintf(" Crit DMG:     %-12s  Attack SPD:  %-12s\n", fmt.Sprintf("%.1f%%", player.CritDamage), fmt.Sprintf("%.1f%%", player.AttackSpeed)))
+	sb.WriteString(fmt.Sprintf(" Cast SPD:     %-12s\n", fmt.Sprintf("%.1f%%", player.CastSpeed)))
+	sb.WriteString("-------------------------------------------------\n")
+
+	return sb.String()
+}

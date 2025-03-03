@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"strconv"
 	"strings"
 )
 
@@ -53,6 +52,9 @@ func handleConnection(conn net.Conn) {
 		// Send initial room description to the player
 		player.Conn.Write([]byte(fmt.Sprintf("%s\r\n", DescribeRoom(player.Room, player))))
 
+		// Calculate derived stats for loaded player
+		player.UpdateDerivedStats()
+
 		playGame(player, reader) // Start the game for the newly created player
 
 		// When player disconnects, use RemovePlayer
@@ -61,7 +63,7 @@ func handleConnection(conn net.Conn) {
 		return
 	}
 	// Player already exists; load their existing information from the database
-	race, class, roomID, str, dex, con, int_, wis, pre, level, xp, nextLevelXP, hp, maxHP, mp, maxMP, err := LoadPlayer(name)
+	race, class, roomID, str, dex, con, int_, wis, pre, level, xp, nextLevelXP, hp, maxHP, mp, maxMP, stamina, maxStamina, gold, err := LoadPlayer(name)
 	if err != nil {
 		conn.Write([]byte("Error loading character.\r\n")) // Handle loading errors
 		return
@@ -94,7 +96,13 @@ func handleConnection(conn net.Conn) {
 		MaxHP:       maxHP,
 		MP:          mp,
 		MaxMP:       maxMP,
+		Stamina:     stamina,
+		MaxStamina:  maxStamina,
+		Gold:        gold,
 	}
+
+	// Calculate derived stats for loaded player
+	player.UpdateDerivedStats()
 
 	// Welcome the player back
 	conn.Write([]byte(fmt.Sprintf("Welcome back, %s!\r\n", name)))
@@ -122,51 +130,20 @@ func playGame(player *Player, reader *bufio.Reader) {
 		input, _ := reader.ReadString('\n')
 		input = strings.TrimSpace(strings.ToLower(input))
 
-		if input == "ooc" || strings.HasPrefix(input, "ooc ") {
-			oocManager.HandleOOCCommand(player, input)
-			continue
+		// Store the original command for movement handling
+		player.LastCommand = input
+
+		// Process the command
+		response := HandleCommand(player, input)
+
+		// Send the response to the player
+		if response != "" {
+			player.Conn.Write([]byte(response))
 		}
 
-		// Split the input into command and arguments
-		parts := strings.Fields(input)
-		if len(parts) == 0 {
-			continue
-		}
-
-		command := parts[0]
-		args := parts[1:]
-
-		switch command {
-		case "quit":
-			player.Conn.Write([]byte("Goodbye!\r\n"))
+		// Check if the player is quitting
+		if input == "quit" {
 			return
-
-		case "look":
-			result := HandleLook(player, args)
-			player.Conn.Write([]byte(result + "\r\n"))
-
-		case "north", "south", "east", "west", "up", "down",
-			"n", "s", "e", "w", "u", "d":
-			if err := HandleMovement(player, input); err != nil {
-				player.Conn.Write([]byte(err.Error() + "\n"))
-			}
-
-		case "gainxp":
-			if len(args) > 0 {
-				if amount, err := strconv.Atoi(args[0]); err == nil {
-					player.GainXP(amount)
-				}
-			}
-
-		case "stats":
-			player.Conn.Write([]byte(fmt.Sprintf(
-				"HP: %d/%d\nMP: %d/%d\nLevel: %d\nXP: %d/%d\n",
-				player.HP, player.MaxHP,
-				player.MP, player.MaxMP,
-				player.Level, player.XP, player.NextLevelXP)))
-
-		default:
-			player.Conn.Write([]byte("Unknown command.\r\n"))
 		}
 	}
 }

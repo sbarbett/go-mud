@@ -99,6 +99,31 @@ func InitDB() {
 	if err != nil {
 		log.Printf("Note: max_mp column may already exist: %v", err)
 	}
+
+	_, err = db.Exec(`
+	ALTER TABLE players 
+	ADD COLUMN stamina INTEGER NOT NULL DEFAULT 100;
+	`)
+	if err != nil {
+		log.Printf("Note: stamina column may already exist: %v", err)
+	}
+
+	_, err = db.Exec(`
+	ALTER TABLE players 
+	ADD COLUMN max_stamina INTEGER NOT NULL DEFAULT 100;
+	`)
+	if err != nil {
+		log.Printf("Note: max_stamina column may already exist: %v", err)
+	}
+
+	// Add Gold column
+	_, err = db.Exec(`
+	ALTER TABLE players 
+	ADD COLUMN gold INTEGER NOT NULL DEFAULT 0;
+	`)
+	if err != nil {
+		log.Printf("Note: gold column may already exist: %v", err)
+	}
 }
 
 // CreatePlayer adds a new player to the database with their stats
@@ -106,9 +131,10 @@ func CreatePlayer(name, race, class string, stats map[string]int) error {
 	_, err := db.Exec(`
 		INSERT INTO players (
 			name, race, class, str, dex, con, int, wis, pre,
-			level, xp, next_level_xp, hp, max_hp, mp, max_mp
+			level, xp, next_level_xp, hp, max_hp, mp, max_mp,
+			stamina, max_stamina
 		) 
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 0, 1000, 100, 100, 100, 100)`,
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 0, 1000, 100, 100, 100, 100, 100, 100)`,
 		name, race, class,
 		stats["STR"], stats["DEX"], stats["CON"],
 		stats["INT"], stats["WIS"], stats["PRE"])
@@ -125,19 +151,27 @@ func PlayerExists(name string) bool {
 }
 
 // LoadPlayer retrieves a player's information from the database
-func LoadPlayer(name string) (string, string, int, int, int, int, int, int, int, int, int, int, int, int, int, int, error) {
-	var race, class string
-	var roomID, str, dex, con, int_, wis, pre, level, xp, nextLevelXP, hp, maxHP, mp, maxMP int
-	err := db.QueryRow(`
+func LoadPlayer(name string) (race string, class string, roomID int, str int, dex int, con int, int_ int, wis int, pre int, level int, xp int, nextLevelXP int, hp int, maxHP int, mp int, maxMP int, stamina int, maxStamina int, gold int, err error) {
+	// Set default gold value
+	gold = 0
+
+	err = db.QueryRow(`
 		SELECT race, class, room_id, str, dex, con, int, wis, pre, 
-			   level, xp, next_level_xp, hp, max_hp, mp, max_mp 
+			   level, xp, next_level_xp, hp, max_hp, mp, max_mp,
+			   stamina, max_stamina
 		FROM players WHERE name = ?`, name).Scan(
 		&race, &class, &roomID, &str, &dex, &con, &int_, &wis, &pre,
-		&level, &xp, &nextLevelXP, &hp, &maxHP, &mp, &maxMP)
+		&level, &xp, &nextLevelXP, &hp, &maxHP, &mp, &maxMP,
+		&stamina, &maxStamina)
+
 	if err != nil {
-		return "", "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, err
+		return
 	}
-	return race, class, roomID, str, dex, con, int_, wis, pre, level, xp, nextLevelXP, hp, maxHP, mp, maxMP, nil
+
+	// Try to get gold value separately (in case column doesn't exist yet)
+	_ = db.QueryRow("SELECT gold FROM players WHERE name = ?", name).Scan(&gold)
+
+	return
 }
 
 // UpdatePlayerRoom updates the room ID for a player, moving them to a new room
@@ -164,5 +198,25 @@ func UpdatePlayerHPMP(name string, hp, maxHP, mp, maxMP int) error {
 		SET hp = ?, max_hp = ?, mp = ?, max_mp = ? 
 		WHERE name = ?`,
 		hp, maxHP, mp, maxMP, name)
+	return err
+}
+
+// Add new function to update player stats including stamina
+func UpdatePlayerStats(name string, hp, maxHP, mp, maxMP, stamina, maxStamina int) error {
+	_, err := db.Exec(`
+		UPDATE players 
+		SET hp = ?, max_hp = ?, mp = ?, max_mp = ?, stamina = ?, max_stamina = ?
+		WHERE name = ?`,
+		hp, maxHP, mp, maxMP, stamina, maxStamina, name)
+	return err
+}
+
+// UpdatePlayerAttributes updates the core attributes of a player in the database
+func UpdatePlayerAttributes(name string, str, dex, con, int_, wis, pre int) error {
+	_, err := db.Exec(`
+		UPDATE players 
+		SET str = ?, dex = ?, con = ?, int = ?, wis = ?, pre = ?
+		WHERE name = ?`,
+		str, dex, con, int_, wis, pre, name)
 	return err
 }

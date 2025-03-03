@@ -124,18 +124,21 @@ func CreateNewCharacter(conn net.Conn, reader *bufio.Reader, name string) (*Play
 
 	// Create and return the player object
 	player := &Player{
-		Name:  name,
-		Race:  race,
-		Class: class,
-		Room:  room,
-		Conn:  conn,
-		STR:   stats["STR"],
-		DEX:   stats["DEX"],
-		CON:   stats["CON"],
-		INT:   stats["INT"],
-		WIS:   stats["WIS"],
-		PRE:   stats["PRE"],
-		Level: 1,
+		Name:       name,
+		Race:       race,
+		Class:      class,
+		Room:       room,
+		Conn:       conn,
+		STR:        stats["STR"],
+		DEX:        stats["DEX"],
+		CON:        stats["CON"],
+		INT:        stats["INT"],
+		WIS:        stats["WIS"],
+		PRE:        stats["PRE"],
+		Level:      1,
+		Stamina:    100,
+		MaxStamina: 100,
+		Gold:       0, // Start with 0 gold
 	}
 
 	// Calculate derived stats based on class and base stats
@@ -161,6 +164,9 @@ func CreateNewCharacter(conn net.Conn, reader *bufio.Reader, name string) (*Play
 	// Set initial XP thresholds
 	player.XP = 0
 	player.NextLevelXP = 1000 // Base XP needed for level 2
+
+	// Calculate initial derived stats
+	player.UpdateDerivedStats()
 
 	return player, nil
 }
