@@ -19,3 +19,21 @@ Converts a DikuMUD area file to a YAML format. This is a quick, hacky way of con
 python area_converter.py <filename> [area_name]
 ```
 
+## `mobiles_converter.py`
+Converts mobiles from a DikuMUD area file into a YAML format.
+
+### Usage
+
+```bash
+python mobiles_converter.py <filename>
+```
+
+## `mob_resets_converter.py`
+Converts mob resets from a DikuMUD area file into a YAML format.
+
+### Usage
+
+```bash
+python mob_resets_converter.py <filename>
+```
+
