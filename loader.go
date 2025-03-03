@@ -36,8 +36,10 @@ type Room struct {
 
 // Area represents a collection of rooms
 type Area struct {
-	Name  string        `yaml:"name"`  // Name of the area as defined in YAML
-	Rooms map[int]*Room `yaml:"rooms"` // A map of room IDs to Room pointers
+	Name      string        `yaml:"name"`
+	Rooms     map[int]*Room `yaml:"rooms"`
+	Mobiles   map[int]*Mob  `yaml:"mobiles"`
+	MobResets []MobReset    `yaml:"mob_resets"`
 }
 
 // Global storage for rooms, initialized as an empty map
@@ -85,11 +87,21 @@ func loadArea(path string) error {
 
 	// Set the area name and ID for each room
 	for id, room := range area.Rooms {
-		room.ID = id         // Explicitly set the room ID
-		room.Area = areaName // Set the area name
-		rooms[id] = room     // Store in global rooms map
+		room.ID = id
+		room.Area = areaName
+		rooms[id] = room
 		fmt.Printf("Loaded Room [%d]: %s (Area: %s)\n", id, room.Name, room.Area)
 	}
+
+	// Load mobs from the mobiles section
+	for id, mob := range area.Mobiles {
+		fmt.Printf("Loading mob [%d]: %s\nLong Description: %s\n", id, mob.ShortDescription, mob.LongDescription)
+		mob.ID = id
+		RegisterMob(mob)
+	}
+
+	// Store mob resets
+	mobResets = append(mobResets, area.MobResets...)
 
 	return nil
 }

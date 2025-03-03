@@ -225,6 +225,9 @@ func main() {
 		log.Fatalf("Error loading areas: %v", err)
 	}
 
+	// Process mob resets after loading areas
+	ProcessMobResets()
+
 	// Start the MUD server
 	listener, err := net.Listen("tcp", "0.0.0.0:4000")
 	if err != nil {

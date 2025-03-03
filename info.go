@@ -28,10 +28,26 @@ func DescribeRoom(room *Room, viewer *Player) string {
 	playersMutex.Unlock()
 
 	// Build the room description
-	description := fmt.Sprintf("%s\n%s\nAvailable exits: [%s]",
+	description := fmt.Sprintf("%s\n%s",
 		room.Name,
-		room.Description,
-		strings.Join(exits, ", "))
+		room.Description)
+
+	// Add mobs in the room
+	mobMutex.RLock()
+	mobs := GetMobsInRoom(room.ID)
+	mobMutex.RUnlock()
+
+	if len(mobs) > 0 {
+		description += "\n" // Single newline before mobs
+		for _, mob := range mobs {
+			if mob != nil {
+				description += fmt.Sprintf("%s\n", mob.LongDescription)
+			}
+		}
+	}
+
+	// Add exits after mobs
+	description += fmt.Sprintf("\nAvailable exits: [%s]", strings.Join(exits, ", "))
 
 	// Add other players if present
 	if len(otherPlayers) > 0 {
@@ -61,8 +77,16 @@ func HandleLook(player *Player, args []string) string {
 		return "Nothing special there."
 	}
 
-	// Check environment attributes
+	// Check if looking at a mob
 	lookTarget := strings.ToLower(strings.Join(args, " "))
+	mob := FindMobInRoom(player.Room.ID, lookTarget)
+	if mob != nil {
+		// Return the mob's description along with some basic stats
+		return fmt.Sprintf("%s\n[Level %d %s] [HP: %d/%d]",
+			mob.Description, mob.Level, mob.Toughness, mob.HP, mob.MaxHP)
+	}
+
+	// Check environment attributes
 	for _, attr := range player.Room.Environment {
 		for _, keyword := range attr.Keywords {
 			if strings.ToLower(keyword) == lookTarget {
