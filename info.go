@@ -2,16 +2,18 @@ package main
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 )
 
 // DescribeRoom prints the description of the current room
 func DescribeRoom(room *Room, viewer *Player) string {
-	// Get available exits
+	// Get available exits and sort them
 	var exits []string
 	for direction := range room.Exits {
 		exits = append(exits, direction)
 	}
+	sort.Strings(exits)
 
 	// Get list of other players in the room (excluding the viewer)
 	playersMutex.Lock()
@@ -45,12 +47,31 @@ func HandleLook(player *Player, args []string) string {
 		return DescribeRoom(player.Room, player)
 	}
 
+	// Check if looking at a direction
 	direction := args[0]
-	// Check if it's a direction alias
 	if fullDirection, isAlias := DirectionAliases[direction]; isAlias {
 		direction = fullDirection
 	}
-	return LookDirection(player.Room, direction)
+	// If it's a direction (either an alias or full name), handle it
+	if _, exists := player.Room.Exits[direction]; exists {
+		return LookDirection(player.Room, direction)
+	}
+	// If it's a valid direction but no exit exists
+	if _, isDirection := DirectionAliases[direction]; isDirection || stringInSlice(direction, []string{"north", "south", "east", "west", "up", "down"}) {
+		return "Nothing special there."
+	}
+
+	// Check environment attributes
+	lookTarget := strings.ToLower(strings.Join(args, " "))
+	for _, attr := range player.Room.Environment {
+		for _, keyword := range attr.Keywords {
+			if strings.ToLower(keyword) == lookTarget {
+				return attr.Description
+			}
+		}
+	}
+
+	return "You do not see that here."
 }
 
 // LookDirection returns the description of what's visible in a given direction

@@ -18,13 +18,20 @@ type Exit struct {
 	Description string      `yaml:"description"` // Optional description of what's visible in that direction
 }
 
+// EnvironmentAttribute represents a lookable object or detail in a room
+type EnvironmentAttribute struct {
+	Keywords    []string `yaml:"keywords"`
+	Description string   `yaml:"description"`
+}
+
 // Room represents a location in the game
 type Room struct {
-	ID          int              `yaml:"-"`
-	Name        string           `yaml:"name"`
-	Description string           `yaml:"description"`
-	Area        string           `yaml:"-"`
-	Exits       map[string]*Exit `yaml:"exits"` // Updated to use Exit struct
+	ID          int                    `yaml:"-"`
+	Name        string                 `yaml:"name"`
+	Description string                 `yaml:"description"`
+	Area        string                 `yaml:"-"`
+	Exits       map[string]*Exit       `yaml:"exits"`
+	Environment []EnvironmentAttribute `yaml:"environment,omitempty"`
 }
 
 // Area represents a collection of rooms

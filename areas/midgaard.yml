@@ -15,23 +15,2321 @@ rooms:
     exits:
       north:
         id: 3054
-        description: "The temple hall continues northward, where you can see a large altar."
-      east:
+        description: "At the northern end of the temple hall is a statue and a huge altar."
+      south:
         id: 3005
-        description: "Through the eastern archway, you can see the temple square."
-      west:
-        id: 3700
-        description: "A side passage leads west into a dimly lit corridor."
+        description: "You see the temple square."
       up:
         id: "mud_school.yml:1"
-        description: "Large stone steps lead upward to the entrance of MUD School."
+        description: "You see the entrance to Mud School."
+    environment:
+      - keywords: ["plaque", "placard"]
+        description: |
+          This world was built on the foundation of those who came before. It 
+          draws inspiration from ROM 2.4, which in turn was shaped by MERC and 
+          the original DikuMUD—engines that brought countless adventures to life.
+
+          With appreciation for the creators who laid the path:
+
+          Hans Staerfeldt, Katja Nyboe, Tom Madsen,
+          Michael Seifert, and Sebastian Hammer (DikuMUD)
+
+          Hatchet, Furey, and Kahn (MERC)
+
+          Russ Taylor (ROM 2.4)
+
+          A new chapter begins here.
+  3002:
+    name: "Cleric's Inner Sanctum"
+    description: |
+      This is the inner sanctum.  A picture of the mighty Mota is hanging on
+      the wall, just above the altar which is set against the western wall.  A well
+      in the middle of the floor leads down into darkness.  Vile smells waft from
+      the depths.
+    exits:
+      east:
+        id: 3003
+        description: "You see your favorite place, the bar of divination."
+      down:
+        id: 7026
+        description: "You can't see what is down there, it is too dark.  Looks like it would be impossible to climb back up."
+  3003:
+    name: "Cleric's Bar"
+    description: |
+      The bar is one of the finest in the land, lucky it is members only.  Fine
+      furniture is set all around the room.  A small sign is hanging on the wall.
+    exits:
+      south:
+        id: 3004
+        description: "You see the entrance."
+      west:
+        id: 3002
+        description: "You see the inner sanctum."
+    environment:
+      - keywords: ["sign"]
+        description: |
+          The sign reads:
+          Free instructions provided by the waiter:
+          
+             Buy  - Buy something (drinkable) from the waiter.
+             List - The waiter will show you all the different drinks and
+                    specialties, and tell the price of each.
+  3004:
+    name: "Entrance to Cleric's Guild"
+    description: |
+      The entrance hall is a small modest room, reflecting the true nature of
+      the Clerics.  The exit leads east to the temple square.  A small entrance to
+      the bar is in the northern wall.
+    exits:
+      north:
+        id: 3003
+        description: "You see the bar, richly decorated with really stylish furniture."
+      east:
+        id: 3005
+        description: "You see the Temple Square."
   3005:
     name: "Temple Square"
-    description: "You are standing on the temple square."
+    description: |
+      You are standing on the temple square.  Huge marble steps lead up to the
+      temple gate.  The entrance to the Clerics Guild is to the west, and the old
+      Grunting Boar Inn, is to the east.  Just south of here you see the market
+      square, the center of Midgaard.
+    exits:
+      north:
+        id: 3001
+        description: "You see the temple."
+      east:
+        id: 3006
+        description: "You see the good old Grunting Boar Inn."
+      south:
+        id: 3014
+        description: "You see the Market Square."
+      west:
+        id: 3004
+        description: "You see the entrance to the Clerics Guild."
+      up:
+        id: 3057
+        description: "You see the air."
+  3006:
+    name: "Entrance to the Grunting Boar Inn"
+    description: |
+      You are standing in the entrance hall of the Grunting Boar Inn.  The hall
+      has been wisely decorated with simple but functional furniture.  A small
+      staircase leads up to the defunct reception room and the bar is to the east.
+    exits:
+      east:
+        id: 3007
+        description: "Surprise! You see the bar."
+      west:
+        id: 3005
+        description: "You see the temple square."
+      up:
+        id: 3008
+        description: "You see the defunct reception room."
+  3007:
+    name: "The Grunting Boar"
+    description: |
+      You are standing in the bar.  The bar is set against the northern wall, old
+      archaic writing, carvings and symbols cover its top.  A fireplace is built into
+      the western wall, and through the southeastern windows you can see the temple
+      square.  This place makes you feel like home.
+      A small sign with big letters is fastened to the bar.
     exits:
       west:
-        id: 3001
-        description: "The grand temple entrance stands majestically to the west."
+        id: 3006
+        description: "You see the exit to the entrance hall."
+    environment:
+      - keywords: ["writing", "carving", "carvings", "symbols", "symbol"]
+        description: |
+          Although it is very hard to understand, you think it looks a lot like beer,
+          poems about beer, and small beer-mugs.
+      - keywords: ["sign"]
+        description: |
+          The sign reads:
+          Free instructions provided by the Grunting Boar Inn.
+          
+             Buy  - Buy something (drinkable) from the bartender.
+             List - The bartender will show you all the different drinks and
+                    specialties, and tell the price of each.
+  3008:
+    name: "The Defunct Reception"
+    description: |
+      You are standing in a dusty, defunct reception.  The staircase leads
+      down to the entrance hall.
+    exits:
+      down:
+        id: 3006
+        description: "You see the entrance hall."
+  3009:
+    name: "The Bakery"
+    description: |
+      You are standing inside the small bakery.  A sweet scent of Danish and
+      fine bread fills the room.  The bread and Danish are arranged in fine order
+      on the shelves, and seem to be of the finest quality.
+      A small sign is on the counter.
+    exits:
+      south:
+        id: 3013
+        description: "You see the main street."
+    environment:
+      - keywords: ["sign"]
+        description: |
+          Free instructions provided by the store:
+          
+             Buy  - Will buy you some bread or pastry.
+             List - The baker will kindly tell you the price and sort of the bread in
+                    his bakery.
+      - keywords: ["danish", "pastry"]
+        description: |
+          You see that this is truly delicious pastry.  Must be made by a Dane from
+          Denmark (which surely is not the capital of Sweden!).  Former ruler of
+          Scandinavia, England, Northern Germany, Northern France, Russia, Greenland,
+          Iceland, Estonia etc. etc.
+             The sight of those large, wholesome chokoladeboller makes your mouth water
+          and your soul sing.         
+  3010:
+    name: "The General Store"
+    description: |
+      You are inside the general store.  All sorts of items are stacked on shelves
+      behind the counter, safely out of your reach.
+      A small note hangs on the wall.
+    exits:
+      south:
+        id: 3015
+        description: "You see the main street."
+    environment:
+      - keywords: ["note"]
+        description: |
+          The note reads:
+          
+            List  - Show which various items are in the store.
+            Buy   - Buy an item.
+            Value - The shopkeeper will (free of charge) tell how much he will
+                    pay for your item.
+            Sell  - Sell an item.
+  3011:
+    name: "The Weapon Shop"
+    description: |
+      You are inside the weapon shop.  There is a small note on the counter.
+    exits:
+      south:
+        id: 3016
+        description: "You see the main street."
+    environment:
+      - keywords: ["note"]
+        description: |
+          The note reads:
+          
+            List  - Show which various items are in the store.
+            Buy   - Buy an item.
+            Value - The shopkeeper will (free of charge) tell how much he will
+                    pay for your item.
+            Sell  - Sell an item.
+  3012:
+    name: "Main Street"
+    description: |
+      You are at the end of the main street of Midgaard.  South of here is the
+      entrance to the Guild of Magic Users.  The street continues east towards the
+      market square.  The magic shop is to the north and to the west is the city
+      gate.
+    exits:
+      north:
+        id: 3033
+        description: "You see the magic shop."
+      east:
+        id: 3013
+        description: "You see the main street."
+      south:
+        id: 3017
+        description: "You see the entrance to the Guild of Magic Users."
+      west:
+        id: 3040
+        description: "You see the city gate."
+  3013:
+    name: "Main Street"
+    description: |
+      You are on the main street passing through the City of Midgaard.  South of
+      here is the entrance to the Armoury, and the bakery is to the north.  East of
+      here is the market square.
+    exits:
+      north:
+        id: 3009
+        description: "You see the bakery."
       east:
         id: 3014
-        description: "A busy street extends to the east."
+        description: "You see the market square."
+      south:
+        id: 3020
+        description: "You see the armoury."
+      west:
+        id: 3012
+        description: "You see the main street."
+  3014:
+    name: "Market Square"
+    description: |
+      You are standing on the market square, the famous Square of Midgaard.
+      A large, peculiar looking statue is standing in the middle of the square.
+      Roads lead in every direction, north to the temple square, south to the
+      common square, east and westbound is the main street.
+    exits:
+      north:
+        id: 3005
+        description: "You see the temple square."
+      east:
+        id: 3015
+        description: "You see the main street."
+      south:
+        id: 3025
+        description: "You see the common square."
+      west:
+        id: 3013
+        description: "You see the main street."
+    environment:
+      - keywords: ["statue"]
+        description: |
+          What you see is the Midgaard Worm, stretching around the Palace of Midgaard.
+  3015:
+    name: "The Main Street"
+    description: |
+      You are on Main Street crossing through town.  To the north is the general
+      store, and the main street continues east.  To the west you see and hear the
+      market place and to the south is the Jeweller's Shop.
+    exits:
+      north:
+        id: 3010
+        description: "You see the general store."
+      east:
+        id: 3016
+        description: "You see Main Street."
+      south:
+        id: 3034
+        description: "You see the Jeweller's Shop."
+      west:
+        id: 3014
+        description: "You see the market square."
+  3016:
+    name: "The Main Street"
+    description: |
+      The main street, to the north is the weapon shop and to the south is the
+      Guild of Swordsmen.  To the east you leave town and to the west the street
+      leads to the market square.
+    exits:
+      north:
+        id: 3011
+        description: "You see the weapon shop."
+      east:
+        id: 3041
+        description: "You see the city gate."
+      south:
+        id: 3021
+        description: "You see the swordsmen's guild."
+      west:
+        id: 3015
+        description: "You see the main street leading to the market square."
+  3017:
+    name: "Entrance to Mage's Guild"
+    description: |
+      The entrance hall is a small, poor lighted room.
+    exits:
+      north:
+        id: 3012
+        description: "You see the main street."
+      south:
+        id: 3018
+        description: "You see your favorite place, the Mage's Bar."
+  3018:
+    name: "Mage's Bar"
+    description: |
+      The bar is one of the wierdest in the land.  Mystical images float around
+      the air.  Illusions of fine furniture appear all around the room.
+    exits:
+      north:
+        id: 3017
+        description: "You see the lobby."
+      east:
+        id: 3019
+        description: "You see the laboratory."
+  3019:
+    name: "Mage's Laboratory"
+    description: |
+      This is the Magical Experiments Laboratory.  Dark smoke-stained stones
+      arch over numerous huge oaken tables, most of these cluttered with strange-
+      looking pipes and flasks.  The floor is covered with half-erased pentagrams
+      and even weirder symbols, and a blackboard in a dark corner has only been
+      partially cleaned, some painful-looking letters faintly visible.  A well in
+      the middle of the floor leads down into darkness.  Vile smells waft from the
+      depths.
+    exits:
+      west:
+        id: 3018
+        description: "You see the bar."
+      down:
+        id: 7017
+        description: "You can't see what is down there, it is too dark.  Looks like it would be impossible to climb back up."
+  3020:
+    name: "The Armoury"
+    description: |
+      The armoury with all kinds of armours on the walls and in the window.  You
+      see helmets, shields and chain mails.  To the north is the main street.
+      On the wall is a small note.
+    exits:
+      north:
+        id: 3013
+        description: "You see the main street."
+    environment:
+      - keywords: ["note"]
+        description: |
+          You can use these commands for trading:
+          
+            value <item>     To get the price of an item in your possession.
+            sell <item>      To sell something.
+            buy <item>       To buy something (provided that the shop has it in store).
+            list             Gives you a listing of the shop's inventory.
+          
+                  WE DON'T GIVE CREDIT; WE DON'T EXPECT TO RECEIVE CREDIT!
+                                       NO HAGGLING
+  3021:
+    name: "Entrance Hall to the Guild of Swordsmen"
+    description: |
+      The entrance hall to the Guild of Swordsmen.  A place where one has to be
+      careful not to say something wrong (or right).  To the east is the bar and to
+      the north is the main street.
+    exits:
+      north:
+        id: 3016
+        description: "You see the main street."
+      east:
+        id: 3022
+        description: "You see the swordsmen's bar, many noises comes from there."
+  3022:
+    name: "The Bar of Swordsmen"
+    description: |
+      The bar of swordsmen, once upon a time beautifully furnished.  But now the
+      furniture is all around you in small pieces.  To the south is the yard, and
+      to the west is the entrance hall.
+    exits:
+      south:
+        id: 3023
+        description: "You see the practice yard."
+      west:
+        id: 3021
+        description: "You see the entrance hall to the thieves guild."
+  3023:
+    name: "The Tournament and Practice Yard"
+    description: |
+      The practice yard of the fighters.  To the north is the bar.  A well leads
+      down into darkness.
+    exits:
+      north:
+        id: 3022
+        description: "You see the bar."
+      down:
+        id: 7048
+        description: "You can't see what is down there, it is too dark.  Looks like it would be impossible to climb back up."
+  3024:
+    name: "Eastern End of Poor Alley"
+    description: |
+      You are at the poor alley. South of here is the Grubby Inn and to the
+      east you see common square. Melancholy's map shop is north. The alley continues 
+      further west.
+    exits:
+      north:
+        id: 3160
+        description: "You see Melancholy's Map Shop"
+      east:
+        id: 3025
+        description: "You see the common square."
+      south:
+        id: 3048
+        description: "You see the Inn."
+      west:
+        id: 3044
+        description: "You see the poor alley."
+  3025:
+    name: "The Common Square"
+    description: |
+      The common square, people pass you, talking to each other.  To the west is
+      the poor alley and to the east is the dark alley.  To the north, this square
+      is connected to the market square.  From the south you notice a nasty smell.
+    exits:
+      north:
+        id: 3014
+        description: "You see the market square."
+      east:
+        id: 3026
+        description: "You see the dark alley."
+      south:
+        id: 3030
+        description: "You see the city dump."
+      west:
+        id: 3024
+        description: "You see the poor alley."
+  3026:
+    name: "The Dark Alley"
+    description: |
+      The dark alley, to the west is the common square and to the south is the
+      Guild of Thieves.  Grebe's Tavern, the famous sailor's dive, is north.
+      The alley continues east.
+    exits:
+      north:
+        id: 3352
+        description: "You see a foul-smelling sailor's dive."
+      east:
+        id: 3045
+        description: "The alley continues east."
+      south:
+        id: 3027
+        description: "You see the entrance to the thieves guild."
+      west:
+        id: 3025
+        description: "You see the common square."
+    environment:
+      - keywords: ["guild"]
+        description: |
+          It is the thieves guild, don't enter if you care about your health or money.
+  3027:
+    name: "Entrance Hall to the Guild of Thieves"
+    description: |
+      The entrance hall to the thieves' and assassins' guild.  A place where you
+      can lose both your life and your money, if you are not careful.  To the north
+      is the dark alley and to the east is the thieves' bar.
+    exits:
+      north:
+        id: 3026
+        description: "You see the alley."
+      east:
+        id: 3028
+        description: "You see the thieves bar, where everything disappears."
+  3028:
+    name: "The Thieves Bar"
+    description: |
+      The bar of the thieves.  Once upon a time this place was beautifully
+      furnished, but now it seems almost empty.  To the south is the yard, and to
+      the west is the entrance hall.
+         (Maybe the furniture has been stolen?!)
+    exits:
+      south:
+        id: 3029
+        description: "You see the secret yard."
+      west:
+        id: 3027
+        description: "You see the entrance hall to the thieves guild."
+    environment:
+      - keywords: ["furniture"]
+        description: |
+          As you look at the furniture, the chair you sit on disappears.
+  3029:
+    name: "The Secret Yard"
+    description: |
+      The secret practice yard of thieves and assassins.  To the north is the
+      bar.  A well leads down into darkness.
+    exits:
+      north:
+        id: 3028
+        description: "You see the bar."
+      down:
+        id: 7043
+        description: "You can't see what is down there, it is too dark.  Looks like it would be impossible to climb back up."
+  3030:
+    name: "The Dump"
+    description: |
+      The dump, where the people from the city drop their garbage.  Through the
+      garbage you can see a large junction of pipes, looks like the entrance to the
+      sewer system.  South of here you see the river and to the north is the common
+      square.  A rickety old bridge leads south to the promenade.
+    exits:
+      north:
+        id: 3025
+        description: "You see the common square."
+      south:
+        id: 3254
+        description: "You see a river between northern and southern Midgaard.  A small bridge spans the flow."
+      down:
+        id: 7030
+        description: "You see the sewers."
+  3031:
+    name: "The Pet Shop"
+    description: |
+      The Pet Shop is a small crowded store, full of cages and animals of
+      various sorts and sizes.  There is a sign on the wall.
+    exits:
+      south:
+        id: 3045
+        description: "You see the Alley."
+    environment:
+      - keywords: ["sign"]
+        description: |
+          The sign reads:
+          
+            Use 'List' to see the available pets.
+            Use 'Buy <pet> <name>' to buy yourself a pet and name it.
+          
+            You can use 'order <pet> <instructions>' to order your pets around.
+            If you abuse your pet, it will no longer regard you as its master.
+            If you have several pets you may use 'order all <instructions>'
+          
+           Regards,
+          
+             The Shopkeeper
+  3032:
+    name: "Pet Shop Store"
+    description: |
+      This is the small dark room in which the Pet Shop Boy keeps his pets.
+      It is vital that this room be immediately after the pet shop.
+  3033:
+    name: "The Magic Shop"
+    description: |
+      You are in a small room that smells of rare chemicals and spices.
+      Dividing the room in two is a large desk, and on the wall behind it are
+      numerous shelves crammed with jars, bottles, books and scrolls of all
+      sorts and sizes.
+    exits:
+      south:
+        id: 3012
+        description: "You see the main street."
+    environment:
+      - keywords: ["scrolls"]
+        description: |
+          Each scroll is stored in a leather tube that protects it from moist.
+      - keywords: ["books"]
+        description: |
+          Most of them appear to be very old and dusty.
+      - keywords: ["jars", "bottles"]
+        description: |
+          Some of them are transparent enabling you to see that some contain colored
+          powders while others contain body parts of various animals.
+  3034:
+    name: "The Jeweller's Shop"
+    description: |
+      You are in a small, beautifully furnished room.  The warm light emanating
+      from the small oil lamps on the walls is reflected in the hard, polished
+      surface of the big mahogany desk that stands in the centre of the room.
+      A small sign with golden letters stands on the desk.
+    exits:
+      north:
+        id: 3015
+        description: "You see Main Street."
+    environment:
+      - keywords: ["sign"]
+        description: |
+          The golden letters say :-
+          
+              Use 'list' to see what is in store,
+                  'buy <item>' to buy an item,
+                  'sell <item>' to sell an item and
+                  'value <item>' to make the jeweller evaluate an item.
+      - keywords: ["desk"]
+        description: |
+          Your face is reflected in its surface.
+      - keywords: ["oil", "lamps"]
+        description: |
+          They are made from polished gold and looks as if they are securely fastened
+          to the smooth stone walls.
+  3035:
+    name: "The Leather Shop"
+    description: |
+      An acrid smell fills this large room.  Along the walls are numerous
+      shelves containing all sorts of animal hide and in the crackling fireplace
+      hangs a big iron pot with boiling water.  In the middle of the room is a
+      large oak table.
+      A wooden sign is hanging above the fireplace.
+    exits:
+      south:
+        id: 3044
+        description: "You see the alley."
+    environment:
+      - keywords: ["sign"]
+        description: |
+          The wooden sign says :-
+          
+              Use 'list' to see what is in store,
+                  'buy <item>' to buy an item,
+                  'sell <item>' to sell an item and
+                  'value <item>' to make the leather worker evaluate an item.
+      - keywords: ["pot"]
+        description: |
+          Several large pieces of leather hide are boiling in the iron pot.
+      - keywords: ["table"]
+        description: |
+          It is made from solid oak but appears to be very used.  Its surface is
+          covered in marks and scratches.  A large burning candle stands directly on
+          the table surface, tallow flowing down its sides.
+      - keywords: ["fireplace"]
+        description: |
+          It is a rather large fireplace made from heavy granite rocks.
+  3040:
+    name: "Inside the West Gate of Midgaard"
+    description: |
+      You are by two small towers that have been built into the city wall and
+      connected with a footbridge across the heavy wooden gate.  Main Street leads
+      east and Wall Road leads both north and south from here.
+    exits:
+      north:
+        id: 3257
+        description: "Wall road runs along the inner city wall to the north."
+      east:
+        id: 3012
+        description: "You see Main Street."
+      south:
+        id: 3042
+        description: "You see the road running along the inner side of the city wall.  You notice that it is called Wall Road."
+    environment:
+      - keywords: ["gate"]
+        description: |
+          It is a set of very big double doors made from hard wood.  They have been
+          reinforced with large iron bands to make them even more sturdy.  One of the
+          doors is equipped with a very big lock.
+      - keywords: ["bridge", "footbridge"]
+        description: |
+          It is too high up to reach but it looks as if one easily could walk across it
+          from one tower to the other.
+  3041:
+    name: "Inside the East Gate of Midgaard"
+    description: |
+      You are by two small towers that have been built into the city wall and
+      connected with a footbridge across the heavy wooden gate.  Main Street leads
+      west from here.  Wall road crosses the street, heading north and south along
+      the city wall.
+    exits:
+      north:
+        id: 3267
+        description: "Wall road heads north along the city wall."
+    environment:
+      - keywords: ["gate"]
+        description: |
+          It is a set of very big double doors made from hard wood.  They have been
+          reinforced with large iron bands to make them even more sturdy.  One of the
+          doors is equipped with a very big lock.
+      - keywords: ["bridge", "footbridge"]
+        description: |
+          It is too high up to reach but it looks as if one easily could walk across it
+          from one tower to the other.
+  3042:
+    name: "Wall Road"
+    description: |
+      You are walking next to the western city wall.  The road continues further
+      south and the city gate is just north of here.
+    exits:
+      north:
+        id: 3040
+        description: "You see the city gate."
+      south:
+        id: 3043
+        description: "The road continues further south."
+    environment:
+      - keywords: ["wall"]
+        description: |
+          It is built from large grey rocks that have been fastened to each other with
+          some kind of mortar.  It is far too high to climb.
+  3043:
+    name: "Wall Road"
+    description: |
+      You are walking next to the western city wall.  Wall Road continues further
+      north and south.  A small, poor alley leads east.
+      Some letters have been written on the wall here.
+    exits:
+      north:
+        id: 3042
+        description: "The road continues further north."
+      east:
+        id: 3044
+        description: "The alley leads east."
+      south:
+        id: 3047
+        description: "The road continues further south."
+    environment:
+      - keywords: ["wall"]
+        description: |
+          It is built from large grey rocks that have been fastened to each other with
+          some kind of mortar.  It is far too high to climb.
+      - keywords: ["letters"]
+        description: |
+          It says 'Who watches the watchmen?'
+  3044:
+    name: "Poor Alley"
+    description: |
+      You are in narrow and dirty alley leading east and west.  The leather shop
+      is to the north.
+    exits:
+      north:
+        id: 3035
+        description: "The leather shop is to the north."
+      east:
+        id: 3024
+        description: "The alley leads east."
+      south:
+        id: 3170
+        description: "There is an ornate doorway to the south."
+      west:
+        id: 3043
+        description: "The alley leads west."
+  3045:
+    name: "Alley at Levee"
+    description: |
+      You are standing in the alley which continues east and west.  South of
+      here you see the levee.  North is the Pet Shop.
+    exits:
+      north:
+        id: 3031
+        description: "You see, hear, and smell the pet shop."
+      east:
+        id: 3046
+        description: "The alley leads east."
+      south:
+        id: 3049
+        description: "You see the levee."
+      west:
+        id: 3026
+        description: "The alley leads west."
+  3046:
+    name: "Eastern end of Alley"
+    description: |
+      You are standing at the eastern end of the alley,  near the city walls.  
+      Wall road loops around the city to your east, and you can see an old 
+      three-story warehouse to the south.  The Fountain of Youth Apothecary is 
+      north.
+    exits:
+      north:
+        id: 3056
+        description: "You see a pricey-looking potion shop."
+      east:
+        id: 3251
+        description: "You see wall road, running a north-south loop around the city."
+      south:
+        id: 3050
+        description: "You see the warehouse."
+      west:
+        id: 3045
+        description: "You see the alley."
+  3047:
+    name: "Wall Road"
+    description: |
+      You are standing on the road next to the western city wall which
+      continues north.  South of here is a bridge across the river.  To the east,
+      you see an odd looking building painted bright orange with purple trim...
+      it must be the Mob Factory!
+    exits:
+      north:
+        id: 3043
+        description: "You see the road."
+      east:
+        id: 9400
+        description: "You see the purple-and-orange Mob Factory.  Someone has no taste."
+      south:
+        id: 3051
+        description: "You see the bridge."
+    environment:
+      - keywords: ["wall"]
+        description: |
+          It is built from large grey rocks that have been fastened to each other with
+          some kind of mortar.  It is far too high to climb.
+  3048:
+    name: "Grubby Inn"
+    description: |
+      You are inside the old Grubby Inn.  This place has not been cleaned for
+      several decades, vile smells make you dizzy.
+    exits:
+      north:
+        id: 3024
+        description: "You see the alley."
+  3049:
+    name: "Levee"
+    description: |
+      You are at the levee.  South of here you see the river gently flowing west.
+      The river bank is very low making it possible to enter the river.  Directly
+      across the river you can see a small boat landing built off of Kate's Diner.
+    exits:
+      north:
+        id: 3045
+        description: "You see the Alley."
+      south:
+        id: 3203
+        description: "You see the river flowing west."
+  3050:
+    name: "Abandoned Warehouse"
+    description: |
+      You are inside the only room in the old warehouse.  The place is very dusty
+      and appears to have been unused for many years.  The skylight spills
+      violet-tinged light.
+    exits:
+      north:
+        id: 3046
+        description: "You see the alley."
+      up:
+        id: 8604
+        description: "You see machine dreams and taste violet phosphor."
+  3051:
+    name: "On the Bridge"
+    description: |
+      You are standing on the stone bridge crosses the river.  The bridge is
+      built out from the western city wall and the river flows west through an
+      opening in the wall ten feet below the bridge.
+    exits:
+      north:
+        id: 3047
+        description: "You see the road."
+      south:
+        id: 3100
+        description: "You see the Concourse."
+    environment:
+      - keywords: ["wall"]
+        description: |
+          It is built from large grey rocks that have been fastened to each other with
+          some kind of mortar.  It is far too high to climb.
+      - keywords: ["opening"]
+        description: |
+          You cannot really see it from here as it is somewhere beneath your feet.
+      - keywords: ["bridge"]
+        description: |
+          It is built from large grey rocks that have been fastened to each other with
+          some kind of mortar, just like the wall.
+  3052:
+    name: "Outside the West Gate of Midgaard"
+    description: |
+      You are by two small towers that have been built into the city wall and
+      connected with a footbridge across the heavy wooden gate.  To the west you
+      can see the edge of a big forest. A small dusty trail leads north along the
+      wall.
+    exits:
+      north:
+        id: 3900
+        description: "The trail continues around the City of Midgaard."
+    environment:
+      - keywords: ["wall"]
+        description: |
+          It is built from large grey rocks that have been fastened to each other with
+          some kind of mortar.  It is far too high to climb.
+      - keywords: ["tower", "towers"]
+        description: |
+          Both of the towers are built from large grey rocks that have been fastened to
+          each other with some kind of mortar, just like the city wall.
+      - keywords: ["gate"]
+        description: |
+          It is a set of very big double doors made from hard wood.  They have been
+          reinforced with large iron bands to make them even more sturdy.  One of the
+          doors is equipped with a very big lock.
+      - keywords: ["bridge", "footbridge"]
+        description: |
+          It is too high up to reach but it looks as if one easily could walk across it
+          from one tower to the other.
+  3053:
+    name: "Outside the East Gate of Midgaard"
+    description: |
+      You are by two small towers that have been built into the city wall and
+      connected with a footbridge across the heavy wooden gate.  To the east the
+      plains stretch out in the distance. To the north a small dusty trail follow
+      the city wall.
+    exits:
+      north:
+        id: 3908
+        description: "The trail continues around the City of Midgaard."
+    environment:
+      - keywords: ["wall"]
+        description: |
+          It is built from large grey rocks that have been fastened to each other with
+          some kind of mortar.  It is far too high to climb.
+      - keywords: ["tower", "towers"]
+        description: |
+          Both of the towers are built from large grey rocks that have been fastened to
+          each other with some kind of mortar, just like the city wall.
+      - keywords: ["gate"]
+        description: |
+          It is a set of very big double doors made from hard wood.  They have been
+          reinforced with large iron bands to make them even more sturdy.  One of the
+          doors is equipped with a very big lock.
+      - keywords: ["bridge", "footbridge"]
+        description: |
+          It is too high up to reach but it looks as if one easily could walk across it
+          from one tower to the other.
+  3054:
+    name: "By the Temple Altar"
+    description: |
+      You are by the temple altar in the northern end of the Temple of Mota.
+      A huge altar made from white polished marble is standing in front of you and
+      behind it is a ten foot tall sitting statue of Odin, the King of the Gods.
+      The back of the altar opens into a a beautiful atrium, above which can be
+      seen a rainbow.
+    exits:
+      south:
+        id: 3001
+        description: "You see the southern end of the temple."
+      up:
+        id: 1215
+        description: "Bifrost, the Rainbow Bridge, hangs in the sky above you."
+    environment:
+      - keywords: ["statue", "Mota", "king", "god"]
+        description: |
+          The statue represents the Great God Mota, holding a staff.  He has long, grey
+          hair and beard and a kindly look on his face.  His staff is topped by a painted
+          cube, the 6 faces of which represent the 6 aspects of his power.
+      - keywords: ["altar"]
+        description: |
+          Even though the altar is more than ten feet long it appears to be made from a
+          single block of white virgin marble.
+  3056:
+    name: "The Fountain of Youth Apothecary"
+    description: |
+      An old man putters around behind the counter, making strange love potions
+      and curative philtres.  He turns as you enter, and looks on with avarice.
+      Judging from the furnishings, he's been made very wealthy by his trade.
+    exits:
+      south:
+        id: 3046
+        description: "You see the eastern end of alley."
+  3057:
+    name: "In the air..."
+    description: |
+      WOW you can fly!  You are floating in the air above Temple Square of Midgaard.
+    exits:
+      up:
+        id: 1017
+        description: "More of the same."
+      down:
+        id: 3005
+        description: "Back down on the earth where you should be!"
+  3100:
+    name: "Northwest end of Concourse"
+    description: |
+      You are at the concourse, the city wall is just west.  A small promenade
+      goes east, and the bridge is just north of here.  The concourse continues
+      south along the city wall.
+    exits:
+      north:
+        id: 3051
+        description: "You see the Bridge."
+      east:
+        id: 3101
+        description: "You see the promenade."
+      south:
+        id: 3270
+        description: "The concourse continues south."
+  3101:
+    name: "Promenade"
+    description: |
+      The river gently flows west just north of here.  The promenade continues
+      further east and to the west you see the city wall.  Park Road leads south
+      from here.
+    exits:
+      east:
+        id: 3102
+        description: "The promenade."
+      south:
+        id: 3131
+        description: "Park Road leads south."
+      west:
+        id: 3100
+        description: "You see the Concourse."
+  3102:
+    name: "Promenade"
+    description: |
+      The river gently flows west just north of here.  The promenade continues
+      both east and west.  A rickety bridge crosses the river to the north, towards
+      the city dump (fortunately, the wind is blowing towards the dump today). 
+      South of here you see the entrance to the park, and a small building seems
+      to be just west of the entrance.  Austral Square, home of Kate's Diner, lies
+      to your east.
+    exits:
+      north:
+        id: 3254
+        description: "A rickety old bridge crosses the river, heading towards the city dump."
+      east:
+        id: 3103
+        description: "You see people moving in and out of Kate's Diner."
+      south:
+        id: 3105
+        description: "You see the park entrance."
+      west:
+        id: 3101
+        description: "You see the promenade."
+  3103:
+    name: "Austral Square"
+    description: |
+      The Promenade opens here onto Austral Square, on the south bank of the
+      Midgaard River.  All around you is the bustle of Southern Midgaard--
+      shopkeepers on break, a town gossip or two prattling away.  You hear the
+      river lapping at the pilings of the dock by Kate's Diner, which is to your
+      north.  Emerald Avenue begins to the south, the Promenade continues west,
+      and the concourse ends to your east.
+    exits:
+      north:
+        id: 3150
+        description: "You smell the heavenly scents of Kate's Diner."
+      east:
+        id: 3104
+        description: "You see the Concourse."
+      south:
+        id: 3132
+        description: "The small path leads south."
+      west:
+        id: 3102
+        description: "You see the promenade."
+  3104:
+    name: "Northeast end of Concourse"
+    description: |
+      You are at the Concourse.  The city wall is just east and Austral Square,
+      home of Kate's Diner, is west.  Looking across the river you see an old  
+      warehouse.  A strong stone bridge crosses the river to the north, where the
+      concourse becomes wall road.  The Concourse continues south along the wall.
+    exits:
+      north:
+        id: 3253
+        description: "A strong stone bridge crosses the river."
+      south:
+        id: 3272
+        description: "The Concourse continues south, towards an intersection with Penny Lane."
+      west:
+        id: 3103
+        description: "You Austral Square."
+    environment:
+      - keywords: ["wall"]
+        description: |
+          It is built from large grey rocks that have been fastened to each other with
+          some kind of mortar.  It is far too high to climb.
+  3105:
+    name: "Park Entrance"
+    description: |
+      You are standing just inside the small park of Midgaard.  To the north is
+      the promenade and a small path leads south into the park.  To your east is
+      the famous Park Cafe.
+    exits:
+      north:
+        id: 3102
+        description: "You see the promenade."
+      east:
+        id: 3106
+        description: "You see Park Cafe."
+      south:
+        id: 3108
+        description: "You see the park."
+  3106:
+    name: "Park Cafe"
+    description: |
+      You are inside Park Cafe, a very well lighted, cosy place. The cafe
+      is built from large logs. Through the windows in the northern wall you
+      see the river, and through the southern window you see many vigorous
+      colorful plants.
+    exits:
+      west:
+        id: 3105
+        description: "You see the park entrance."
+  3107:
+    name: "Small path through the park"
+    description: |
+      You are walking along a small path through the park.  The path continues
+      south and east.
+    exits:
+      east:
+        id: 3108
+        description: "You see the path continue through the park."
+      south:
+        id: 3113
+        description: "You see the path leading towards a small pond."
+  3108:
+    name: "Small path in the park"
+    description: |
+      You are standing on a small path inside the park.  The park entrance is
+      just north of here, and Park Cafe is just east of the entrance.  The path
+      leads further east and west.
+    exits:
+      north:
+        id: 3105
+        description: "You see the northern park entrance."
+      east:
+        id: 3109
+        description: "The path continues east through the park."
+      west:
+        id: 3107
+        description: "The path winds west through the park."
+  3109:
+    name: "Small path in the park"
+    description: |
+      You are on a small path running through the park.  It continues west and
+      south and just north of here you see the southern wall of Park Cafe.
+    exits:
+      south:
+        id: 3115
+        description: "The path leads south towards the eastern park entrance."
+      west:
+        id: 3108
+        description: "The path continues west through the park."
+  3110:
+    name: "Cityguard Head Quarters"
+    description: |
+      You are inside a tidy office.  A big desk made from dark wood is standing
+      in the centre of the room.
+  3111:
+    name: "Park Road"
+    description: |
+      The road continues north and south.  A building is just west of here, you
+      notice a sign on the door.  The park entrance is to the east.
+    exits:
+      north:
+        id: 3131
+        description: "Park Road continues north."
+      east:
+        id: 3112
+        description: "You see the park entrance."
+      south:
+        id: 3118
+        description: "Park Road continues south."
+  3112:
+    name: "Western Park Entrance"
+    description: |
+      You are standing at the western end of the park.  A small path leads east
+      into the park and going west through the entrance you will reach Park Road.
+    exits:
+      east:
+        id: 3113
+        description: "A small path leads into the park."
+      west:
+        id: 3111
+        description: "You see Park Road."
+  3113:
+    name: "A path in the park"
+    description: |
+      You are in the park.  The paths lead north and west.  Westwards is the
+      park entrance and to the east you see a small pond.
+    exits:
+      north:
+        id: 3107
+        description: "The path leads north through the park."
+      east:
+        id: 3114
+        description: "You see the pond."
+      west:
+        id: 3112
+        description: "You see the western park entrance."
+  3114:
+    name: "The Pond"
+    description: |
+      You are swimming around in the pond, feeling rather stupid.  You can get
+      back on the path from the eastern and western end of the pond.
+    exits:
+      east:
+        id: 3115
+        description: "You see the path on the eastern side of the pond."
+      west:
+        id: 3113
+        description: "You see the path on the western side of the pond."
+  3115:
+    name: "A path in the park"
+    description: |
+      You are in the park.  The paths lead north and east.  Eastwards is the
+      park entrance and to the west you see a small pond.
+    exits:
+      north:
+        id: 3109
+        description: "The path leads north through the park."
+      east:
+        id: 3116
+        description: "You see the eastern park entrance."
+      west:
+        id: 3114
+        description: "You see the pond."
+  3116:
+    name: "Eastern Park Entrance"
+    description: |
+      You are standing at the eastern end of the park.  A small path leads west
+      into the park.  Going east through the entrance you will reach Emerald
+      Avenue.
+    exits:
+      east:
+        id: 3117
+        description: "You see Emerald Avenue."
+      west:
+        id: 3115
+        description: "A small path leads into the park."
+  3117:
+    name: "Emerald Avenue"
+    description: |
+      You are at Emerald Avenue which continues north and south.  To the west is
+      the park entrance and to the east is the not very big Town Hall of Midgaard.
+    exits:
+      north:
+        id: 3132
+        description: "Emerald Avenue continues north."
+      east:
+        id: 3137
+        description: "You see the Town Hall."
+      south:
+        id: 3119
+        description: "Emerald Avenue continues south."
+      west:
+        id: 3116
+        description: "You see the park entrance."
+  3118:
+    name: "Park Road"
+    description: |
+      You are on Park Road which leads north and south.
+    exits:
+      north:
+        id: 3111
+        description: "Park Road continues north."
+      south:
+        id: 3135
+        description: "Park Road continues south towards a road crossing."
+  3119:
+    name: "Emerald Avenue"
+    description: |
+      You are standing at a bend on Emerald Avenue.  The road leads north and west.
+      To the east, you see some run-down slums...it looks like the bad part of
+      town.
+    exits:
+      north:
+        id: 3117
+        description: "Emerald Avenue continues north."
+      east:
+        id: 2101
+        description: "You see some dangerous looking slums...just the right place for a gang."
+      west:
+        id: 3133
+        description: "Emerald Avenue bends to the west."
+  3120:
+    name: "Road Crossing"
+    description: |
+      You are in the middle of the road cross.  Roads lead in all directions.
+      A huge black iron chain as thick as a tree trunk is fastened into the ground
+      at the centre of the road cross.  Its other end leads directly upwards towards
+      the sky.
+      A road sign is here.
+    exits:
+      north:
+        id: 3133
+        description: "You see Emerald Avenue heading north."
+      east:
+        id: 3136
+        description: "You see Park Road leading east."
+      south:
+        id: 3134
+        description: "You see Emerald Avenue continuing south."
+      west:
+        id: 3135
+        description: "You see Park Road stretching west."
+  3121:
+    name: "Emerald Avenue"
+    description: |
+      You are standing at a bend on Emerald Avenue.  The road leads south and
+      east.
+    exits:
+      east:
+        id: 3134
+        description: "Emerald Avenue continues east."
+      south:
+        id: 3125
+        description: "Emerald Avenue continues south."
+  3122:
+    name: "Park Road"
+    description: |
+      You are on Park Road which leads south and north.  Elm Street is east of
+      here.
+    exits:
+      north:
+        id: 3136
+        description: "Park Road continues north."
+      east:
+        id: 3123
+        description: "You see Elm Street."
+      south:
+        id: 3126
+        description: "Park Road continues south."
+  3123:
+    name: "Elm Street"
+    description: |
+      You are on Elm street.  Park Road is to the west and Elm Street continues
+      in eastward direction.
+    exits:
+      east:
+        id: 3124
+        description: "Elm Street continues east."
+      west:
+        id: 3122
+        description: "You see Park Road."
+  3124:
+    name: "Elm Street"
+    description: |
+      You near the end of Elm Street.  An old elm tree grows here.  A heavy
+      iron grating is south, surrounding the city's graveyard.  You can see a sign
+      hanging on the grate.  The concourse joins Elm Street to the east, and the
+      street ends to the north near a run-down neighborhood.
+    exits:
+      north:
+        id: 3144
+        description: "You see the beginnings of Midgaard's bad neighborhoods."
+      east:
+        id: 3273
+        description: "You see the concourse."
+    environment:
+      - keywords: ["elm", "tree"]
+        description: |
+          The fresh young leaves of the elm tree wave gently in the wind.
+      - keywords: ["sign"]
+        description: |
+          The sign says :-
+           
+                                    Graveyard of Midgaard
+           
+              Many brave adventurers have found their final resting place here.
+                    Please show respect and do not desecrate their tombs.
+      - keywords: ["grate", "grating"]
+        description: |
+          Looks heavy.  A small sign is hanging on it.
+  3125:
+    name: "Emerald Avenue"
+    description: |
+      You are on Emerald Avenue which continues north.
+      The Concourse is south of here.
+    exits:
+      north:
+        id: 3121
+        description: "Emerald Avenue continues north."
+      south:
+        id: 3128
+        description: "You see the Concourse."
+  3126:
+    name: "Park Road"
+    description: |
+      You are on Park Road which continues north.  The Concourse is south of here.
+    exits:
+      north:
+        id: 3122
+        description: "Park Road continues north."
+      south:
+        id: 3129
+        description: "You see the Concourse."
+  3127:
+    name: "On the Concourse"
+    description: |
+      You are at the southwest corner of the city wall.  The Concourse leads
+      both north and east.
+    exits:
+      north:
+        id: 3271
+        description: "The Concourse continues north along the city wall."
+      east:
+        id: 3128
+        description: "The Concourse continues east towards the south gate."
+  3128:
+    name: "On the Concourse"
+    description: |
+      You are walking around the scenic concourse as it continues its path around
+      the city of Midgaard.  The south gate of the city lies to your east, and the 
+      southwestern corner of the city wall is west.  Emerald Avenue stretches out
+      to the north.
+    exits:
+      north:
+        id: 3125
+        description: "Emerald avenue lies to the north."
+      east:
+        id: 3255
+        description: "You can see the heavily guarded southern gate of Midgaard."
+      west:
+        id: 3127
+        description: "You see the southwestern corner of the city wall."
+  3129:
+    name: "On the Concourse"
+    description: |
+      The concourse continues its path around the city.  The southern gates of the
+      city are west of here, and park road lies north.  The northeastern corner of
+      the city wall is east.
+    exits:
+      north:
+        id: 3126
+        description: "Park Road stretches northward."
+      east:
+        id: 3130
+        description: "You see the southeastern corner of the city wall."
+      west:
+        id: 3255
+        description: "You see the south gate of Midgaard."
+  3130:
+    name: "On the Concourse"
+    description: |
+      You are at the southeast corner of the city wall.  The Concourse leads
+      both north and west.
+    exits:
+      north:
+        id: 3273
+        description: "The Concourse continues north along the eastern wall."
+      west:
+        id: 3129
+        description: "The Concourse continues west towards the south gate."
+  3131:
+    name: "Park Road"
+    description: |
+      You are at Park Road which continues north and south.
+    exits:
+      north:
+        id: 3101
+        description: "You see the promenade to the north."
+      south:
+        id: 3111
+        description: "Park Road continues south."
+  3132:
+    name: "Emerald Avenue"
+    description: |
+      You are standing on the north end of Emerald Avenue.  To the north is 
+      Austral Square and Kate's Diner, to the east is the small street Penny Lane.
+    exits:
+      north:
+        id: 3103
+        description: "You see Austral Square and Kate's Diner."
+      east:
+        id: 3139
+        description: "You see the quaint cobblestones of Penny Lane."
+      south:
+        id: 3117
+        description: "Emerald Avenue continues south."
+  3133:
+    name: "Emerald Avenue"
+    description: |
+      You are standing at a bend on Emerald Avenue.  To the east the road goes on
+      and to the south is the Road Crossing.
+    exits:
+      east:
+        id: 3119
+        description: "Emerald Avenue continues east."
+      south:
+        id: 3120
+        description: "You see the Road Crossing ahead."
+  3134:
+    name: "Emerald Avenue"
+    description: |
+      You are standing at a bend on Emerald Avenue.  To the west the road goes on
+      and to the north is the Road Crossing.
+    exits:
+      north:
+        id: 3120
+        description: "You see the Road Crossing ahead."
+      west:
+        id: 3121
+        description: "Emerald Avenue continues west."
+  3135:
+    name: "Park Road"
+    description: |
+      You are at a bend on Park Road.  To the north the road goes on and to the
+      east is the Road Crossing.  To the south, the ancient cliffs rise from deep
+      under the ground, forming a wall.
+    exits:
+      north:
+        id: 3118
+        description: "Park Road continues north."
+      east:
+        id: 3120
+        description: "You see the Road Crossing ahead."
+  3136:
+    name: "Park Road"
+    description: |
+      You are at a bend on Park Road.  To the south the road goes on and to the
+      west is the Road Crossing.
+    exits:
+      south:
+        id: 3122
+        description: "Park Road continues south."
+      west:
+        id: 3120
+        description: "You see the Road Crossing ahead."
+  3137:
+    name: "The Waiting Room"
+    description: |
+      You are standing in the waiting room at the town hall.  Wooden chairs stand
+      along the walls and a long desk is placed in the middle of the room.
+    exits:
+      east:
+        id: 3138
+        description: "It looks like some kind of office."
+      west:
+        id: 3117
+        description: "The exit west leads to Emerald Avenue."
+  3138:
+    name: "The Mayor's Office"
+    description: |
+      You are in the not very big office of the Mayor of Midgaard.  A large and
+      polished but completely empty desk is standing in front of an armchair that
+      looks so comfortable that it most of all resembles a bed with the head end
+      raised slightly.
+    exits:
+      west:
+        id: 3137
+        description: "The waiting room is to the west."
+    environment:
+      - keywords: ["chair", "armchair"]
+        description: |
+          This chair is really a masterpiece.  A chair where one can sit as comfortably
+          as in a bed.  All lecture halls should be equipped with these things.
+  3139:
+    name: "Penny Lane"
+    description: |
+      You are on Penny Lane.  Emerald Avenue is to the west and Penny Lane
+      continues in eastward direction.
+    exits:
+      east:
+        id: 3140
+        description: "Penny Lane continues east."
+      west:
+        id: 3132
+        description: "You see Emerald Avenue."
+  3140:
+    name: "Penny Lane"
+    description: |
+      You are on Penny Lane.  The narrow road continues north and west, and
+      the concourse intersects this street to the east.
+    exits:
+      north:
+        id: 3141
+        description: "Penny Lane continues north."
+      east:
+        id: 3272
+        description: "You see the concourse."
+      west:
+        id: 3139
+        description: "Penny Lane continues west."
+  3141:
+    name: "The end of Penny Lane"
+    description: |
+      You are at the end of Penny Lane.  The only exit appears to be south.
+    exits:
+      south:
+        id: 3140
+        description: "You see Penny Lane heading south."
+  3142:
+    name: "Captain's Office"
+    description: |
+      You are in the Office of the Captain of the Guard.  The Midgaard Coat of
+      Arms is hanging on the north wall and a heavy steel door is to the south.
+    environment:
+      - keywords: ["arms"]
+        description: |
+          Although a bit dusty the Coat of Arms is an excellent piece of work.
+  3143:
+    name: "The Jail"
+    description: |
+      You are in a dark and humid jail.  The dark stone walls are hard and cold
+      to the touch.  A heavy steel door is to the north.
+  3144:
+    name: "The end of Elm Street"
+    description: |
+      Elm street ends here, next to a dangerous-looking run down neighborhood.
+      You can enter the slums to the east, or head towards the graveyard to the
+      south.  It occurs to you that this isn't the happiest section of town.
+    exits:
+      east:
+        id: 2160
+        description: "You see a run-down slum neighborood."
+      south:
+        id: 3124
+        description: "Elm street continues towards a graveyard."
+  3150:
+    name: "Kate's Diner"
+    description: |
+      The smells of baking bread and simmering stew lead you dancing through
+      the doorway of the diner.  No greasy spoons to be seen here-- the
+      booth walls are covered in casual paisleys; the chairs are carved wood,
+      rescued from garage sales.  Most tables have chess or backgammon boards
+      carved and painted on their fingertip-smooth tops.  The refrain of some
+      musical or other from the 1930's blends with the dusty golden light and the
+      wonderful smells to put you completely at ease.  A huge picture window
+      looks out over the Midgaard River, and a doorway leads north onto the dock
+      and the South Bank river landing, while the main entrance to the south
+      returns you to Austral Square.
+        On most days you will find Kate here, testing a batch of stew or brewing
+      a special pot of cinnamon coffee, eerily just in time for your arrival
+      Pull up a chair, perhaps play a game, and take time out to talk.
+    exits:
+      north:
+        id: 3203
+        description: "A small boat landing lets boats land at the diner."
+      south:
+        id: 3103
+        description: "You see Austral Square."
+      up:
+        id: 1219
+        description: "You see the far-off halls of Valhalla."
+    environment:
+      - keywords: ["window", "landing"]
+        description: |
+          You can see a rickety bridge to your northwest, leading back into
+          Central Midgaard.  A rustic dock connects the Diner with the Midgaard
+          River, and a boat or two floats lazily past.  Across the river you can see
+          the Levee and the Guild of Thieves, but they seem very far away from all
+          of this...
+  3160:
+    name: "Melancholy's Maps"
+    description: |
+      As you walk in, a sudden gust of wind enters the shop and sends several
+      scraps of paper fly around the room.  You blink as the dust you've stirred 
+      up stings your eyes, and take a look around the shop.  This shop is cluttered 
+      with old pieces of parchment, stacks of books, and odd scraps.  A desk with 
+      slightly less clutter than the rest of the shop is in front of you.  A scroll 
+      case full of scrolls is behind the desk.  A bookcase is to the right of you, 
+      and to the left is a window overlooking the Common Square.  A small door, 
+      half hidden by a stack of books, leads to a room in the back of the shop.
+    exits:
+      south:
+        id: 3024
+        description: "To the south is the Poor Alley.  Across the alley, you see the Grubby Inn."
+    environment:
+      - keywords: ["window"]
+        description: |
+          You peer out the window and see a cityguard beating up an old lady.
+      - keywords: ["bookcase"]
+        description: |
+          You see many cartographer journals and topographical studies.  You also see
+          quite a few tomes written by someone named "Anson MacDonald".
+  3161:
+    name: "Melancholy's Room"
+    description: |
+      A faint smell of incense teases your nose as you enter this room.  You 
+      step onto a soft bearskin rug and look around.  A simple bed lies against
+      the far wall.  At the foot of it is a sturdy, ironbound chest, most likely
+      full of Melancholy's trappings from her adventuring days.  On a small table
+      under a window to the east is a vase with a single white rose.  Other than
+      that, the room is quite bare.  
+    environment:
+      - keywords: ["chest"]
+        description: |
+          This chest is firmly locked, and the device by which it opens is beyond your
+          reckoning.
+  3170:
+    name: "Temple Of Stupid"
+    description: |
+      As you enter the abandoned warehouse your eyes blink violently to
+      adjust to the almost total darkness.  You wonder where the windows are
+      as you step into a mud puddle in the middle of the floor.  As your eyes
+      adjust, you realize that there are mud puddles all around the room, and
+      this is some weird version of windows.  In a flash of revelation, you
+      realize that you've entered the Temple of Stupid.
+    exits:
+      north:
+        id: 3044
+        description: "Poor Alley is to the north."
+      up:
+        id: 1219
+        description: "You see the far-off halls of Valhalla."
+    environment:
+      - keywords: ["puddle", "puddles"]
+        description: |
+          The puddles on the floor are filthy and exude a foul stench.
+  3200:
+    name: "Under the Bridge"
+    description: |
+      The arch under the bridge is covered by seaweed for one foot above the
+      surface of the river.  The water gently flows through an opening in the lower
+      part of the city wall.
+    exits:
+      east:
+        id: 3201
+        description: "You see the bridge to the east."
+  3201:
+    name: "On the River"
+    description: |
+      North of here you see the miserable buildings of the poor alley.  The
+      river flows west towards the bridge.  The riverbanks are too steep to climb.
+    exits:
+      east:
+        id: 3202
+        description: "You see the poor alley to the east."
+      west:
+        id: 3200
+        description: "You see the bridge to the west."
+  3202:
+    name: "On the River"
+    description: |
+      North of here you see the dump.  The river flows from east to west.  The
+      riverbanks are too steep to climb.  A bridge passes overhead, connecting the
+      dump to the promenade.
+    exits:
+      east:
+        id: 3203
+        description: "You see the dump to the east."
+      west:
+        id: 3201
+        description: "You see the bridge to the west."
+  3203:
+    name: "On the River"
+    description: |
+      The levee is directly north of here, and a small boat landing for Kate's
+      Diner is to the south.  The river flows in an east west direction.
+    exits:
+      north:
+        id: 3049
+        description: "You see the levee to the north."
+      east:
+        id: 3204
+        description: "You see the bridge to the east."
+      south:
+        id: 3150
+        description: "You see the landing in the back of Kate's Diner."
+      west:
+        id: 3202
+        description: "You see the bridge to the west."
+  3204:
+    name: "On the River"
+    description: |
+      You see the warehouse on the northern riverbank.  East of here the river
+      passes under the eastern bridge and through the city wall. The banks of the 
+      levee are west, in the direction of the current.
+    exits:
+      east:
+        id: 3205
+        description: "You see the bridge to the east."
+      west:
+        id: 3203
+        description: "You see the bridge to the west. The river flows west."
+  3205:
+    name: "On the River"
+    description: |
+      The river enters from a hole in the eastern city wall.  The hole has been
+      blocked by several vertically positioned iron bars set into the wall. Overhead
+      you can see the stone buttresses of the eastern bridge.
+  3250:
+    name: "Wall Road"
+    description: |
+      Wall road extends north and south along the eastern walls of the city.
+      The east gate is north of you, south is an intersection with a dark alley. You
+      check to make sure you still have your wallet.
+    exits:
+      north:
+        id: 3041
+        description: "The eastern gate of the city is north."
+      south:
+        id: 3251
+        description: "You see an intersection with a dark alley."
+  3251:
+    name: "Wall Road"
+    description: |
+      You are walking along the eastern wall of the city, on a road extending 
+      between the east gate and a bridge to the south.  A dark, dirty alley lies west 
+      of here.  You step carefully around a pool of liquid...who knows what it could 
+      be in a place this foul...
+    exits:
+      north:
+        id: 3250
+        description: "Wall road continues to the north, heading towards the gate."
+      south:
+        id: 3252
+        description: "Wall road continues to the south, towards a bridge over the Midgaard river."
+      west:
+        id: 3046
+        description: "A dirty, unlight alley lies to the west...it looks like a perfect spot for a mugging."
+  3252:
+    name: "Wall Road"
+    description: |
+      The walls of Midgaard tower above you to the east, keeping the city safe
+      from its enemies...you hope.  An intersection with a dark alley lies north,
+      and a bridge over the Midgaard river is south.  Beyond the bridge wall road 
+      turns in the concourse.
+    exits:
+      north:
+        id: 3251
+        description: "You see an intersection with a dark alley."
+      south:
+        id: 3253
+        description: "The eastern bridge crosses the river to the south."
+  3253:
+    name: "On the Bridge"
+    description: |
+      You are crossing a strong stone bridge, which spans the Midgaard river.
+      Below you, the river flows into an opening in the city wall, sealed with
+      strong metal bars.  North of you is wall road, south of here the concourse
+      loops around the inside of the city walls.
+    exits:
+      north:
+        id: 3252
+        description: "Wall road continues to the north."
+      south:
+        id: 3104
+        description: "The concourse stretches around the southern parts of Midgaard."
+    environment:
+      - keywords: ["opening", "bars", "river"]
+        description: |
+          Hmm...some of the bars have been ripped out of the wall.  Enough to pass a
+          good sized raft or canoe, or perhaps even a barge.  You wonder what sort of
+          beast had the strength to do this.
+  3254:
+    name: "The South Bridge"
+    description: |
+      You are standing on a small, rickety bridge leading from the Midgaard
+      City Dump to the much more attractive promenade of the southern parts of 
+      Midgaard.  You can smell the stench of the dump to the north, the fresher
+      air of the promenade seems preferable.  Below you are the swift-moving 
+      currents of the Midgaard river.
+    exits:
+      north:
+        id: 3030
+        description: "You can see the clutter of the City Dump."
+      south:
+        id: 3102
+        description: "The beautiful promenade lies along the river.  What a romantic place to visit!"
+  3255:
+    name: "Inside the South Gate of Midgaard"
+    description: |
+      Two strong stone towers surround a heavy wooden gate set into the city wall,
+      to guard against the goblins that lurk in the southern forests.  You can exit
+      the city to the south, if you dare, or walk down the concourse to the east
+      or west.
+    exits:
+      east:
+        id: 3129
+        description: "The concourse heads east along the inside of the city wall."
+      south:
+        id: 3256
+        description: "You see the southern gate."
+      west:
+        id: 3128
+        description: "The concourse heads west along the inside of the city wall."
+  3256:
+    name: "Outside the South Gate of Midgaard"
+    description: |
+      You are standing outside the strong wooden gate on the southern walls of
+      Midgaard.  Guards eye you suspiciously from the two towers on either side of
+      the gate, as they stand watch to protect the city from the goblins of this
+      forest.  The trees and goblins of the Miden'nir are south, the gate back to 
+      Migaard lies north.
+    exits:
+      north:
+        id: 3255
+        description: "You see the southern gate."
+      south:
+        id: 3505
+        description: "The green forests of the Miden'nir are south, hiding countless goblin warriors."
+  3257:
+    name: "Wall Road"
+    description: |
+      You are walking along wall road, just north of the west gate of Midgaard.  
+      The road continues along the western wall to the north, towards an intersection
+      with a busy Clan street.
+    exits:
+      north:
+        id: 3258
+        description: "You see an intersection between wall road and a busy Clan street."
+      south:
+        id: 3040
+        description: "The west gate of the city lies south."
+  3258:
+    name: "Wall Road"
+    description: |
+      Wall road intersects with a crowded Clan Road here, filled with shops and
+      artisans.  The street stretches off to the east, towards the far wall of the
+      city.  Wall road continues to the north and south.
+    exits:
+      north:
+        id: 3259
+        description: "Wall road continues to the north, towards the northwestern corner of the wall."
+      east:
+        id: 3301
+        description: "You see the shops and clan halls of Clan Road."
+      south:
+        id: 3257
+        description: "Wall road continues alongside the western wall, heading towards the west gate."
+  3259:
+    name: "Wall Road"
+    description: |
+      You are walking along wall road, which extends along the inside of the western
+      wall of Midgaard.  To the south, you can see an intersection with a crowded
+      Clan street.  The northwestern corner of the city wall lies ahead to the
+      north.
+    exits:
+      north:
+        id: 3260
+        description: "You see the northwestern corner of the city wall."
+      south:
+        id: 3258
+        description: "To the south, wall road intersects with a crowded Clan street."
+  3260:
+    name: "The Northwest Corner"
+    description: |
+      You are standing beneath the northwestern corner of the city wall, on a turn
+      in wall road.  You can head south, towards the west gate, or east, to the 
+      north gate.
+    exits:
+      east:
+        id: 3261
+        description: "Wall road continues along the northern wall of the city."
+      south:
+        id: 3259
+        description: "Wall road continues along the western wall of the city."
+  3261:
+    name: "Wall Road"
+    description: |
+      The city walls tower over you as walk down wall road, between the northwestern
+      corner of the wall to the west, and the northern gate of Midgaard to the east.
+    exits:
+      east:
+        id: 3262
+        description: "Wall road continues to the east, towards the northern gate of Midgaard."
+      west:
+        id: 3260
+        description: "You can see the northwest corner of the city wall to the west."
+  3262:
+    name: "Inside the North Gate of Midgaard"
+    description: |
+      Two small towers surround a strong wooden gate, connected by a small stone
+      bridge set with murder holes.  This gate is not as heavily guarded as the 
+      others, as the plains outside are safe to travel.  You can leave midgaard to
+      the north, or continues along wall road to the west and east.  A teeming clan
+      street is visible to the south, and beyond that the graceful spires of the
+      Temple of Mota, but there is no way to reach them from here.
+    exits:
+      north:
+        id: 3268
+        description: "The northern plains are visible through the gate."
+      east:
+        id: 3263
+        description: "Wall road continues to the east, alongside the northern wall."
+      west:
+        id: 3261
+        description: "Wall road continues to the west, alongside the northern wall."
+  3263:
+    name: "Wall Road"
+    description: |
+      You are walking along wall road, between the northern gate of the city and the
+      northeastern corner of the city walls.  You can see bloodstains on the road...
+      better be on guard for thieves.
+    exits:
+      east:
+        id: 3264
+        description: "You see the northeastern corner of the city walls."
+      west:
+        id: 3262
+        description: "The northern gate of the city lies east."
+  3264:
+    name: "The Northeast Corner"
+    description: |
+      Wall road turns the corner here, as you pass by the northeastern edge of the
+      city wall.  The north gate lies to your west, and the road south leads to the
+      eastern gate of Midgaard.
+    exits:
+      south:
+        id: 3265
+        description: "Wall road continues to the south, along the eastern wall of the city."
+      west:
+        id: 3263
+        description: "Wall road continues to the west, along the northern wall of the city."
+  3265:
+    name: "Wall Road"
+    description: |
+      Just south of you is an intersection with a crowded clan street.  The 
+      eastern wall of Midgaard is beside you, and to the north you can see the 
+      northeast corner of the city wall.
+    exits:
+      north:
+        id: 3264
+        description: "You can see the northeast corner of the city wall."
+      south:
+        id: 3266
+        description: "You see an intersection with a crowded street."
+  3266:
+    name: "Wall Road"
+    description: |
+      Here, wall road meets up with a busy clan street heading off towards the 
+      west, and the far wall of the city.  You can smell spices, perfume, freshly
+      cured hide, and other strange scents, all mingle together in one heady aroma.
+      Wall road continues to the north and south.
+    exits:
+      north:
+        id: 3265
+        description: "Wall road continues to the north, along the eastern wall of the city."
+      south:
+        id: 3267
+        description: "Wall road continues to the south, towards the east gate of Midgaard."
+      west:
+        id: 3316
+        description: "You see a mass of people heading down Clan Road."
+  3267:
+    name: "Wall Road"
+    description: |
+      You are near the center of wall road, just north of the east gate of the city.
+      To the north, you can see an intersection with a crowded clan street.
+      The guards at the gate eye you suspiciously from afar.
+    exits:
+      north:
+        id: 3266
+        description: "You see an intersection with a busy clan street."
+      south:
+        id: 3041
+        description: "You see the well-guarded east gate of Midgaard."
+  3268:
+    name: "Outside the North Gate of Midgaard"
+    description: |
+      You stand outside the north gate of the walled city of Midgaard.  A dusty 
+      trail is visibile to the north, it stretches around the walls of the city.  
+      Further north are the wide expanses of the northern plains, leading to the 
+      village of Ofcol.  You can return to Midgaard to the south.
+    exits:
+      north:
+        id: 3904
+        description: "You see a dusty trail leading around the city."
+      south:
+        id: 3262
+        description: "You see the north gate of Midgaard."
+  3270:
+    name: "On the Concourse"
+    description: |
+      The strong stone walls of Midgaard rise up to the west, keeping evil at bay.
+      The concourse heads towards a bridge to the north, and continues south 
+      alongside a beautiful park.
+    exits:
+      north:
+        id: 3100
+        description: "The concourse continues to the north, along the city wall."
+      south:
+        id: 3271
+        description: "The concourse heads south, passing by a beautiful park."
+  3271:
+    name: "On the Concourse near the park"
+    description: |
+      You are walking down the Concoruse, along the western wall of Midgaard.  To
+      the north, the road passes by a beautiful park, to the south, you can see
+      the southwest corner of the city wall.
+    exits:
+      north:
+        id: 3270
+        description: "The concourse heads north, passing by a beautiful park."
+      south:
+        id: 3127
+        description: "You can see the southwest corner of the city wall."
+  3272:
+    name: "On the Concourse at Penny Lane"
+    description: |
+      You are on a road leading around the inner walls of Midgaard.  To the north,
+      the concourse heads towards a bridge into northern Midgaard.  To the south, 
+      you can see an intersection with Elm Street.  The quaint paved streets of
+      Penny Lane lie west.
+    exits:
+      north:
+        id: 3104
+        description: "The concourse continues to the north, towards the east bridge."
+      south:
+        id: 3273
+        description: "The concourse continues south, towards an intersection with Elm Street."
+      west:
+        id: 3140
+        description: "You see Penny Lane."
+  3273:
+    name: "On the Concourse at Elm Street"
+    description: |
+      The air grows chill as you pass near the Elm Street graveyard.  The walls of
+      Midgaard are to the east, and the concourse continues to the north and south.
+      To your west, you see Elm Street at the graveyard entrance.
+    exits:
+      north:
+        id: 3272
+        description: "The concourse continues to the north, towards an intersection with Penny Lane."
+      south:
+        id: 3130
+        description: "The concourse continues to the south, towards the southeast corner of the wall."
+      west:
+        id: 3124
+        description: "You see Elm Street and the graveyard entrance."
+  3301:
+    name: "Clan Road"
+    description: |
+      You are standing on the western end of Clan Road.  The traffic here  
+      is light.  This is a quieter section of Midgaard.  You can hear the sound of
+      haggling coming from the east.
+    exits:
+      east:
+        id: 3302
+        description: "Clan Road continues east."
+      west:
+        id: 3258
+        description: "Wall Road is to the west."
+  3302:
+    name: "Clan Road"
+    description: |
+      You are walking along Clan Road.  To the south of you is the money changer.  
+      Clan Road continues on to the east and the west.  
+    exits:
+      east:
+        id: 3303
+        description: "Clan Road continues east."
+      south:
+        id: 3334
+        description: "The money changer is to the south."
+      west:
+        id: 3301
+        description: "Clan Road continues west."
+  3303:
+    name: "Clan Road"
+    description: |
+      The shops on this stretch of Clan road are long-closed and boarded up.
+      Not much traffic passes through this part, as there is nothing to buy.  
+    exits:
+      east:
+        id: 3314
+        description: "Clan Road continues to the east."
+      west:
+        id: 3302
+        description: "Clan Road continues to the west."
+  3314:
+    name: "Clan Road"
+    description: |
+      Noise and light abound on this part of Clan Road.  Clan road continues off
+      to the east and west.
+    exits:
+      east:
+        id: 3315
+        description: "Clan Road continues to the east."
+      west:
+        id: 3303
+        description: "Clan Road continues to the west."
+  3315:
+    name: "Clan Road"
+    description: |
+      Clan Road seems to widen here slightly, allowing more traffic to 
+      travel through the area.  To the south is another entrance to the busy
+      pub.  This door is also open wide and spilling forth the sounds of
+      happy patrons.  Clan Road continues to the east and west.
+    exits:
+      east:
+        id: 3316
+        description: "Clan Road continues to the east."
+      south:
+        id: 3356
+        description: "A busy pub is to the south."
+      west:
+        id: 3314
+        description: "Clan Road continues to the west."
+  3316:
+    name: "Clan Road"
+    description: |
+      You are at the eastern end of Clan Road.  To the east of you, the  
+      tall wall around the city looms up before you and casts its shadow on
+      you.  Clan Road continues to the west.  
+    exits:
+      east:
+        id: 3266
+        description: "Wall Road is east of here."
+      west:
+        id: 3315
+        description: "Clan Road continues to the west."
+  3334:
+    name: "A Money Changer's Room"
+    description: |
+      A few strategically placed lanterns keep this place well-lit in the 
+      absence of any windows.  The room is surprisingly well appointed with  
+      tapestries hanging on the walls.  You'd wager your life the moneylender's
+      guards are behind them, as there are none here.  The moneylender himself
+      works from behind a large desk, no doubt holding a fortune in gold and silver.
+      A smallish sign hangs on the wall, lettered in common.
+    exits:
+      north:
+        id: 3302
+        description: "Clan Road is to the north."
+    environment:
+      - keywords: ["tapestries", "walls"]
+        description: |
+          You think about peeking behind the tapestries, but think better of it.
+      - keywords: ["sign"]
+        description: |
+          Give me your coins, and I shall change them for you, taking but 1 in 20 for
+          my fee.  --- Otho the Changer
+  3352:
+    name: "Grebe's Tavern"
+    description: |
+      Dive.  That's all you can say about this place; its a
+      dive.  You step carefully over the dead and/or drunk sailors
+      on the floor toward the center of the room.  There's no
+      decorations on the wall; they've all been ripped down in anger
+      or for use as weapons at one time or another.  Looking around,
+      you search vainly for a clean table to sit at, and then give up.
+    exits:
+      south:
+        id: 3026
+        description: "A dark alley is to the south."
+    environment:
+      - keywords: ["wall", "walls"]
+        description: |
+          Bare, except for the holes.
+      - keywords: ["table", "tables"]
+        description: |
+          You find a table that's relatively vomit-free.
+  3355:
+    name: "Andy's Pub"
+    description: |
+      The busy pub is filled with patrons.  People are laughing and singing.
+      A minstrel plays his lute in another part of the pub, and a few people
+      are even dancing.  Andy, the pubs owner, wanders around and checks to see
+      that the needs of his customers are met.  The bar is to your south.  East
+      of you is another section of the pub.  You know that there are rooms to
+      be had somewhere around here...
+    exits:
+      east:
+        id: 3356
+        description: "You see another room in the pub."
+      south:
+        id: 3357
+        description: "The bar is to the south of you."
+  3356:
+    name: "A Room in the Pub"
+    description: |
+      This part of the pub is filled with dancing and singing.  A wandering
+      minstrel is on a chair in a corner with his lute.  A busty red headed
+      woman is standing near him and singing a tale of comedic heroism. Drunk
+      men sit laughing at their tables and busy bar maids weave through the
+      crowd with full mugs and horns of ale and mead.  Another part of the pub
+      is located to your west. The bar is to the south.  A set of steps occupy
+      in a corner of the room.  They lead up to the inn section of this
+      prosperous establishment.
+    exits:
+      north:
+        id: 3315
+        description: "Clan Road is to the north."
+      south:
+        id: 3358
+        description: "The bar is to your south."
+      west:
+        id: 3355
+        description: "Another room in the pub is to your west."
+      up:
+        id: 3359
+        description: "A set of stairs leads up to the reception area."
+  3357:
+    name: "The Bar"
+    description: |
+      A long mahogany bar is set in the back of the pub.  Mugs line a shelf
+      behind the bar.  Bottles of strong, nasty looking liquids decorate one
+      of the lower shelves.  A large cask rests on a table behind the bar.  A
+      strong but friendly-looking bartender stands next to the cask polishing
+      glasses.  A couple of the bar maids stand in a corner and throw the most
+      inviting glances your way.
+      A sign is on the wall.
+    exits:
+      north:
+        id: 3355
+        description: "The pub proper is to the north."
+    environment:
+      - keywords: ["sign"]
+        description: |
+          The sign says: Don't forget our dinner menu.
+  3358:
+    name: "The Bar"
+    description: |
+      A long mahogany bar is set in the back of the pub.  Mugs line a shelf
+      behind the bar.  Bottles of strong, nasty looking liquids decorate one
+      of the lower shelves.  A large cask rests on a table behind the bar.  A
+      strong but friendly looking bartender stands next to the cask polishing
+      glasses.  A couple of the bar maids stand in a corner and throw the most
+      inviting glances your way.
+    exits:
+      north:
+        id: 3356
+        description: "The pub proper is to the north."
+    environment:
+      - keywords: ["sign"]
+        description: |
+          The sign says: Don't forget our dinner menu.
+  3359:
+    name: "The Inn"
+    description: |
+      You are standing upstairs from Andy's Pub at Andy's Inn.  A few chairs
+      and a couple of end tables give the room a `homey' atmosphere.  A large
+      stone fireplace burns brightly against one wall and warms the room.  A
+      large oak desk is nestled in one corner of the room.  A small man with
+      wire-framed glasses sits behind the desk working dilligently on his books.
+      He looks up as you enter the room.  He looks at you quizzically.  He is
+      probably waiting for you to ask him for a room.
+    exits:
+      down:
+        id: 3356
+        description: "The stairs lead back down to the pub."
