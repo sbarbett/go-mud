@@ -61,8 +61,8 @@ func CreateNewCharacter(conn net.Conn, reader *bufio.Reader, name string) (*Play
 		return nil, err
 	}
 
-	// Load the initial room for the player, starting in room 1
-	room, err := GetRoom(1)
+	// Load the initial room for the player, starting in room 3700 (Mud School)
+	room, err := GetRoom(3700)
 	if err != nil {
 		// Return nil and the error if the room could not be retrieved
 		return nil, err

@@ -1,40 +1,1102 @@
 ---
 name: Mud School
 rooms:
-  1:
-    name: "The Entrance to Mud School"
-    description: "You stand at the entrance of the Mud School, a place for new adventurers."
+  3700:
+    name: "Entrance to Mud School"
+    description: |
+      This is the entrance to the Merc Mud School.  Go north to go through mud
+      school.  If you have been here before and want to go directly to the arena,
+      go south.
+
+      A sign warns 'You may not pass these doors once you have passed level 5.'
     exits:
       north:
-        id: 2
-        description: "A well-lit hallway extends northward, where you can hear the sounds of training."
+        id: 3757
+        description: "You see the doorway into the Mud School Building."
+      south:
+        id: 3744
+        description: "You see the one way door into the Arena of Mud School."
       down:
-        id: "midgaard.yml:3001"
-        description: "The temple of Mota lies below, accessible via a grand staircase."
-  2:
-    name: "Mud School Hallway"
-    description: "A long hallway with training dummies lined along the walls."
+        id: 3001
+        desription: "You see the Temple of Midgaard."
+  3701:
+    name: "A Room in Mud School"
+    description: |
+      You are in a square white room.  The walls are all blank, with no windows.
+      Light fluoresces off the ceiling in soft white tones.  Of course, there is a
+      sign on the wall.  The exits are west and south.  A small plaque is on the
+      wall.
     exits:
       south:
-        id: 1
-        description: "The entrance to Mud School lies to the south."
+        id: 3757
+        description: "You see a path into another room."
+      west:
+        id: 3702
+        description: "You see a path into another room."
+    environment:
+      - keywords: ["sign"]
+        description: |
+          Equipment check time!  Type 'EQUIPMENT' to see your current equipment.  Right
+          now, you have just a vest, a shield, and a weapon.  As you go through Mud
+          School you will acquire a complete set of equipment.
+          
+          To pick up items on the ground as you see them, type 'GET item'.
+          To wear a piece of armor, type 'WEAR item'.
+          To hold a light source, type 'HOLD item'.
+          To wield a weapon, type 'WIELD weapon'.
+          To wear, hold, and wield everything you have, type 'WEAR ALL'.
+          To stop using a piece of equipment, type 'REMOVE item'.
+          Finally, to see the items in your inventory, type 'INVENTORY'.
+          
+          When you are ready to continue, go west.
+      - keywords: ["plaque"]
+        description: |
+          This zone (Mud School) is created by Hatchet for any Merc Mud.
+          Copyright 1992, 1993.
+  3702:
+    name: "The Center Room"
+    description: |
+      You are in a square white room.  The walls are all blank, with no windows.
+      Light fluoresces off the ceiling in soft white tones.  Of course, there is a
+      sign on the wall.  Exits lead in ALL directions.
+    exits:
       north:
-        id: 3
-        description: "You can see the final training room ahead."
-  3:
-    name: "Final Training Room"
-    description: "The last test before you graduate from Mud School."
-    exits:
-      south:
-        id: 2
-        description: "The training hallway stretches back to the south."
+        id: 3703
+        description: "You see the room north that will lead you to the next section."
       east:
-        id: 4
-        description: "A faint outline of a secret door can be seen in the eastern wall."
-  4:
-    name: "Secret Room"
-    description: "A hidden chamber only accessible to those who dare."
+        id: 3701
+        description: "You see a room."
+      south:
+        id: 3705
+        description: "You see a room."
+      west:
+        id: 3704
+        description: "You see a room."
+      up:
+        id: 3708
+        description: "You see a room."
+      down:
+        id: 3707
+        description: "You see a room."
+    environment:
+      - keywords: ["sign"]
+        description: |
+          This is the direction practicing room.  The directions you can go in any
+          room are: north, south, east, west, up, or down.  Of course, not all rooms
+          have all exits available.
+          
+          To see the obvious exits in a room, type 'EXITS'.
+          
+          Sometimes doors are closed, or locked, or secret.  Then you have to notice
+          clues in the room description, or try going into that direction and seeing
+          if you bump into a door.
+          
+          Try going into each direction from here.  When you are done, go NORTH.
+  3703:
+    name: "A Room in Mud School"
+    description: |
+      You are in a square white room.  The walls are all blank, with no windows.
+      Light fluoresces off the ceiling in soft white tones.  Of course, there is a
+      sign on the wall.  Exits lead north and south.
+    exits:
+      north:
+        id: 3709
+        description: "You see the next station ahead."
+      south:
+        id: 3702
+        description: "You see the central room."
+    environment:
+      - keywords: ["sign"]
+        description: |
+          Since you are here, let us have another lesson.  You can see the statistics on
+          yourself by typing 'SCORE'.  Do that right now.  At higher levels, 'SCORE'
+          gives you more information.
+  3704:
+    name: "A Room in Mud School"
+    description: |
+      You are in a square white room.  The walls are all blank, with no windows.
+      Light fluoresces off the ceiling in soft white tones.  Of course, there is a
+      sign on the wall.  The only exit is east.
+    exits:
+      east:
+        id: 3702
+        description: "You see the central room."
+    environment:
+      - keywords: ["sign"]
+        description: |
+          Just go east to the central room.
+  3705:
+    name: "A Room in Mud School"
+    description: |
+      You are in a square white room.  The walls are all blank, with no windows.
+      Light fluoresces off the ceiling in soft white tones.  Of course, there is a
+      sign on the wall.  The only exit is north.
+    exits:
+      north:
+        id: 3702
+        description: "You see the central room."
+    environment:
+      - keywords: ["sign"]
+        description: |
+          Just go north to the central room.
+  3707:
+    name: "A Room in Mud School"
+    description: |
+      You are in a square white room.  The walls are all blank, with no windows.
+      Light fluoresces off the ceiling in soft white tones.  Of course, there is a
+      sign on the wall.  The only exit is up.
+    exits:
+      up:
+        id: 3702
+        description: "You see the central room."
+    environment:
+      - keywords: ["sign"]
+        description: |
+          Just go up to the central room.
+  3708:
+    name: "A Room in Mud School"
+    description: |
+      You are in a square white room.  The walls are all blank, with no windows.
+      Light fluoresces off the ceiling in soft white tones.  Of course, there is a
+      sign on the wall.  The only exit is down.
+    exits:
+      down:
+        id: 3702
+        description: "You see the central room."
+    environment:
+      - keywords: ["sign"]
+        description: |
+          Just go down to the central room.
+  3709:
+    name: "A Room in Mud School"
+    description: |
+      You are in a square white room.  The walls are all blank, with no windows.
+      Light fluoresces off the ceiling in soft white tones.  Of course, there is a
+      sign on the wall.  Exits reach west and down.
     exits:
       west:
-        id: 3
-        description: "The secret door leads back to the final training room."
+        id: 3711
+        description: "You see the next station of Mud School."
+      down:
+        id: 3710
+        description: "You see a cage."
+    environment:
+      - keywords: ["sign"]
+        description: |
+          Welcome to combat training.
+          
+          The first lesson is knowing whom to fight.  Use the command 'CONSIDER' to
+          consider killing a monster.  Avoid fighting monsters that will kill you
+          easily.
+          
+          The second lesson is running away.  There is a monster in the room down.
+          He is too strong for you to kill, but he won't kill you.  So go 'DOWN' from
+          here, then 'CONSIDER' him, then 'KILL' him.  After a while, type 'FLEE' to
+          escape from him.
+          
+          You can also set your character to flee automatically with the 'WIMPY' command.
+          Type 'HELP WIMPY' to find out more about 'WIMPY'.
+          
+          After you flee, you will be back in this room.  When you are ready to go on
+          to the next station, go 'WEST'.
+  3710:
+    name: "The Blob Cage"
+    description: |
+      You are in a smelly cage.  Strangely, the walls are still clean!
+      You see a sign here.  The only exit is up.
+    exits:
+      up:
+        id: 3709
+        description: "You see a safe room up."
+    environment:
+      - keywords: ["sign"]
+        description: |
+          Remember, don't fight the blob to the finish!  Just type 'KILL BLOB', then
+          when you are fighting, type 'FLEE', until you flee and are out of here.
+  3711:
+    name: "A Room in Mud School"
+    description: |
+      You are in a square white room.  The walls are all blank, with no windows.
+      Light fluoresces off the ceiling in soft white tones.  Of course, there is a
+      sign on the wall.
+    exits:
+      east:
+        id: 3709
+        description: "You see the next station of Mud School."
+      down:
+        id: 3712
+        description: "You see the combat hall."
+    environment:
+      - keywords: ["sign"]
+        description: |
+          Welcome to the next station.  Here, you will actually fight real monsters,
+          without fleeing!  Kill every mob, since they hold some equipment you need.
+          To start, go down.
+  3712:
+    name: "The Cage Room"
+    description: |
+      You are in the cage room.  All around are 4 cages.  Light fluoresces off the
+      ceiling in soft white tones.  Of course, there is a big sign on the wall.
+      Exits lead into the cardinal directions plus down.
+    exits:
+      north:
+        id: 3713
+        description: "You see the aggressive monster inside!"
+      east:
+        id: 3716
+        description: "You see the unmodified monster inside!"
+      south:
+        id: 3715
+        description: "You see the wimpy monster inside!"
+      west:
+        id: 3714
+        description: "You see the aggressive wimpy monster inside!"
+      down:
+        id: 3717
+        description: "You see the next station below."
+    environment:
+      - keywords: ["sign"]
+        description: |
+          Welcome to the cage room.  The adepts of mud school have captured some
+          monsters for you to kill.  In the four cages are four monsters of various
+          types.  Kill them all!
+          
+          After you kill each monster, get all of the equipment from their corpses
+          with the command 'GET ALL CORPSE'.  You can then use the command 'WEAR ALL'
+          to wear your newly won equipment.
+          
+          When you are done with the corpse, 'SACRIFICE CORPSE' to give it to your God.
+          God will reward you for this.
+          
+          Between combat, you may need to rest or sleep to regenerate hit points.
+          You can 'REST' to regenerate hit points, or you can 'SLEEP'.  'SLEEP' will
+          refresh you faster than 'REST', but you will be less aware of your
+          surroundings.
+  3713:
+    name: "A Cage"
+    description: |
+      You are in a cage.  Blood and gore are everywhere.  The keepers must be lax
+      in the upkeep here!  There is a sign on the wall.  The only exit is south.
+    exits:
+      south:
+        id: 3712
+        description: "You see the Cage Room."
+    environment:
+      - keywords: ["sign"]
+        description: |
+          There is an aggressive monster in this room.  Kill him and get out of here
+          fast!  Remember to loot and sacrifice the corpse.
+  3714:
+    name: "A Cage"
+    description: |
+      You are in a cage.  Blood and gore are everywhere.  The keepers must be lax
+      in the upkeep here!  There is a sign on the wall.  The only exit is east.
+    exits:
+      east:
+        id: 3712
+        description: "You see the Cage Room."
+    environment:
+      - keywords: ["sign"]
+        description: |
+          There is a wimpy, aggressive monster in this room.  Kill him and get out of
+          here fast!  Remember to loot and sacrifice the corpse.
+  3715:
+    name: "A Cage"
+    description: |
+      You are in a cage.  Blood and gore are everywhere.  The keepers must be lax
+      in the upkeep here!  There is a sign on the wall.  The only exit is north.
+    exits:
+      north:
+        id: 3712
+        description: "You see the Cage Room."
+    environment:
+      - keywords: ["sign"]
+        description: |
+          There is a wimpy monster in this room.  Kill him and get out of here fast!
+          Remember to loot and sacrifice the corpse.
+  3716:
+    name: "A Cage"
+    description: |
+      You are in a cage.  Blood and gore are everywhere.  The keepers must be lax
+      in the upkeep here!  There is a sign on the wall.  The only exit is west.
+    exits:
+      west:
+        id: 3712
+        description: "You see the Cage Room."
+    environment:
+      - keywords: ["sign"]
+        description: |
+          There is a monster in this room.  Kill him and get out of here fast!
+          Remember to loot and sacrifice the corpse.
+  3717:
+    name: "A Room in Mud School"
+    description: |
+      You are in a square white room.  The walls are all blank, with no windows.
+      Light fluoresces off the ceiling in soft white tones.  Of course, there is a
+      sign on the wall.  Find your own exit here.
+    exits:
+      up:
+        id: 3712
+        description: "You see the Cage room."
+    environment:
+      - keywords: ["sign"]
+        description: |
+          By now, you must be hungry and thirsty.  Time to buy groceries!
+          To the south is a store.  Inside the store, you can use these commands:
+          
+              BUY    Buy an item
+              LIST   List what is for sale
+          
+          After buying some food and drink, you can 'EAT' and 'DRINK' it.
+          
+          After that, find the next exit yourself.
+  3718:
+    name: "The Store in Mud School"
+    description: |
+      You are in a cramped room.  Stacked neatly on shelves everywhere are items
+      and packages.  Light fluoresces off the ceiling in soft white tones.  Of
+      course, there is a sign on the wall.  The only exit is north.
+    exits:
+      north:
+        id: 3717
+        description: "You see the only exit out of here."
+    environment:
+      - keywords: ["sign"]
+        description: |
+          The sign reads:
+          
+             Buy   - Buy something from the storekeeper.
+             List  - The storekeeper will tell you what's for sale.
+             Value - The storekeeper will tell you how much he will give to you for
+                     that item.
+             Sell  - Sell that item to the storekeeper.
+  3719:
+    name: "A Room in Mud School"
+    description: |
+      You are in a square white room.  The walls are all blank, with no windows.
+      Light fluoresces off the ceiling in soft white tones.  Of course, there is a
+      sign on the wall.  The exits are north and west, with a door to the east.
+    exits:
+      north:
+        id: 3720
+        description: "You see a darkened room inside."
+    environment:
+      - keywords: ["sign"]
+        description: |
+          North of you is a dark room.  I hope you still have the lantern!  If not,
+          you have to back to the store and buy one.
+          
+          In the room is a monster with a key that you need.  After killing the
+          monster and getting the key, come back here, UNLOCK EAST, OPEN EAST,
+          and continue east.
+  3720:
+    name: "The Darkened Room"
+    description: |
+      This room was purposefully darkened so that you would need to hold on to a
+      light source to go through.  The walls are, of course, blank, and white.
+      The only exit is south.
+    exits:
+      south:
+        id: 3719
+        description: "You see the room that you have come from."
+  3721:
+    name: "The End of Mud School!"
+    description: |
+      This is a very bright room, with a marble pedestal in the center.  Behind
+      the pedestal stands a person cloaked in Silver.  Tapestries flow from every
+      wall, and you feel very happy to be here right now.  There is a big sign here.
+      The only exit is on the other side of the gate north of you.
+  3722:
+    name: "South Wall of Arena"
+    description: |
+      You are in the Arena.  Remember, if you wish to get out of this Arena, just
+      go up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are
+      being watched by some divine being.
+    exits:
+      north:
+        id: 3729
+        description: "You see another part of the Arena."
+      east:
+        id: 3725
+        description: "You see another part of the Arena."
+      west:
+        id: 3723
+        description: "You see another part of the Arena."
+      up:
+        id: 3760
+        description: "You see the EXIT."
+  3723:
+    name: "South Wall of Arena"
+    description: |
+      You are in the Arena.  Remember, if you wish to get out of this Arena, just
+      go up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are
+      being watched by some divine being.
+    exits:
+      north:
+        id: 3728
+        description: "You see another part of the Arena."
+      east:
+        id: 3722
+        description: ""
+      west:
+        id: 3724
+        description: ""
+      up:
+        id: 3760
+        description: "You see the EXIT."
+  3724:
+    name: "South West Corner of Arena"
+    description: |
+      You are in the Arena.  Remember, if you wish to get out of this Arena, just
+      go up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are
+      being watched by some divine being.
+    exits:
+      north:
+        id: 3727
+        description: "You see another part of the Arena."
+      east:
+        id: 3723
+        description: ""
+      up:
+        id: 3760
+        description: "You see the EXIT."
+  3725:
+    name: "South Wall of Arena"
+    description: |
+      You are in the Arena.  Remember, if you wish to get out of this Arena, just
+      go up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are
+      being watched by some divine being.
+    exits:
+      north:
+        id: 3730
+        description: "You see another part of the Arena."
+      east:
+        id: 3726
+        description: "You see another part of the Arena."
+      west:
+        id: 3722
+        description: "You see another part of the Arena."
+      up:
+        id: 3760
+        description: "You see the EXIT."
+  3726:
+    name: "South East Corner of Arena"
+    description: |
+      You are in the Arena.  Remember, if you wish to get out of this Arena, just
+      go up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are
+      being watched by some divine being.
+    exits:
+      north:
+        id: 3731
+        description: "You see another part of the Arena."
+      west:
+        id: 3725
+        description: "You see another part of the Arena."
+      up:
+        id: 3760
+        description: "You see the EXIT."
+  3727:
+    name: "West Wall of Arena"
+    description: |
+      You are in the Arena.  Remember, if you wish to get out of this Arena, just
+      go up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are
+      being watched by some divine being.
+    exits:
+      north:
+        id: 3732
+        description: "You see another part of the Arena."
+      east:
+        id: 3728
+        description: "You see another part of the Arena."
+      south:
+        id: 3724
+        description: "You see another part of the Arena."
+      up:
+        id: 3760
+        description: "You see the EXIT."
+  3728:
+    name: "Arena"
+    description: |
+      You are in the Arena.  Remember, if you wish to get out of this Arena, just
+      go up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are
+      being watched by some divine being.
+    exits:
+      north:
+        id: 3733
+        description: "You see another part of the Arena."
+      east:
+        id: 3729
+        description: "You see another part of the Arena."
+      south:
+        id: 3723
+        description: "You see another part of the Arena."
+      west:
+        id: 3727
+        description: "You see another part of the Arena."
+      up:
+        id: 3760
+        description: "You see the EXIT."
+  3729:
+    name: "Arena"
+    description: |
+      You are in the Arena.  Remember, if you wish to get out of this Arena, just
+      go up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are
+      being watched by some divine being.
+    exits:
+      north:
+        id: 3734
+        description: "You see another part of the Arena."
+      east:
+        id: 3730
+        description: "You see another part of the Arena."
+      south:
+        id: 3722
+        description: "You see another part of the Arena."
+      west:
+        id: 3728
+        description: "You see another part of the Arena."
+      up:
+        id: 3760
+        description: "You see the EXIT."
+  3730:
+    name: "Arena"
+    description: |
+      You are in the Arena.  Remember, if you wish to get out of this Arena, just
+      go up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are
+      being watched by some divine being.
+    exits:
+      north:
+        id: 3735
+        description: "You see another part of the Arena."
+      east:
+        id: 3731
+        description: "You see another part of the Arena."
+      south:
+        id: 3725
+        description: "You see another part of the Arena."
+      west:
+        id: 3729
+        description: "You see another part of the Arena."
+      up:
+        id: 3760
+        description: "You see the EXIT."
+  3731:
+    name: "East Wall of Arena"
+    description: |
+      You are in the Arena.  Remember, if you wish to get out of this Arena, just
+      go up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are
+      being watched by some divine being.
+    exits:
+      north:
+        id: 3736
+        description: "You see another part of the Arena."
+      south:
+        id: 3726
+        description: "You see another part of the Arena."
+      west:
+        id: 3730
+        description: "You see another part of the Arena."
+      up:
+        id: 3760
+        description: "You see the EXIT."
+  3732:
+    name: "West Wall of Arena"
+    description: |
+      You are in the Arena.  Remember, if you wish to get out of this Arena, just
+      go up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are
+      being watched by some divine being.
+    exits:
+      north:
+        id: 3737
+        description: "You see another part of the Arena."
+      east:
+        id: 3733
+        description: "You see another part of the Arena."
+      south:
+        id: 3727
+        description: "You see another part of the Arena."
+      up:
+        id: 3760
+        description: "You see the EXIT."
+  3733:
+    name: "Arena"
+    description: |
+      You are in the Arena.  Remember, if you wish to get out of this Arena, just
+      go up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are
+      being watched by some divine being.
+    exits:
+      north:
+        id: 3738
+        description: "You see another part of the Arena."
+      east:
+        id: 3734
+        description: "You see another part of the Arena."
+      south:
+        id: 3728
+        description: "You see another part of the Arena."
+      west:
+        id: 3732
+        description: "You see another part of the Arena."
+      up:
+        id: 3760
+        description: "You see the EXIT."
+  3734:
+    name: "Center of Arena"
+    description: |
+      You are in the Arena.  Remember, if you wish to get out of this Arena, just
+      go up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are
+      being watched by some divine being.  There is a BIG SIGN here.
+    exits:
+      north:
+        id: 3739
+        description: "You see another part of the Arena."
+      east:
+        id: 3735
+        description: "You see another part of the Arena."
+      south:
+        id: 3729
+        description: "You see another part of the Arena."
+      west:
+        id: 3733
+        description: "You see another part of the Arena."
+      up:
+        id: 3760
+        description: "You see the EXIT."
+  3735:
+    name: "Arena"
+    description: |
+      You are in the Arena.  Remember, if you wish to get out of this Arena, just
+      go up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are
+      being watched by some divine being.
+    exits:
+      north:
+        id: 3740
+        description: "You see another part of the Arena."
+      east:
+        id: 3736
+        description: "You see another part of the Arena."
+      south:
+        id: 3730
+        description: "You see another part of the Arena."
+      west:
+        id: 3734
+        description: "You see another part of the Arena."
+      up:
+        id: 3760
+        description: "You see the EXIT."
+  3736:
+    name: "East Wall of Arena"
+    description: |
+      You are in the Arena.  Remember, if you wish to get out of this Arena, just
+      go up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are
+      being watched by some divine being.
+    exits:
+      north:
+        id: 3741
+        description: "You see another part of the Arena."
+      south:
+        id: 3731
+        description: "You see another part of the Arena."
+      west:
+        id: 3735
+        description: "You see another part of the Arena."
+      up:
+        id: 3760
+        description: "You see the EXIT."
+  3737:
+    name: "West Wall of Arena"
+    description: |
+      You are in the Arena.  Remember, if you wish to get out of this Arena, just
+      go up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are
+      being watched by some divine being.
+    exits:
+      north:
+        id: 3742
+        description: "You see another part of the Arena."
+      east:
+        id: 3738
+        description: "You see another part of the Arena."
+      south:
+        id: 3732
+        description: "You see another part of the Arena."
+      up:
+        id: 3760
+        description: "You see the EXIT."
+  3738:
+    name: "Arena"
+    description: |
+      You are in the Arena.  Remember, if you wish to get out of this Arena, just
+      go up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are
+      being watched by some divine being.
+    exits:
+      north:
+        id: 3743
+        description: "You see another part of the Arena."
+      east:
+        id: 3739
+        description: "You see another part of the Arena."
+      south:
+        id: 3733
+        description: "You see another part of the Arena."
+      west:
+        id: 3737
+        description: "You see another part of the Arena."
+      up:
+        id: 3760
+        description: "You see the EXIT."
+  3739:
+    name: "Arena"
+    description: |
+      You are in the Arena.  Remember, if you wish to get out of this Arena, just
+      go up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are
+      being watched by some divine being.
+    exits:
+      north:
+        id: 3744
+        description: "You see another part of the Arena."
+      east:
+        id: 3740
+        description: "You see another part of the Arena."
+      south:
+        id: 3734
+        description: "You see another part of the Arena."
+      west:
+        id: 3738
+        description: "You see another part of the Arena."
+      up:
+        id: 3760
+        description: "You see the EXIT."
+  3740:
+    name: "Arena"
+    description: |
+      You are in the Arena.  Remember, if you wish to get out of this Arena, just
+      go up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are
+      being watched by some divine being.
+    exits:
+      north:
+        id: 3745
+        description: "You see another part of the Arena."
+      east:
+        id: 3741
+        description: "You see another part of the Arena."
+      south:
+        id: 3735
+        description: "You see another part of the Arena."
+      west:
+        id: 3739
+        description: "You see another part of the Arena."
+      up:
+        id: 3760
+        description: "You see the EXIT."
+  3741:
+    name: "East Wall of Arena"
+    description: |
+      You are in the Arena.  Remember, if you wish to get out of this Arena, just
+      go up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are
+      being watched by some divine being.
+    exits:
+      north:
+        id: 3746
+        description: "You see another part of the Arena."
+      south:
+        id: 3736
+        description: "You see another part of the Arena."
+      west:
+        id: 3740
+        description: "You see another part of the Arena."
+      up:
+        id: 3760
+        description: "You see the EXIT."
+  3742:
+    name: "North West Corner of Arena"
+    description: |
+      You are in the Arena.  Remember, if you wish to get out of this Arena, just
+      go up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are
+      being watched by some divine being.
+    exits:
+      east:
+        id: 3743
+        description: "You see another part of the Arena."
+      south:
+        id: 3737
+        description: "You see another part of the Arena."
+      up:
+        id: 3760
+        description: "You see the EXIT."
+  3743:
+    name: "North Wall of Arena"
+    description: |
+      You are in the Arena.  Remember, if you wish to get out of this Arena, just
+      go up.  You can barely see the ceiling.  You feel as if you are being watched
+      by some divine being.
+    exits:
+      east:
+        id: 3744
+        description: "You see another part of the Arena."
+      south:
+        id: 3738
+        description: "You see another part of the Arena."
+      west:
+        id: 3742
+        description: "You see another part of the Arena."
+      up:
+        id: 3760
+        description: "You see the EXIT."
+  3744:
+    name: "North Wall of Arena"
+    description: |
+      You are in the Arena.  Remember, if you wish to get out of this Arena, just
+      go up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are
+      being watched by some divine being.
+    exits:
+      east:
+        id: 3745
+        description: "You see another part of the Arena."
+      south:
+        id: 3739
+        description: "You see another part of the Arena."
+      west:
+        id: 3743
+        description: "You see another part of the Arena."
+      up:
+        id: 3760
+        description: "You see the EXIT."
+  3745:
+    name: "North Wall of Arena"
+    description: |
+      You are in the Arena.  Remember, if you wish to get out of this Arena, just
+      go up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are
+      being watched by some divine being.
+    exits:
+      east:
+        id: 3746
+        description: "You see another part of the Arena."
+      south:
+        id: 3740
+        description: "You see another part of the Arena."
+      west:
+        id: 3744
+        description: "You see another part of the Arena."
+      up:
+        id: 3760
+        description: "You see the EXIT."
+  3746:
+    name: "North East Corner of Arena"
+    description: |
+      You are in the Arena.  Remember, if you wish to get out of this Arena, just
+      go up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are
+      being watched by some divine being.
+    exits:
+      south:
+        id: 3741
+        description: "You see another part of the Arena."
+      west:
+        id: 3745
+        description: "You see another part of the Arena.  You can go up to get out of the Arena."
+      up:
+        id: 3760
+        description: "You see the EXIT."
+  3748:
+    name: "The Center of the Dungeon"
+    description: |
+      You are in the center of a large room.  A faint light from above shows that
+      the floors are all covered with slime.  A feeling of dread comes over you as
+      you notice that this is NOT a great place to go.  Exits go in all directions.
+      Of special note is the one that brings you back up!!!
+    exits:
+      north:
+        id: 3750
+        description: "You see the north wall."
+      east:
+        id: 3753
+        description: "You see the east wall."
+      south:
+        id: 3755
+        description: "You see the south wall."
+      west:
+        id: 3752
+        description: "You see the west wall."
+  3749:
+    name: "The North West Corner of the Dungeon"
+    description: |
+      You are against a wall in the dungeon.  It is quite dark here.  The lack of
+      any windows in the area explains the smell around you.
+    exits:
+      east:
+        id: 3750
+        description: "You see the north wall."
+      south:
+        id: 3752
+        description: "You see the south wall."
+  3750:
+    name: "The North Wall of the Dungeon"
+    description: |
+      You are against a wall in the dungeon.  It is quite dark here.  The lack of
+      any windows in the area explains the smell around you.
+    exits:
+      east:
+        id: 3751
+        description: "You see the north east corner."
+      south:
+        id: 3748
+        description: "You see the center of the dungeon."
+      west:
+        id: 3749
+        description: "You see the north west corner."
+  3751:
+    name: "The North East Corner of the Dungeon"
+    description: |
+      You are against a wall in the dungeon.  It is quite dark here.  The lack of
+      any windows in the area explains the smell around you.
+    exits:
+      south:
+        id: 3753
+        description: "You see the east wall."
+      west:
+        id: 3750
+        description: "You see the north wall."
+  3752:
+    name: "The West Wall of the Dungeon"
+    description: |
+      You are against a wall in the dungeon.  It is quite dark here.  The lack of
+      any windows in the area explains the smell around you.
+    exits:
+      north:
+        id: 3749
+        description: "You see the north west corner."
+      east:
+        id: 3748
+        description: "You see the center of the dungeon."
+      south:
+        id: 3754
+        description: "You see the south west corner."
+  3753:
+    name: "The East Wall of the Dungeon"
+    description: |
+      You are against a wall in the dungeon.  It is quite dark here.  The lack of
+      any windows in the area explains the smell around you.
+    exits:
+      north:
+        id: 3751
+        description: "You see the north east corner."
+      south:
+        id: 3756
+        description: "You see the south east corner."
+      west:
+        id: 3748
+        description: "You see the center of the dungeon."
+  3754:
+    name: "The South West Corner of the Dungeon"
+    description: |
+      You are against a wall in the dungeon.  It is quite dark here.  The lack of
+      any windows in the area explains the smell around you.
+    exits:
+      north:
+        id: 3752
+        description: "You see the north wall."
+      east:
+        id: 3755
+        description: "You see the south wall."
+  3755:
+    name: "The South Wall of the Dungeon"
+    description: |
+      You are against a wall in the dungeon.  It is quite dark here.  The lack of
+      any windows in the area explains the smell around you.
+    exits:
+      north:
+        id: 3748
+        description: "You see the center of the dungeon."
+      east:
+        id: 3756
+        description: "You see the south east corner."
+      west:
+        id: 3754
+        description: "You see the south west corner."
+  3756:
+    name: "The South East Corner of the Dungeon"
+    description: |
+      You are against a wall in the dungeon.  It is quite dark here.  The lack of
+      any windows in the area explains the smell around you.
+    exits:
+      north:
+        id: 3753
+        description: "You see the east wall."
+      west:
+        id: 3755
+        description: "You see the south wall."
+  3757:
+    name: "A Room in Mud School"
+    description: |
+      You are in a room in Mud School.  Paintings of the heroic graduates of mud
+      school adorn the walls. To the west is Furey's Training Room, and to the east
+      is Zump's Guild Room.  North of you is the next Station of Mud School.
+      There is a sign on the wall (type 'LOOK SIGN' to read it).
+    exits:
+      north:
+        id: 3701
+        description: "You see the next station of Mud School."
+      east:
+        id: 3759
+        description: "You see Zump's Guild Room.  Go there to practice your skills."
+      south:
+        id: 3700
+        description: "You see the entrance to Mud School."
+      west:
+        id: 3758
+        description: "You see Furey's Training Room.  Go there to train your attributes."
+    environment:
+      - keywords: ["sign"]
+        description: |
+          To find out your attributes, type 'score'.  You can improve your attributes
+          in Furey's Training Room to the west.  You can practice your skills and spells
+          in Zump's Guild Room to the east.  You can continue through mud school by
+          going north.
+          
+          If you are a new character, you should go 'WEST' from here, train your
+          abilities, and then come back here and go 'NORTH'.
+  3758:
+    name: "Furey's Training Room"
+    description: |
+      You are in Furey's Training Room.  Around you are all sorts of physical
+      and mental training tools.  The whole room is filled with magic, holiness, 
+      and sweat.  There is a sign on the wall.
+    exits:
+      east:
+        id: 3757
+        description: "You see the room you came from, and the room you should go to."
+    environment:
+      - keywords: ["sign"]
+        description: |
+          Welcome to Furey's Training Room.  Here you can train your attributes.  To 
+          train an attribute, you need enough practices.  To find out how many practice
+          sessions you have, type 'train' while you are in this room.  To train for a 
+          specific attribute, type 'train <attr>' where attr is the first 3 letters of
+          the attribute you want increased.  Type 'help train' for more information.
+  3759:
+    name: "Zump's Guild Room"
+    description: |
+      You are in a room filled with weapons, books, and many combat dummies, some
+      cut and stabbed many times, others burnt to a crisp.  The room is filled with
+      sweat and an aura of magic.  There is a sign on the wall.
+    exits:
+      west:
+        id: 3757
+        description: "You see the room you came from and the room you should go to."
+    environment:
+      - keywords: ["sign"]
+        description: |
+          Welcome to Zump's Guild Room.  Here you will learn your skills and spells.
+          To find out what skills and spells you can practice and how many practice
+          sessions you have, type 'practice'.  To practice the specific skill, type
+          'practice <skill>', where 'skill' is the skill or spell you wish to practice.
+          Practicing increases the amount you know of that skill or spell, up to a
+          certain maximum.  When you have practiced all you wish to practice, go west.
+  3760:
+    name: "A Safe Room"
+    description: |
+      You are in a safe room, away from all the mean rabbits and snails of the Arena.
+      You can rest here, and go up to go back to the Temple of Midgaard.
+    exits:
+      up:
+        id: 3001
+        description: "You see the Temple of Midgaard."
