@@ -40,6 +40,10 @@ type Player struct {
 	AttackSpeed   float64
 	CastSpeed     float64
 
+	// Combat state
+	InCombat bool
+	Target   *MobInstance
+
 	// Session-specific data
 	Room        *Room    // Current room the player is in
 	Conn        net.Conn // Network connection for the player
@@ -281,9 +285,45 @@ func (p *Player) RegenTick() {
 
 // PulseUpdate handles updates that occur every second
 func (p *Player) PulseUpdate() {
-	// This could handle things like spell durations, cooldowns, etc.
-	// For now, we'll just implement a simple notification for low health
+	// Check for low health notification
 	if p.HP > 0 && p.HP < p.MaxHP/5 {
 		p.Conn.Write([]byte("\r\n*Your health is critically low!*\r\n"))
 	}
+
+	// Handle combat state
+	if p.IsInCombat() {
+		// Verify target is still valid
+		if p.Target == nil {
+			p.ExitCombat()
+			p.Conn.Write([]byte("\r\nYour target is no longer available.\r\n"))
+			return
+		}
+
+		// Verify target is still in the same room
+		if p.Target.Room == nil || p.Target.Room.ID != p.Room.ID {
+			p.ExitCombat()
+			p.Conn.Write([]byte("\r\nYour target has left the room.\r\n"))
+			return
+		}
+
+		// In future phases, this is where combat rounds would be processed
+		// For now, we just maintain the combat state
+	}
+}
+
+// EnterCombat puts the player in combat with the specified mob
+func (p *Player) EnterCombat(target *MobInstance) {
+	p.InCombat = true
+	p.Target = target
+}
+
+// ExitCombat removes the player from combat
+func (p *Player) ExitCombat() {
+	p.InCombat = false
+	p.Target = nil
+}
+
+// IsInCombat returns whether the player is currently in combat
+func (p *Player) IsInCombat() bool {
+	return p.InCombat
 }

@@ -86,6 +86,11 @@ var DirectionAliases = map[string]string{
 
 // HandleMovement processes movement commands and executes the movement
 func HandleMovement(player *Player, command string) error {
+	// Check if the player is in combat
+	if player.IsInCombat() {
+		return fmt.Errorf("you can't move while in combat")
+	}
+
 	// Check if the command is a shorthand direction and convert it
 	if fullDirection, isAlias := DirectionAliases[command]; isAlias {
 		command = fullDirection

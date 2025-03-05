@@ -41,7 +41,22 @@ func DescribeRoom(room *Room, viewer *Player) string {
 		description += "\n" // Single newline before mobs
 		for _, mob := range mobs {
 			if mob != nil {
-				description += fmt.Sprintf("%s\n", mob.LongDescription)
+				// Check if this mob is in combat with any player
+				combatStatus := ""
+				playersMutex.Lock()
+				for _, p := range activePlayers {
+					if p.IsInCombat() && p.Target == mob {
+						if p == viewer {
+							combatStatus = " [FIGHTING YOU]"
+						} else {
+							combatStatus = fmt.Sprintf(" [FIGHTING %s]", p.Name)
+						}
+						break
+					}
+				}
+				playersMutex.Unlock()
+
+				description += fmt.Sprintf("%s%s\n", mob.LongDescription, combatStatus)
 			}
 		}
 	}
@@ -81,9 +96,25 @@ func HandleLook(player *Player, args []string) string {
 	lookTarget := strings.ToLower(strings.Join(args, " "))
 	mob := FindMobInRoom(player.Room.ID, lookTarget)
 	if mob != nil {
-		// Return the mob's description along with some basic stats
-		return fmt.Sprintf("%s\n[Level %d %s] [HP: %d/%d]",
-			mob.Description, mob.Level, mob.Toughness, mob.HP, mob.MaxHP)
+		// Check if this mob is the player's combat target
+		combatStatus := ""
+		if player.IsInCombat() && player.Target == mob {
+			combatStatus = " [FIGHTING YOU]"
+		} else {
+			// Check if this mob is fighting any other player
+			playersMutex.Lock()
+			for _, p := range activePlayers {
+				if p.IsInCombat() && p.Target == mob {
+					combatStatus = fmt.Sprintf(" [FIGHTING %s]", p.Name)
+					break
+				}
+			}
+			playersMutex.Unlock()
+		}
+
+		// Return the mob's description along with some basic stats and combat status
+		return fmt.Sprintf("%s\n[Level %d %s] [HP: %d/%d]%s",
+			mob.Description, mob.Level, mob.Toughness, mob.HP, mob.MaxHP, combatStatus)
 	}
 
 	// Check environment attributes
