@@ -3,9 +3,11 @@ package main
 import (
 	"fmt"
 	"log"
+	"math/rand"
 	"net"
 	"strings"
 	"sync"
+	"time"
 )
 
 // Player represents an active player session
@@ -285,29 +287,227 @@ func (p *Player) RegenTick() {
 
 // PulseUpdate handles updates that occur every second
 func (p *Player) PulseUpdate() {
+	log.Printf("[DEBUG] PulseUpdate: Starting for player %s", p.Name)
+
 	// Check for low health notification
 	if p.HP > 0 && p.HP < p.MaxHP/5 {
-		p.Conn.Write([]byte("\r\n*Your health is critically low!*\r\n"))
+		p.Conn.Write([]byte("\r\n*Your health is critically low!*\r\n> "))
 	}
 
-	// Handle combat state
+	// Handle combat state - only if player is in combat
 	if p.IsInCombat() {
+		// Log combat processing for debugging
+		log.Printf("[DEBUG] PulseUpdate: Processing combat for player %s against %s",
+			p.Name, p.Target.ShortDescription)
+
+		// Make a local copy of the target to avoid race conditions
+		target := p.Target
+
 		// Verify target is still valid
-		if p.Target == nil {
+		if target == nil {
+			log.Printf("[DEBUG] PulseUpdate: Target is nil for player %s", p.Name)
 			p.ExitCombat()
-			p.Conn.Write([]byte("\r\nYour target is no longer available.\r\n"))
+			p.Conn.Write([]byte("\r\nYour target is no longer available.\r\n> "))
 			return
 		}
 
 		// Verify target is still in the same room
-		if p.Target.Room == nil || p.Target.Room.ID != p.Room.ID {
+		if target.Room == nil || target.Room.ID != p.Room.ID {
+			log.Printf("[DEBUG] PulseUpdate: Target %s is not in the same room as player %s",
+				target.ShortDescription, p.Name)
 			p.ExitCombat()
-			p.Conn.Write([]byte("\r\nYour target has left the room.\r\n"))
+			p.Conn.Write([]byte("\r\nYour target has left the room.\r\n> "))
 			return
 		}
 
-		// In future phases, this is where combat rounds would be processed
-		// For now, we just maintain the combat state
+		// Check if target is dead
+		if target.HP <= 0 {
+			log.Printf("[DEBUG] PulseUpdate: Target %s is already dead", target.ShortDescription)
+			p.Conn.Write([]byte(fmt.Sprintf("\r\nThe %s is dead!\r\n> ", target.ShortDescription)))
+			p.ExitCombat()
+			return
+		}
+
+		log.Printf("[DEBUG] PulseUpdate: Executing attack for player %s", p.Name)
+		// Execute player's attack
+		p.ExecuteAttack()
+
+		// Check if player is still in combat after their attack
+		// (they might have killed the target)
+		if !p.IsInCombat() || p.Target == nil {
+			log.Printf("[DEBUG] PulseUpdate: Player %s is no longer in combat after their attack", p.Name)
+			return
+		}
+
+		// Add a small delay to make combat easier to follow
+		time.Sleep(100 * time.Millisecond)
+
+		log.Printf("[DEBUG] PulseUpdate: Executing counter-attack against player %s", p.Name)
+		// Execute mob's counter-attack if it's still alive
+		if p.Target != nil && p.Target.HP > 0 {
+			p.ReceiveAttack(p.Target)
+		}
+	}
+
+	log.Printf("[DEBUG] PulseUpdate: Completed for player %s", p.Name)
+}
+
+// ExecuteAttack performs the player's attack against their target
+func (p *Player) ExecuteAttack() {
+	// Safety check - ensure player is in combat and has a valid target
+	if !p.IsInCombat() || p.Target == nil {
+		log.Printf("[DEBUG] ExecuteAttack: Player %s is not in combat or has no target", p.Name)
+		return
+	}
+
+	log.Printf("[DEBUG] ExecuteAttack: Player %s attacking %s (HP: %d/%d)",
+		p.Name, p.Target.ShortDescription, p.Target.HP, p.Target.MaxHP)
+
+	// Calculate hit chance using the utility function
+	finalHitChance := CalculateHitChance(p.Level, p.Target.Level)
+
+	// Roll to hit
+	hitRoll := rand.Float64()
+	log.Printf("[DEBUG] ExecuteAttack: Hit chance %.2f, roll %.2f", finalHitChance, hitRoll)
+
+	if hitRoll <= finalHitChance {
+		// Hit! Calculate damage using the utility function
+		damage := CalculateDamage(p.Level)
+
+		// Apply damage to target
+		p.Target.HP -= damage
+		if p.Target.HP < 0 {
+			p.Target.HP = 0
+		}
+
+		log.Printf("[DEBUG] ExecuteAttack: Hit! Damage %d, Target HP now %d/%d",
+			damage, p.Target.HP, p.Target.MaxHP)
+
+		// Send hit message to player
+		p.Conn.Write([]byte(fmt.Sprintf("\r\nYou strike the %s for %d damage!\r\n> ",
+			p.Target.ShortDescription, damage)))
+
+		// Broadcast the attack to other players in the room
+		BroadcastCombatMessage(fmt.Sprintf("%s strikes the %s for %d damage!",
+			p.Name, p.Target.ShortDescription, damage), p.Room, p)
+
+		// Log the attack
+		log.Printf("[COMBAT] Player %s hit Mob %s for %d damage (Mob HP: %d/%d)",
+			p.Name, p.Target.ShortDescription, damage, p.Target.HP, p.Target.MaxHP)
+
+		// Check if target is dead
+		if p.Target.HP <= 0 {
+			log.Printf("[DEBUG] ExecuteAttack: Target %s is dead", p.Target.ShortDescription)
+
+			p.Conn.Write([]byte(fmt.Sprintf("\r\nYou have defeated the %s!\r\n> ",
+				p.Target.ShortDescription)))
+
+			// Broadcast the defeat to other players in the room
+			BroadcastCombatMessage(fmt.Sprintf("%s has defeated the %s!",
+				p.Name, p.Target.ShortDescription), p.Room, p)
+
+			// Log the defeat
+			log.Printf("[COMBAT] Player %s defeated Mob %s",
+				p.Name, p.Target.ShortDescription)
+
+			// Exit combat
+			p.ExitCombat()
+		}
+	} else {
+		// Miss
+		log.Printf("[DEBUG] ExecuteAttack: Miss!")
+
+		p.Conn.Write([]byte(fmt.Sprintf("\r\nYou swing at the %s but miss!\r\n> ",
+			p.Target.ShortDescription)))
+
+		// Broadcast the miss to other players in the room
+		BroadcastCombatMessage(fmt.Sprintf("%s swings at the %s but misses!",
+			p.Name, p.Target.ShortDescription), p.Room, p)
+
+		// Log the miss
+		log.Printf("[COMBAT] Player %s missed attack against Mob %s",
+			p.Name, p.Target.ShortDescription)
+	}
+}
+
+// ReceiveAttack handles an attack from a mob against the player
+func (p *Player) ReceiveAttack(attacker *MobInstance) {
+	// Safety check - ensure player is in combat and has a valid target
+	if !p.IsInCombat() || p.Target == nil || p.Target != attacker {
+		log.Printf("[DEBUG] ReceiveAttack: Player %s is not in combat with %s",
+			p.Name, attacker.ShortDescription)
+		return
+	}
+
+	log.Printf("[DEBUG] ReceiveAttack: Mob %s attacking player %s (HP: %d/%d)",
+		attacker.ShortDescription, p.Name, p.HP, p.MaxHP)
+
+	// Calculate hit chance for the mob using the utility function
+	finalHitChance := CalculateHitChance(attacker.Level, p.Level)
+
+	// Roll to hit
+	hitRoll := rand.Float64()
+	log.Printf("[DEBUG] ReceiveAttack: Hit chance %.2f, roll %.2f", finalHitChance, hitRoll)
+
+	if hitRoll <= finalHitChance {
+		// Hit! Calculate damage using the utility function
+		damage := CalculateDamage(attacker.Level)
+
+		// Apply damage to player
+		p.HP -= damage
+		if p.HP < 0 {
+			p.HP = 0
+		}
+
+		log.Printf("[DEBUG] ReceiveAttack: Hit! Damage %d, Player HP now %d/%d",
+			damage, p.HP, p.MaxHP)
+
+		// Send hit message to player
+		p.Conn.Write([]byte(fmt.Sprintf("\r\nThe %s strikes you for %d damage!\r\n> ",
+			attacker.ShortDescription, damage)))
+
+		// Broadcast the attack to other players in the room
+		BroadcastCombatMessage(fmt.Sprintf("The %s strikes %s for %d damage!",
+			attacker.ShortDescription, p.Name, damage), p.Room, p)
+
+		// Log the attack
+		log.Printf("[COMBAT] Mob %s hit Player %s for %d damage (Player HP: %d/%d)",
+			attacker.ShortDescription, p.Name, damage, p.HP, p.MaxHP)
+
+		// Check if player is dead
+		if p.HP <= 0 {
+			log.Printf("[DEBUG] ReceiveAttack: Player %s is dead", p.Name)
+
+			p.Conn.Write([]byte("\r\nYou have been defeated!\r\n> "))
+
+			// Broadcast the defeat to other players in the room
+			BroadcastCombatMessage(fmt.Sprintf("%s has been defeated by the %s!",
+				p.Name, attacker.ShortDescription), p.Room, p)
+
+			// Exit combat
+			p.ExitCombat()
+
+			// Reset player HP to 1 for now (death handling will be in Phase 3)
+			p.HP = 1
+
+			// Log the defeat
+			log.Printf("[COMBAT] Player %s was defeated by Mob %s",
+				p.Name, attacker.ShortDescription)
+		}
+	} else {
+		// Miss
+		log.Printf("[DEBUG] ReceiveAttack: Miss!")
+
+		p.Conn.Write([]byte(fmt.Sprintf("\r\nThe %s swings at you but misses!\r\n> ",
+			attacker.ShortDescription)))
+
+		// Broadcast the miss to other players in the room
+		BroadcastCombatMessage(fmt.Sprintf("The %s swings at %s but misses!",
+			attacker.ShortDescription, p.Name), p.Room, p)
+
+		// Log the miss
+		log.Printf("[COMBAT] Mob %s missed attack against Player %s",
+			attacker.ShortDescription, p.Name)
 	}
 }
 
@@ -326,4 +526,59 @@ func (p *Player) ExitCombat() {
 // IsInCombat returns whether the player is currently in combat
 func (p *Player) IsInCombat() bool {
 	return p.InCombat
+}
+
+// CalculateHitChance determines the chance to hit based on attacker and defender levels
+func CalculateHitChance(attackerLevel, defenderLevel int) float64 {
+	baseHitChance := 0.80 // 80% base hit chance
+	levelDifference := attackerLevel - defenderLevel
+
+	// Adjust hit chance based on level difference
+	hitChanceAdjustment := 0.0
+	if levelDifference >= 2 {
+		hitChanceAdjustment = 0.10 // +10% for 2+ levels higher
+	} else if levelDifference == 1 {
+		hitChanceAdjustment = 0.05 // +5% for 1 level higher
+	} else if levelDifference == -1 {
+		hitChanceAdjustment = -0.05 // -5% for 1 level lower
+	} else if levelDifference <= -2 {
+		hitChanceAdjustment = -0.10 // -10% for 2+ levels lower
+	}
+
+	finalHitChance := baseHitChance + hitChanceAdjustment
+
+	// Ensure hit chance is within bounds
+	if finalHitChance < 0.05 {
+		finalHitChance = 0.05 // Minimum 5% hit chance
+	} else if finalHitChance > 1.0 {
+		finalHitChance = 1.0 // Maximum 100% hit chance
+	}
+
+	return finalHitChance
+}
+
+// CalculateDamage determines the damage dealt based on attacker level
+func CalculateDamage(attackerLevel int) int {
+	baseMultiplier := 2
+	return attackerLevel * baseMultiplier
+}
+
+// BroadcastCombatMessage sends a combat message to all players in the room except the sender
+func BroadcastCombatMessage(message string, room *Room, sender *Player) {
+	// Make a copy of the players to avoid holding the lock while writing to connections
+	var playersToNotify []*Player
+
+	playersMutex.Lock()
+	for _, p := range activePlayers {
+		if p != sender && p.Room != nil && room != nil &&
+			p.Room.ID == room.ID && p.Room == room {
+			playersToNotify = append(playersToNotify, p)
+		}
+	}
+	playersMutex.Unlock()
+
+	// Now send the message to each player without holding the lock
+	for _, p := range playersToNotify {
+		p.Conn.Write([]byte(message + "\r\n"))
+	}
 }

@@ -176,19 +176,31 @@ func GetMobsInRoom(roomID int) []*MobInstance {
 	return roomMobs[roomID]
 }
 
-// FindMobInRoom looks for a mob in the room by keyword
-func FindMobInRoom(roomID int, keyword string) *MobInstance {
+// FindMobInRoom finds a mob in a room by name or keyword
+func FindMobInRoom(roomID int, searchTerm string) *MobInstance {
 	mobMutex.RLock()
 	defer mobMutex.RUnlock()
 
-	keyword = strings.ToLower(keyword)
-	for _, mob := range roomMobs[roomID] {
-		for _, k := range mob.Keywords {
-			if strings.ToLower(k) == keyword {
+	mobs := roomMobs[roomID]
+	if len(mobs) == 0 {
+		return nil
+	}
+
+	searchTerm = strings.ToLower(searchTerm)
+	for _, mob := range mobs {
+		// Check if the search term matches the mob's short description
+		if strings.Contains(strings.ToLower(mob.ShortDescription), searchTerm) {
+			return mob
+		}
+
+		// Check if the search term matches any of the mob's keywords
+		for _, keyword := range mob.Keywords {
+			if strings.ToLower(keyword) == searchTerm {
 				return mob
 			}
 		}
 	}
+
 	return nil
 }
 

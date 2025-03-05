@@ -22,6 +22,9 @@ var commandHandlers = map[string]CommandHandler{
 	"kill":   handleAttack,
 	"flee":   handleFlee,
 	"status": handleStatus,
+	"combat": handleStatus,
+	// Debug commands
+	"debug": handleDebug,
 	// Movement commands
 	"north": handleMove,
 	"south": handleMove,
@@ -120,6 +123,10 @@ func handleAttack(player *Player, args []string) string {
 	// Set the player's combat state
 	player.EnterCombat(mob)
 
+	// Broadcast the combat initiation to other players in the room
+	BroadcastCombatMessage(fmt.Sprintf("%s attacks the %s!",
+		player.Name, mob.ShortDescription), player.Room, player)
+
 	// Log the combat initiation
 	log.Printf("[COMBAT] Player %s engaged Mob ID %d (%s)",
 		player.Name, mob.ID, mob.ShortDescription)
@@ -142,8 +149,12 @@ func handleFlee(player *Player, args []string) string {
 		mobName = player.Target.ShortDescription
 	}
 
-	// Exit combat
+	// Exit combat BEFORE broadcasting to avoid deadlocks
 	player.ExitCombat()
+
+	// Broadcast the flee to other players in the room
+	BroadcastCombatMessage(fmt.Sprintf("%s flees from the %s!",
+		player.Name, mobName), player.Room, player)
 
 	// Log the flee
 	log.Printf("[COMBAT] Player %s fled from combat", player.Name)
@@ -164,8 +175,77 @@ func handleStatus(player *Player, args []string) string {
 		return "You are not in combat.\r\n"
 	}
 
-	return fmt.Sprintf("You are fighting %s.\r\nYour health: %d/%d\r\nTarget health: %d/%d\r\n",
+	// Calculate hit chance using the utility function
+	finalHitChance := CalculateHitChance(player.Level, player.Target.Level)
+
+	// Calculate expected damage using the utility function
+	expectedDamage := CalculateDamage(player.Level)
+
+	return fmt.Sprintf("You are fighting %s.\r\n"+
+		"Your health: %d/%d\r\n"+
+		"Target health: %d/%d\r\n"+
+		"Your level: %d, Target level: %d\r\n"+
+		"Hit chance: %.0f%%\r\n"+
+		"Expected damage per hit: %d\r\n",
 		player.Target.ShortDescription,
 		player.HP, player.MaxHP,
-		player.Target.HP, player.Target.MaxHP)
+		player.Target.HP, player.Target.MaxHP,
+		player.Level, player.Target.Level,
+		finalHitChance*100,
+		expectedDamage)
+}
+
+// handleDebug provides debug information for testing
+func handleDebug(player *Player, args []string) string {
+	if len(args) == 0 {
+		return "Debug options: combat, room, mobs\r\n"
+	}
+
+	switch args[0] {
+	case "combat":
+		if !player.IsInCombat() {
+			return "You are not in combat.\r\n"
+		}
+		return fmt.Sprintf("Combat Debug:\r\n"+
+			"In Combat: %t\r\n"+
+			"Target: %s (ID: %d)\r\n"+
+			"Target HP: %d/%d\r\n"+
+			"Target Level: %d\r\n"+
+			"Your Level: %d\r\n"+
+			"Hit Chance: %.2f\r\n",
+			player.InCombat,
+			player.Target.ShortDescription, player.Target.ID,
+			player.Target.HP, player.Target.MaxHP,
+			player.Target.Level,
+			player.Level,
+			CalculateHitChance(player.Level, player.Target.Level))
+
+	case "room":
+		return fmt.Sprintf("Room Debug:\r\n"+
+			"Room ID: %d\r\n"+
+			"Room Name: %s\r\n"+
+			"Area: %s\r\n",
+			player.Room.ID,
+			player.Room.Name,
+			player.Room.Area)
+
+	case "mobs":
+		mobMutex.RLock()
+		mobs := GetMobsInRoom(player.Room.ID)
+		mobMutex.RUnlock()
+
+		if len(mobs) == 0 {
+			return "No mobs in this room.\r\n"
+		}
+
+		result := "Mobs in room:\r\n"
+		for i, mob := range mobs {
+			result += fmt.Sprintf("%d. %s (ID: %d, Level: %d, HP: %d/%d)\r\n",
+				i+1, mob.ShortDescription, mob.ID, mob.Level, mob.HP, mob.MaxHP)
+		}
+		return result
+
+	default:
+		return "Unknown debug option.\r\n"
+	}
 }

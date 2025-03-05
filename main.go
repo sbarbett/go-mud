@@ -4,11 +4,13 @@ import (
 	"bufio"
 	"fmt"
 	"log"
+	"math/rand"
 	"net"
 	"os"
 	"os/signal"
 	"strings"
 	"syscall"
+	"time"
 )
 
 // Global variables
@@ -131,8 +133,16 @@ func handleConnection(conn net.Conn) {
 func playGame(player *Player, reader *bufio.Reader) {
 	for {
 		player.Conn.Write([]byte("> "))
-		input, _ := reader.ReadString('\n')
+		input, err := reader.ReadString('\n')
+		if err != nil {
+			log.Printf("Error reading from connection: %v", err)
+			return
+		}
+
 		input = strings.TrimSpace(strings.ToLower(input))
+		if input == "" {
+			continue
+		}
 
 		// Store the original command for movement handling
 		player.LastCommand = input
@@ -181,6 +191,9 @@ func main() {
 	// Setup signal handler for graceful shutdown
 	setupSignalHandler()
 
+	// Initialize the random number generator with a time-based seed
+	rand.Seed(time.Now().UnixNano())
+
 	// Initialize the database
 	InitDB()
 
@@ -206,13 +219,31 @@ func main() {
 		}
 	})
 
-	// Register player pulse updates
+	// Register player pulse updates - ensure this is properly registered
 	timeManager.RegisterPulseFunc(func() {
-		playersMutex.Lock()
-		defer playersMutex.Unlock()
+		// Log that the pulse is running for debugging
+		log.Printf("[DEBUG] Processing pulse update for %d active players", len(activePlayers))
 
+		// Make a copy of the players to avoid holding the lock while processing
+		var playersToUpdate []*Player
+
+		playersMutex.Lock()
 		for _, player := range activePlayers {
-			player.PulseUpdate()
+			playersToUpdate = append(playersToUpdate, player)
+		}
+		playersMutex.Unlock()
+
+		// Now process each player without holding the global lock
+		for _, player := range playersToUpdate {
+			// Process each player in its own goroutine to avoid blocking
+			go func(p *Player) {
+				defer func() {
+					if r := recover(); r != nil {
+						log.Printf("[ERROR] Panic in player pulse update for %s: %v", p.Name, r)
+					}
+				}()
+				p.PulseUpdate()
+			}(player)
 		}
 	})
 
