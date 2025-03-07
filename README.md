@@ -6,8 +6,10 @@
 - Basic telnet-based multiplayer interaction
 - Persistent character creation and storage
 - Room-based movement and descriptions
-- Area loading from YAML files
+- Area and mob loading from YAML files
 - Simple command handling
+- Basic combat system
+- Stats and experience
 
 ## Running the Server
 To run the MUD server locally:
@@ -21,7 +23,9 @@ docker compose up --build
 
 ## Example
 
-![Screeenshot of terminals](./img/ss1.jpg)
+![Screeenshot of login](./img/ss2.jpg)
+![Screeenshot of combat](./img/ss3.jpg)
+![Screeenshot of scorecard](./img/ss4.jpg)
 
 ## Why?
 I wanted to recreate the experience of old-school MUDs while learning Go at the same time. This project is primarily for **fun and nostalgia**—but if it turns into something functional, cool.
