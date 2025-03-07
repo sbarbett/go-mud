@@ -105,15 +105,11 @@ func HandleMovement(player *Player, command string) error {
 		return err
 	}
 
-	// Debug logging
-	// fmt.Printf("Debug - Movement: Player %s moving from Room %d (Area: %s) to Room %d (Area: %s)\n",
-	// 	player.Name, oldRoom.ID, oldRoom.Area, newRoom.ID, newRoom.Area)
-
 	// Notify players in the old room about departure
 	playersMutex.Lock()
 	for _, p := range activePlayers {
 		if p != player && p.Room == oldRoom {
-			p.Conn.Write([]byte(fmt.Sprintf("%s leaves %s.\r\n", player.Name, command)))
+			p.Send(fmt.Sprintf("%s leaves %s.", player.Name, command))
 		}
 	}
 	playersMutex.Unlock()
@@ -121,14 +117,15 @@ func HandleMovement(player *Player, command string) error {
 	// Update player's room
 	player.Room = newRoom
 
-	// Send room description to moving player
-	player.Conn.Write([]byte(fmt.Sprintf("You move %s.\r\n%s\r\n", command, DescribeRoom(newRoom, player))))
+	// Send movement message and room description to moving player
+	player.Send(fmt.Sprintf("You move %s.", command))
+	player.Send(DescribeRoom(newRoom, player))
 
 	// Notify players in the new room about arrival
 	playersMutex.Lock()
 	for _, p := range activePlayers {
 		if p != player && p.Room == newRoom {
-			p.Conn.Write([]byte(fmt.Sprintf("%s arrives.\r\n", player.Name)))
+			p.Send(fmt.Sprintf("%s arrives.", player.Name))
 		}
 	}
 	playersMutex.Unlock()

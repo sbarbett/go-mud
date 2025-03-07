@@ -68,6 +68,7 @@ func InitDB() {
 	addColumnIfNotExists("stamina", "INTEGER")
 	addColumnIfNotExists("max_stamina", "INTEGER")
 	addColumnIfNotExists("gold", "INTEGER")
+	addColumnIfNotExists("color_enabled", "INTEGER NOT NULL DEFAULT 1") // 1 = true, 0 = false
 }
 
 // CreatePlayer adds a new player to the database with their stats
@@ -76,9 +77,9 @@ func CreatePlayer(name, race, class string, stats map[string]int) error {
 		INSERT INTO players (
 			name, race, class, str, dex, con, int, wis, pre,
 			level, xp, next_level_xp, hp, max_hp, mp, max_mp,
-			stamina, max_stamina
+			stamina, max_stamina, color_enabled
 		) 
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 0, 1000, 100, 100, 100, 100, 100, 100)`,
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 0, 1000, 100, 100, 100, 100, 100, 100, 1)`,
 		name, race, class,
 		stats["STR"], stats["DEX"], stats["CON"],
 		stats["INT"], stats["WIS"], stats["PRE"])
@@ -95,26 +96,38 @@ func PlayerExists(name string) bool {
 }
 
 // LoadPlayer retrieves a player's information from the database
-func LoadPlayer(name string) (race string, class string, roomID int, str int, dex int, con int, int_ int, wis int, pre int, level int, xp int, nextLevelXP int, hp int, maxHP int, mp int, maxMP int, stamina int, maxStamina int, gold int, err error) {
-	// Set default gold value
+func LoadPlayer(name string) (race string, class string, roomID int, str int, dex int, con int, int_ int, wis int, pre int, level int, xp int, nextLevelXP int, hp int, maxHP int, mp int, maxMP int, stamina int, maxStamina int, gold int, colorEnabled bool, err error) {
+	// Set default values
 	gold = 0
+	colorEnabled = true // Default to true if not found in DB
+
+	log.Printf("Loading player data for: %s", name)
+
+	// Query the database for the player's information
+	var colorEnabledInt int
+	var goldNull sql.NullInt64 // Use NullInt64 to handle NULL values
 
 	err = db.QueryRow(`
 		SELECT race, class, room_id, str, dex, con, int, wis, pre, 
-			   level, xp, next_level_xp, hp, max_hp, mp, max_mp,
-			   stamina, max_stamina
+		level, xp, next_level_xp, hp, max_hp, mp, max_mp, stamina, max_stamina, gold, 
+		COALESCE(color_enabled, 1) 
 		FROM players WHERE name = ?`, name).Scan(
 		&race, &class, &roomID, &str, &dex, &con, &int_, &wis, &pre,
-		&level, &xp, &nextLevelXP, &hp, &maxHP, &mp, &maxMP,
-		&stamina, &maxStamina)
+		&level, &xp, &nextLevelXP, &hp, &maxHP, &mp, &maxMP, &stamina, &maxStamina, &goldNull,
+		&colorEnabledInt)
 
 	if err != nil {
+		log.Printf("Error loading player %s: %v", name, err)
 		return
 	}
 
-	// Try to get gold value separately (in case column doesn't exist yet)
-	_ = db.QueryRow("SELECT gold FROM players WHERE name = ?", name).Scan(&gold)
+	// Convert NullInt64 to int
+	if goldNull.Valid {
+		gold = int(goldNull.Int64)
+	}
 
+	log.Printf("Successfully loaded player %s: race=%s, class=%s, room=%d", name, race, class, roomID)
+	colorEnabled = colorEnabledInt == 1
 	return
 }
 
@@ -162,5 +175,16 @@ func UpdatePlayerAttributes(name string, str, dex, con, int_, wis, pre int) erro
 		SET str = ?, dex = ?, con = ?, int = ?, wis = ?, pre = ?
 		WHERE name = ?`,
 		str, dex, con, int_, wis, pre, name)
+	return err
+}
+
+// UpdatePlayerColorPreference updates a player's color preference in the database
+func UpdatePlayerColorPreference(name string, colorEnabled bool) error {
+	colorEnabledInt := 0
+	if colorEnabled {
+		colorEnabledInt = 1
+	}
+
+	_, err := db.Exec("UPDATE players SET color_enabled = ? WHERE name = ?", colorEnabledInt, name)
 	return err
 }

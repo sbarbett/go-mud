@@ -24,7 +24,7 @@ func NewOOCManager(playersMutex *sync.Mutex, players map[string]*Player) *OOCMan
 func (m *OOCManager) HandleOOCCommand(player *Player, input string) {
 	// If the input is exactly "ooc", show the help message
 	if input == "ooc" {
-		player.Conn.Write([]byte("OOC (Out of Character) lets you chat with other players.\r\nUsage: ooc <message>\r\n"))
+		player.Send("OOC (Out of Character) lets you chat with other players.\r\nUsage: ooc <message>")
 		return
 	}
 
@@ -40,7 +40,7 @@ func (m *OOCManager) BroadcastMessage(message string, exclude *Player) {
 
 	for _, p := range m.players {
 		if p != exclude {
-			p.Conn.Write([]byte(message + "\r\n"))
+			p.Send(message)
 		}
 	}
 }

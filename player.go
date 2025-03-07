@@ -51,6 +51,9 @@ type Player struct {
 	Room        *Room    // Current room the player is in
 	Conn        net.Conn // Network connection for the player
 	LastCommand string   // Store the last command for reference
+
+	// Color preferences
+	ColorEnabled bool // Whether ANSI colors are enabled for this player
 }
 
 // Global session management
@@ -72,6 +75,31 @@ func RemovePlayer(player *Player) {
 	delete(activePlayers, player.Name)
 }
 
+// Send sends a message to the player with color processing
+func (p *Player) Send(message string) {
+	// Don't send empty messages
+	if message == "" {
+		return
+	}
+
+	// Process color codes
+	processedMessage := ProcessColors(message, p.ColorEnabled)
+
+	// Ensure the message ends with a newline
+	if !strings.HasSuffix(processedMessage, "\r\n") {
+		processedMessage += "\r\n"
+	}
+
+	// Send the message to the player
+	p.Conn.Write([]byte(processedMessage))
+}
+
+// SendType sends a message to the player with the default color for the specified message type
+func (p *Player) SendType(message string, messageType string) {
+	colorizedMessage := ColorizeByType(message, messageType)
+	p.Send(colorizedMessage)
+}
+
 func BroadcastToRoom(message string, room *Room, sender *Player) {
 	playersMutex.Lock()
 	defer playersMutex.Unlock()
@@ -79,7 +107,7 @@ func BroadcastToRoom(message string, room *Room, sender *Player) {
 	for _, p := range activePlayers {
 		if p != sender && p.Room != nil && room != nil &&
 			p.Room.ID == room.ID && p.Room == room {
-			p.Conn.Write([]byte(message + "\r\n"))
+			p.Send(message)
 		}
 	}
 }
@@ -107,7 +135,6 @@ func calculateNextLevelXP(level int) int {
 // Add function to handle XP gain and level ups
 func (p *Player) GainXP(amount int) {
 	p.XP += amount
-	p.Conn.Write([]byte(fmt.Sprintf("You gain %d experience points.\r\n", amount)))
 
 	for p.XP >= p.NextLevelXP {
 		overflowXP := p.XP - p.NextLevelXP
@@ -343,78 +370,81 @@ func (p *Player) PulseUpdate() {
 	}
 }
 
-// ExecuteAttack handles a player attacking a mob
+// ExecuteAttack handles a player's attack against a mob
 func (p *Player) ExecuteAttack() {
-	// Safety check - ensure player is in combat and has a valid target
-	if !p.IsInCombat() || p.Target == nil || p.IsDead {
+	// Check if player is in combat and has a valid target
+	if !p.InCombat || p.Target == nil {
 		return
 	}
 
-	// Check if the target evades the attack
-	if ProcessEvasion(p.Target.Level, p.Level) {
-		// Target evaded the attack
-		p.Conn.Write([]byte(fmt.Sprintf("\r\nYou swing at the %s, but they dodge your attack!\r\n> ",
-			p.Target.ShortDescription)))
-
-		// Broadcast the evasion to other players in the room
-		BroadcastCombatMessage(fmt.Sprintf("%s swings at the %s, but they dodge the attack!",
-			p.Name, p.Target.ShortDescription), p.Room, p)
+	// Check if target is still alive
+	if p.Target.HP <= 0 {
+		p.HandleMobDeath(p.Target)
 		return
 	}
 
-	// Calculate hit chance using the utility function
-	finalHitChance := CalculateHitChance(p.Level, p.Target.Level)
-
-	// Roll to hit
+	// Calculate hit chance
+	hitChance := CalculateHitChance(p.Level, p.Target.Level)
 	hitRoll := rand.Float64()
 
-	if hitRoll <= finalHitChance {
-		// Hit! Calculate damage using the utility function
-		damage := CalculateDamage(p.Level)
+	// Check if attack misses
+	if hitRoll > hitChance {
+		// Attack missed
+		missMessage := fmt.Sprintf("You miss %s.", p.Target.ShortDescription)
+		p.SendType(missMessage, "combat")
 
-		// Check for critical hit
-		isCritical := ProcessCriticalHit(p.Level, p.Target.Level)
-		if isCritical {
-			// Critical hit! Double the damage
-			damage *= 2
-		}
+		// Broadcast miss message to room
+		roomMessage := fmt.Sprintf("%s misses %s.", p.Name, p.Target.ShortDescription)
+		BroadcastCombatMessage(roomMessage, p.Room, p)
+		return
+	}
 
-		// Apply damage to target
-		p.Target.HP -= damage
-		if p.Target.HP < 0 {
-			p.Target.HP = 0
-		}
+	// Check for evasion
+	if ProcessEvasion(p.Target.Level, p.Level) {
+		// Target evaded
+		evadeMessage := fmt.Sprintf("%s evades your attack.", p.Target.ShortDescription)
+		p.SendType(evadeMessage, "combat")
 
-		// Send hit message to player
-		if isCritical {
-			p.Conn.Write([]byte(fmt.Sprintf("\r\nYou land a CRITICAL HIT on the %s for %d damage!\r\n> ",
-				p.Target.ShortDescription, damage)))
+		// Broadcast evasion message to room
+		roomMessage := fmt.Sprintf("%s evades %s's attack.", p.Target.ShortDescription, p.Name)
+		BroadcastCombatMessage(roomMessage, p.Room, p)
+		return
+	}
 
-			// Broadcast the critical hit to other players in the room
-			BroadcastCombatMessage(fmt.Sprintf("%s lands a CRITICAL HIT on the %s for %d damage!",
-				p.Name, p.Target.ShortDescription, damage), p.Room, p)
-		} else {
-			p.Conn.Write([]byte(fmt.Sprintf("\r\nYou strike the %s for %d damage!\r\n> ",
-				p.Target.ShortDescription, damage)))
+	// Calculate damage
+	damage := CalculateDamage(p.Level)
 
-			// Broadcast the attack to other players in the room
-			BroadcastCombatMessage(fmt.Sprintf("%s strikes the %s for %d damage!",
-				p.Name, p.Target.ShortDescription, damage), p.Room, p)
-		}
+	// Check for critical hit
+	isCritical := ProcessCriticalHit(p.Level, p.Target.Level)
+	if isCritical {
+		// Double damage for critical hits
+		damage *= 2
+	}
 
-		// Check if target is dead
-		if p.Target.HP <= 0 {
-			// Handle mob death
-			p.HandleMobDeath(p.Target)
-		}
+	// Apply damage to target
+	p.Target.HP -= damage
+
+	// Send attack message to player
+	var attackMessage string
+	if isCritical {
+		attackMessage = fmt.Sprintf("You land a {R}CRITICAL{x} hit on %s for {R}%d{x} damage!", p.Target.ShortDescription, damage)
 	} else {
-		// Miss
-		p.Conn.Write([]byte(fmt.Sprintf("\r\nYou swing at the %s but miss!\r\n> ",
-			p.Target.ShortDescription)))
+		attackMessage = fmt.Sprintf("You hit %s for {R}%d{x} damage.", p.Target.ShortDescription, damage)
+	}
+	p.SendType(attackMessage, "combat")
 
-		// Broadcast the miss to other players in the room
-		BroadcastCombatMessage(fmt.Sprintf("%s swings at the %s but misses!",
-			p.Name, p.Target.ShortDescription), p.Room, p)
+	// Broadcast attack message to room
+	var roomMessage string
+	if isCritical {
+		roomMessage = fmt.Sprintf("%s lands a CRITICAL hit on %s!", p.Name, p.Target.ShortDescription)
+	} else {
+		roomMessage = fmt.Sprintf("%s hits %s.", p.Name, p.Target.ShortDescription)
+	}
+	BroadcastCombatMessage(roomMessage, p.Room, p)
+
+	// Check if target died from the attack
+	if p.Target.HP <= 0 {
+		p.HandleMobDeath(p.Target)
 	}
 }
 
@@ -428,12 +458,12 @@ func (p *Player) ReceiveAttack(attacker *MobInstance) {
 	// Check if the player evades the attack
 	if ProcessEvasion(p.Level, attacker.Level) {
 		// Player evaded the attack
-		p.Conn.Write([]byte(fmt.Sprintf("\r\nThe %s swings at you, but you evade just in time!\r\n> ",
-			attacker.ShortDescription)))
+		evadeMessage := fmt.Sprintf("The %s swings at you, but you evade just in time!", attacker.ShortDescription)
+		p.SendType(evadeMessage, "combat")
 
 		// Broadcast the evasion to other players in the room
-		BroadcastCombatMessage(fmt.Sprintf("The %s swings at %s, but they evade just in time!",
-			attacker.ShortDescription, p.Name), p.Room, p)
+		roomMessage := fmt.Sprintf("The %s swings at %s, but they evade just in time!", attacker.ShortDescription, p.Name)
+		BroadcastCombatMessage(roomMessage, p.Room, p)
 		return
 	}
 
@@ -461,35 +491,35 @@ func (p *Player) ReceiveAttack(attacker *MobInstance) {
 		}
 
 		// Send hit message to player
+		var attackMessage string
 		if isCritical {
-			p.Conn.Write([]byte(fmt.Sprintf("\r\nThe %s lands a CRITICAL HIT on you for %d damage!\r\n> ",
-				attacker.ShortDescription, damage)))
-
-			// Broadcast the critical hit to other players in the room
-			BroadcastCombatMessage(fmt.Sprintf("The %s lands a CRITICAL HIT on %s for %d damage!",
-				attacker.ShortDescription, p.Name, damage), p.Room, p)
+			attackMessage = fmt.Sprintf("The %s lands a {R}CRITICAL HIT{x} on you for {R}%d{x} damage!", attacker.ShortDescription, damage)
 		} else {
-			p.Conn.Write([]byte(fmt.Sprintf("\r\nThe %s strikes you for %d damage!\r\n> ",
-				attacker.ShortDescription, damage)))
-
-			// Broadcast the attack to other players in the room
-			BroadcastCombatMessage(fmt.Sprintf("The %s strikes %s for %d damage!",
-				attacker.ShortDescription, p.Name, damage), p.Room, p)
+			attackMessage = fmt.Sprintf("The %s strikes you for {R}%d{x} damage.", attacker.ShortDescription, damage)
 		}
+		p.SendType(attackMessage, "combat")
 
-		// Check if player is dead
+		// Broadcast the attack to other players in the room
+		var roomMessage string
+		if isCritical {
+			roomMessage = fmt.Sprintf("The %s lands a CRITICAL HIT on %s for %d damage!", attacker.ShortDescription, p.Name, damage)
+		} else {
+			roomMessage = fmt.Sprintf("The %s strikes %s for %d damage.", attacker.ShortDescription, p.Name, damage)
+		}
+		BroadcastCombatMessage(roomMessage, p.Room, p)
+
+		// Check if player died from the attack
 		if p.HP <= 0 {
-			// Handle player death
 			p.Die(attacker)
 		}
 	} else {
 		// Miss
-		p.Conn.Write([]byte(fmt.Sprintf("\r\nThe %s swings at you but misses!\r\n> ",
-			attacker.ShortDescription)))
+		missMessage := fmt.Sprintf("The %s swings at you but misses!", attacker.ShortDescription)
+		p.SendType(missMessage, "combat")
 
 		// Broadcast the miss to other players in the room
-		BroadcastCombatMessage(fmt.Sprintf("The %s swings at %s but misses!",
-			attacker.ShortDescription, p.Name), p.Room, p)
+		roomMessage := fmt.Sprintf("The %s swings at %s but misses!", attacker.ShortDescription, p.Name)
+		BroadcastCombatMessage(roomMessage, p.Room, p)
 	}
 }
 
@@ -510,71 +540,51 @@ func (p *Player) IsInCombat() bool {
 	return p.InCombat && p.Target != nil
 }
 
-// HandleMobDeath handles the death of a mob killed by a player
+// HandleMobDeath processes a mob's death
 func (p *Player) HandleMobDeath(mob *MobInstance) {
+	// Exit combat
+	p.ExitCombat()
+
 	// Calculate XP gain
 	xpGain := CalculateXPGain(p.Level, mob.Level)
-
-	// Award XP to the player
 	p.GainXP(xpGain)
 
-	// Award gold to the player
-	goldGain := mob.Level * 5 // Simple formula: 5 gold per mob level
-	p.Gold += goldGain
-
 	// Send death message to player
-	p.Conn.Write([]byte(fmt.Sprintf("\r\nYou have slain the %s!\r\n", mob.ShortDescription)))
-	p.Conn.Write([]byte(fmt.Sprintf("You gain %d experience and %d gold.\r\n> ", xpGain, goldGain)))
+	deathMessage := fmt.Sprintf("You have slain %s!", mob.ShortDescription)
+	p.SendType(deathMessage, "combat")
 
-	// Broadcast the death to other players in the room
-	BroadcastCombatMessage(fmt.Sprintf("%s has slain the %s!",
-		p.Name, mob.ShortDescription), p.Room, p)
+	// Send XP gain message
+	xpMessage := fmt.Sprintf("You gain {G}%d{x} experience points.", xpGain)
+	p.Send(xpMessage)
 
-	// Remove the mob from the room (this would be handled by a mob management function)
-	// For now, we'll just log it
-	log.Printf("Mob %s killed by player %s", mob.ShortDescription, p.Name)
+	// Broadcast death message to room
+	roomMessage := fmt.Sprintf("%s has slain %s!", p.Name, mob.ShortDescription)
+	BroadcastCombatMessage(roomMessage, p.Room, p)
 
-	// Exit combat
-	p.ExitCombat()
-
-	// Schedule mob respawn would be handled by a mob management function
-	// For now, we'll just log it
-	log.Printf("Scheduling respawn for mob %s", mob.ShortDescription)
+	// Remove the mob from the world
+	RemoveMobFromRoom(mob)
 }
 
-// Die handles the death of a player
+// Die handles player death
 func (p *Player) Die(killer *MobInstance) {
-	// Set player as dead
+	// Set the player's death state
 	p.IsDead = true
-
-	// Exit combat
+	p.HP = 0
 	p.ExitCombat()
 
-	// Send death message to player
-	p.Conn.Write([]byte(fmt.Sprintf("\r\n\x1b[31mYou have been killed by the %s!\x1b[0m\r\n",
-		killer.ShortDescription)))
+	// Notify the player of their death
+	deathMessage := fmt.Sprintf("You have been killed by %s!", killer.ShortDescription)
+	p.SendType(deathMessage, "death")
 
-	// Broadcast the death to other players in the room
-	BroadcastCombatMessage(fmt.Sprintf("\x1b[31m%s has been killed by the %s!\x1b[0m",
-		p.Name, killer.ShortDescription), p.Room, p)
+	// Broadcast the death to the room
+	roomMessage := fmt.Sprintf("%s has been killed by %s!", p.Name, killer.ShortDescription)
+	BroadcastToRoom(ColorizeByType(roomMessage, "death"), p.Room, p)
 
-	// Calculate XP loss (10% of current XP)
-	xpLoss := p.XP / 10
-	if xpLoss < 1 {
-		xpLoss = 1 // Minimum XP loss of 1
-	}
+	// Provide instructions for respawning
+	p.Send("{W}Type 'respawn' to return to life.{x}")
 
-	// Apply XP loss
-	p.XP -= xpLoss
-	if p.XP < 0 {
-		p.XP = 0
-	}
-
-	// Inform player of XP loss
-	p.Conn.Write([]byte(fmt.Sprintf("You lose %d experience points.\r\n", xpLoss)))
-
-	// Schedule player respawn
-	go p.ScheduleRespawn()
+	// Schedule automatic respawn after a delay
+	p.ScheduleRespawn()
 }
 
 // ScheduleRespawn schedules a player to respawn after a delay
@@ -626,12 +636,13 @@ func (p *Player) ScheduleRespawn() {
 		}
 
 		// Broadcast arrival to respawn room
-		BroadcastToRoom(fmt.Sprintf("%s appears in a flash of divine light.", p.Name), startRoom, p)
+		arrivalMsg := fmt.Sprintf("%s appears in a flash of divine light.", p.Name)
+		BroadcastToRoom(ColorizeByType(arrivalMsg, "system"), startRoom, p)
 	}
 
 	// Send respawn message
-	p.Conn.Write([]byte("\r\n\x1b[32mYou have been resurrected!\x1b[0m\r\n"))
-	p.Conn.Write([]byte("Your blurred vision comes to focus and you find yourself next to the Temple Altar.\r\n> "))
+	p.SendType("You have been resurrected!", "system")
+	p.Send("{C}Your blurred vision comes to focus and you find yourself next to the Temple Altar.{x}")
 
 	// Update player stats in database
 	UpdatePlayerHPMP(p.Name, p.HP, p.MaxHP, p.MP, p.MaxMP)
@@ -676,21 +687,16 @@ func CalculateDamage(attackerLevel int) int {
 
 // BroadcastCombatMessage sends a combat message to all players in the room except the sender
 func BroadcastCombatMessage(message string, room *Room, sender *Player) {
-	// Make a copy of the players to avoid holding the lock while writing to connections
-	var playersToNotify []*Player
-
 	playersMutex.Lock()
+	defer playersMutex.Unlock()
+
+	colorizedMessage := ColorizeByType(message, "combat")
+
 	for _, p := range activePlayers {
 		if p != sender && p.Room != nil && room != nil &&
 			p.Room.ID == room.ID && p.Room == room {
-			playersToNotify = append(playersToNotify, p)
+			p.Send(colorizedMessage)
 		}
-	}
-	playersMutex.Unlock()
-
-	// Now send the message to each player without holding the lock
-	for _, p := range playersToNotify {
-		p.Conn.Write([]byte(message + "\r\n"))
 	}
 }
 

@@ -27,8 +27,8 @@ func DescribeRoom(room *Room, viewer *Player) string {
 	}
 	playersMutex.Unlock()
 
-	// Build the room description
-	description := fmt.Sprintf("%s\n%s",
+	// Build the room description with colors
+	description := fmt.Sprintf("{C}%s{x}\n%s",
 		room.Name,
 		room.Description)
 
@@ -47,9 +47,9 @@ func DescribeRoom(room *Room, viewer *Player) string {
 				for _, p := range activePlayers {
 					if p.IsInCombat() && p.Target == mob {
 						if p == viewer {
-							combatStatus = " [FIGHTING YOU]"
+							combatStatus = " {R}[FIGHTING YOU]{x}"
 						} else {
-							combatStatus = fmt.Sprintf(" [FIGHTING %s]", p.Name)
+							combatStatus = fmt.Sprintf(" {R}[FIGHTING %s]{x}", p.Name)
 						}
 						break
 					}
@@ -62,11 +62,11 @@ func DescribeRoom(room *Room, viewer *Player) string {
 	}
 
 	// Add exits after mobs
-	description += fmt.Sprintf("\nAvailable exits: [%s]", strings.Join(exits, ", "))
+	description += fmt.Sprintf("\n{G}Available exits:{x} [%s]", strings.Join(exits, ", "))
 
 	// Add other players if present
 	if len(otherPlayers) > 0 {
-		description += fmt.Sprintf("\nAlso here: %s", strings.Join(otherPlayers, ", "))
+		description += fmt.Sprintf("\n{Y}Also here:{x} %s", strings.Join(otherPlayers, ", "))
 	}
 
 	return description

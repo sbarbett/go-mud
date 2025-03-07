@@ -22,8 +22,44 @@ func handleConnection(conn net.Conn) {
 	defer conn.Close()              // Ensure the connection is closed when the function exits
 	reader := bufio.NewReader(conn) // Create a buffered reader for reading from the connection
 
+	// First, ask about ANSI color before showing any colored content
+	conn.Write([]byte("Would you like to enable ANSI colors? (yes/no): "))
+
+	colorResponse, _ := reader.ReadString('\n')
+	colorResponse = strings.TrimSpace(strings.ToLower(colorResponse))
+	colorEnabled := colorResponse != "no" // Enable colors unless explicitly declined
+
+	// Now display the splash screen with or without colors
+	if colorEnabled {
+		conn.Write([]byte("\x1b[1;36m" +
+			"  ▄████  ▒█████      ███▄ ▄███▓ █    ██ ▓█████▄ \r\n" +
+			"  ██▒ ▀█▒▒██▒  ██▒   ▓██▒▀█▀ ██▒ ██  ▓██▒▒██▀ ██▌\r\n" +
+			" ▒██░▄▄▄░▒██░  ██▒   ▓██    ▓██░▓██  ▒██░░██   █▌\r\n" +
+			" ░▓█  ██▓▒██   ██░   ▒██    ▒██ ▓▓█  ░██░░▓█▄   ▌\r\n" +
+			" ░▒▓███▀▒░ ████▓▒░   ▒██▒   ░██▒▒▒█████▓ ░▒████▓ \r\n" +
+			"  ░▒   ▒ ░ ▒░▒░▒░    ░ ▒░   ░  ░░▒▓▒ ▒ ▒  ▒▒▓  ▒ \r\n" +
+			"   ░   ░   ░ ▒ ▒░    ░  ░      ░░░▒░ ░ ░  ░ ▒  ▒ \r\n" +
+			" ░ ░   ░ ░ ░ ░ ▒     ░      ░    ░░░ ░ ░  ░ ░  ░ \r\n" +
+			"       ░     ░ ░            ░      ░        ░    \r\n" +
+			"                                           ░      \x1b[0m\r\n\r\n" +
+			"\x1b[1;32m  Welcome to Go-MUD!\x1b[0m\r\n" +
+			"\x1b[0;36m  A text-based multiplayer adventure\x1b[0m\r\n\r\n" +
+			"\x1b[0;33m  Created with ❤️ by shanevapid\x1b[0m\r\n\r\n"))
+	} else {
+		conn.Write([]byte("\r\n" +
+			"  GO-MUD\r\n\r\n" +
+			"  Welcome to Go-MUD!\r\n" +
+			"  A text-based multiplayer adventure\r\n\r\n" +
+			"  Created with ❤️ by shanevapid\r\n\r\n"))
+	}
+
 	// Prompt the player to enter their character name
-	conn.Write([]byte("Enter your character name: "))
+	if colorEnabled {
+		conn.Write([]byte("\x1b[1;37mWhat's your name, traveler? \x1b[0m"))
+	} else {
+		conn.Write([]byte("What's your name, traveler? "))
+	}
+
 	name, _ := reader.ReadString('\n') // Read name input from the player
 	name = strings.TrimSpace(name)     // Remove any surrounding whitespace
 
@@ -46,8 +82,18 @@ func handleConnection(conn net.Conn) {
 			return
 		}
 
+		// Set the color preference from the initial prompt
+		player.ColorEnabled = colorEnabled
+
+		// Update the player's color preference in the database
+		err = UpdatePlayerColorPreference(name, colorEnabled)
+		if err != nil {
+			// Just log the error, don't fail character creation
+			log.Printf("Error saving color preference: %v\n", err)
+		}
+
 		// Notify the player of the successful character creation
-		conn.Write([]byte(fmt.Sprintf("Character created! Welcome, %s the %s %s!\r\n", player.Name, player.Race, player.Class)))
+		player.Send(fmt.Sprintf("Character created! Welcome, %s the %s %s!", player.Name, player.Race, player.Class))
 
 		// After successful player creation or loading, use AddPlayer
 		AddPlayer(player)
@@ -56,7 +102,7 @@ func handleConnection(conn net.Conn) {
 		oocManager.BroadcastMessage(fmt.Sprintf("[OOC] %s has connected.", player.Name), player)
 
 		// Send initial room description to the player
-		player.Conn.Write([]byte(fmt.Sprintf("%s\r\n", DescribeRoom(player.Room, player))))
+		player.Send(DescribeRoom(player.Room, player))
 
 		// Calculate derived stats for loaded player
 		player.UpdateDerivedStats()
@@ -69,8 +115,9 @@ func handleConnection(conn net.Conn) {
 		return
 	}
 	// Player already exists; load their existing information from the database
-	race, class, roomID, str, dex, con, int_, wis, pre, level, xp, nextLevelXP, hp, maxHP, mp, maxMP, stamina, maxStamina, gold, err := LoadPlayer(name)
+	race, class, roomID, str, dex, con, int_, wis, pre, level, xp, nextLevelXP, hp, maxHP, mp, maxMP, stamina, maxStamina, gold, dbColorEnabled, err := LoadPlayer(name)
 	if err != nil {
+		log.Printf("Error loading player %s: %v", name, err)
 		conn.Write([]byte("Error loading character.\r\n")) // Handle loading errors
 		return
 	}
@@ -78,40 +125,47 @@ func handleConnection(conn net.Conn) {
 	// Fetch the room associated with the loaded player
 	room, err := GetRoom(roomID)
 	if err != nil {
+		log.Printf("Error getting room %d for player %s: %v", roomID, name, err)
 		conn.Write([]byte("Error loading game world.\r\n")) // Handle room loading errors
 		return
 	}
 
 	// Initialize the player object with loaded data
 	player := &Player{
-		Name:        name,
-		Race:        race,
-		Class:       class,
-		Room:        room,
-		Conn:        conn,
-		STR:         str,
-		DEX:         dex,
-		CON:         con,
-		INT:         int_,
-		WIS:         wis,
-		PRE:         pre,
-		Level:       level,
-		XP:          xp,
-		NextLevelXP: nextLevelXP,
-		HP:          hp,
-		MaxHP:       maxHP,
-		MP:          mp,
-		MaxMP:       maxMP,
-		Stamina:     stamina,
-		MaxStamina:  maxStamina,
-		Gold:        gold,
+		Name:         name,
+		Race:         race,
+		Class:        class,
+		Room:         room,
+		Conn:         conn,
+		STR:          str,
+		DEX:          dex,
+		CON:          con,
+		INT:          int_,
+		WIS:          wis,
+		PRE:          pre,
+		Level:        level,
+		XP:           xp,
+		NextLevelXP:  nextLevelXP,
+		HP:           hp,
+		MaxHP:        maxHP,
+		MP:           mp,
+		MaxMP:        maxMP,
+		Stamina:      stamina,
+		MaxStamina:   maxStamina,
+		Gold:         gold,
+		ColorEnabled: colorEnabled, // Use the color preference from the initial prompt
 	}
 
-	// Calculate derived stats for loaded player
-	player.UpdateDerivedStats()
+	// Update the player's color preference in the database if it's different from the stored value
+	if colorEnabled != dbColorEnabled {
+		err = UpdatePlayerColorPreference(name, colorEnabled)
+		if err != nil {
+			log.Printf("Error updating color preference: %v\n", err)
+		}
+	}
 
 	// Welcome the player back
-	conn.Write([]byte(fmt.Sprintf("Welcome back, %s!\r\n", name)))
+	player.Send(fmt.Sprintf("Welcome back, %s!", player.Name))
 
 	// After successful player creation or loading, use AddPlayer
 	AddPlayer(player)
@@ -120,42 +174,55 @@ func handleConnection(conn net.Conn) {
 	oocManager.BroadcastMessage(fmt.Sprintf("[OOC] %s has connected.", player.Name), player)
 
 	// Send initial room description to the player
-	player.Conn.Write([]byte(fmt.Sprintf("%s\r\n", DescribeRoom(player.Room, player))))
+	player.Send(DescribeRoom(player.Room, player))
 
-	playGame(player, reader) // Start the game for the existing player
+	// Calculate derived stats for loaded player
+	player.UpdateDerivedStats()
+
+	playGame(player, reader) // Start the game for the loaded player
 
 	// When player disconnects, use RemovePlayer
 	RemovePlayer(player)
 	oocManager.BroadcastMessage(fmt.Sprintf("[OOC] %s has disconnected.", player.Name), player)
 }
 
-// playGame handles gameplay commands and maintains the player's session state
+// playGame handles the main game loop for a player
 func playGame(player *Player, reader *bufio.Reader) {
+	// Display initial prompt
+	displayPrompt(player)
+
 	for {
-		player.Conn.Write([]byte("> "))
+		// Read input from the player
 		input, err := reader.ReadString('\n')
 		if err != nil {
+			// Handle connection errors
 			log.Printf("Error reading from connection: %v", err)
 			return
 		}
 
-		input = strings.TrimSpace(strings.ToLower(input))
+		// Process the input
+		input = strings.TrimSpace(input)
 		if input == "" {
+			// Display prompt again if empty input
+			displayPrompt(player)
 			continue
 		}
 
-		// Store the original command for movement handling
+		// Store the last command for reference (needed for movement)
 		player.LastCommand = input
 
-		// Process the command
+		// Handle the command and get the response
 		response := HandleCommand(player, input)
 
-		// Send the response to the player
+		// Send the response back to the player
 		if response != "" {
-			player.Conn.Write([]byte(response))
+			player.Send(response)
 		}
 
-		// Check if the player is quitting
+		// Always display the prompt after a command
+		displayPrompt(player)
+
+		// Check if the player wants to quit
 		if input == "quit" {
 			return
 		}
@@ -276,5 +343,38 @@ func main() {
 			continue
 		}
 		go handleConnection(conn)
+	}
+}
+
+// displayPrompt shows the player's current stats (HP, MP, Stamina) as a prompt
+func displayPrompt(player *Player) {
+	// Format: [HP: 100/100 | MP: 100/100 | ST: 100/100]>
+	prompt := fmt.Sprintf("[HP: %d/%d | MP: %d/%d | ST: %d/%d]> ",
+		player.HP, player.MaxHP,
+		player.MP, player.MaxMP,
+		player.Stamina, player.MaxStamina)
+
+	// Apply color to the prompt based on health percentage
+	healthPercent := float64(player.HP) / float64(player.MaxHP)
+
+	if player.ColorEnabled {
+		var colorCode string
+		if healthPercent < 0.3 {
+			// Red for low health
+			colorCode = "{R}"
+		} else if healthPercent < 0.6 {
+			// Yellow for medium health
+			colorCode = "{Y}"
+		} else {
+			// Green for good health
+			colorCode = "{G}"
+		}
+
+		// Send the colored prompt directly to avoid double newlines
+		coloredPrompt := ProcessColors(colorCode+prompt+"{x}", player.ColorEnabled)
+		player.Conn.Write([]byte(coloredPrompt))
+	} else {
+		// Send the plain prompt directly to avoid double newlines
+		player.Conn.Write([]byte(prompt))
 	}
 }

@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"log"
+
 	//"log"
 	"strconv"
 	"strings"
@@ -40,6 +42,8 @@ var commandHandlers = map[string]CommandHandler{
 	"d":     handleMove,
 	// Death commands
 	"respawn": handleRespawn,
+	// Color commands
+	"color": handleColor,
 }
 
 // HandleCommand processes a player's command and returns the appropriate response
@@ -69,14 +73,14 @@ func HandleCommand(player *Player, input string) string {
 		case "look", "score", "quit", "respawn":
 			// These commands are allowed when dead
 		default:
-			return "You are dead and cannot do that. Type 'respawn' to return to life.\r\n"
+			return "You are dead and cannot do that. Type 'respawn' to return to life."
 		}
 	}
 
 	// Look up the handler for this command
 	handler, exists := commandHandlers[command]
 	if !exists {
-		return fmt.Sprintf("Unknown command: %s\r\n", command)
+		return fmt.Sprintf("Unknown command: %s", command)
 	}
 
 	// Execute the handler and return its response
@@ -86,7 +90,7 @@ func HandleCommand(player *Player, input string) string {
 // Individual command handlers
 
 func handleQuit(player *Player, args []string) string {
-	return "Goodbye!\r\n"
+	return "Goodbye!"
 }
 
 func handleScore(player *Player, args []string) string {
@@ -97,22 +101,31 @@ func handleGainXP(player *Player, args []string) string {
 	if len(args) > 0 {
 		if amount, err := strconv.Atoi(args[0]); err == nil {
 			player.GainXP(amount)
-			return fmt.Sprintf("Gained %d XP.\r\n", amount)
+			return fmt.Sprintf("Gained {G}%d{x} XP.", amount)
 		}
 	}
-	return "Usage: gainxp <amount>\r\n"
+	return "Usage: gainxp <amount>"
 }
 
 func handleMove(player *Player, args []string) string {
+	// Get the direction from the player's last command
 	direction := strings.ToLower(player.LastCommand)
+
+	// Handle movement
 	if err := HandleMovement(player, direction); err != nil {
-		return err.Error() + "\r\n"
+		return err.Error()
 	}
+
+	// Return empty string as the movement function will send the room description
 	return ""
 }
 
 func handleLook(player *Player, args []string) string {
-	return HandleLook(player, args) + "\r\n"
+	// Get the look result from HandleLook
+	lookResult := HandleLook(player, args)
+
+	// Return the result without adding newlines
+	return lookResult
 }
 
 // handleAttack processes a player's attempt to attack a mob
@@ -271,14 +284,72 @@ func handleDebug(player *Player, args []string) string {
 	}
 }
 
-// handleRespawn allows a player to manually respawn if they're dead
+// handleRespawn processes a player's attempt to respawn after death
 func handleRespawn(player *Player, args []string) string {
 	if !player.IsDead {
-		return "You are already alive!\r\n"
+		return "You are not dead!"
 	}
 
-	// Force immediate respawn
-	go player.ScheduleRespawn()
+	// Reset player state
+	player.IsDead = false
+	player.HP = player.MaxHP / 2 // Respawn with half health
+	player.MP = player.MaxMP / 2 // Respawn with half mana
 
-	return "You feel your spirit being pulled back to the world of the living...\r\n"
+	// Get the respawn room (Temple of Midgaard)
+	respawnRoomID := 3001 // Temple of Midgaard
+	startRoom, err := GetRoom(respawnRoomID)
+	if err != nil {
+		log.Printf("Error getting respawn room: %v", err)
+		return "{R}Error during respawn. Please contact an administrator.{x}"
+	}
+
+	// Move player to respawn room
+	oldRoom := player.Room
+	player.Room = startRoom
+
+	// Update player's room in database
+	if err := UpdatePlayerRoom(player.Name, respawnRoomID); err != nil {
+		log.Printf("Error updating player room in database: %v", err)
+	}
+
+	// Broadcast departure and arrival messages
+	if oldRoom != startRoom {
+		BroadcastToRoom(fmt.Sprintf("%s's body fades away.", player.Name), oldRoom, player)
+	}
+	BroadcastToRoom(ColorizeByType(fmt.Sprintf("%s appears in a flash of divine light.", player.Name), "system"), startRoom, player)
+
+	return "{G}You feel your spirit being pulled back to the world of the living...{x}"
+}
+
+// handleColor toggles ANSI color on or off for the player
+func handleColor(player *Player, args []string) string {
+	if len(args) == 0 {
+		// Display current color setting
+		if player.ColorEnabled {
+			return "Colors are currently {G}ON{x}. Use 'color off' to disable."
+		} else {
+			return "Colors are currently OFF. Use 'color on' to enable."
+		}
+	}
+
+	switch strings.ToLower(args[0]) {
+	case "on":
+		player.ColorEnabled = true
+		// Update the player's preference in the database
+		err := UpdatePlayerColorPreference(player.Name, true)
+		if err != nil {
+			return "Error saving color preference. Colors enabled for this session only."
+		}
+		return "{G}Colors enabled.{x} You will now see colored text."
+	case "off":
+		player.ColorEnabled = false
+		// Update the player's preference in the database
+		err := UpdatePlayerColorPreference(player.Name, false)
+		if err != nil {
+			return "Error saving color preference. Colors disabled for this session only."
+		}
+		return "Colors disabled. You will no longer see colored text."
+	default:
+		return "Usage: color [on|off]"
+	}
 }
