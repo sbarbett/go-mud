@@ -222,7 +222,7 @@ func main() {
 	// Register player pulse updates - ensure this is properly registered
 	timeManager.RegisterPulseFunc(func() {
 		// Log that the pulse is running for debugging
-		log.Printf("[DEBUG] Processing pulse update for %d active players", len(activePlayers))
+		//log.Printf("[DEBUG] Processing pulse update for %d active players", len(activePlayers))
 
 		// Make a copy of the players to avoid holding the lock while processing
 		var playersToUpdate []*Player

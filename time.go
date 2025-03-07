@@ -176,8 +176,8 @@ func (tm *TimeManager) executeTickFuncs() {
 // executePulseFuncs runs all registered pulse functions
 func (tm *TimeManager) executePulseFuncs() {
 	tm.mu.RLock()
-	funcCount := len(tm.pulseFuncs)
-	log.Printf("[DEBUG] Executing %d pulse functions", funcCount)
+	//funcCount := len(tm.pulseFuncs)
+	//log.Printf("[DEBUG] Executing %d pulse functions", funcCount)
 	defer tm.mu.RUnlock()
 
 	for i, f := range tm.pulseFuncs {
@@ -187,9 +187,9 @@ func (tm *TimeManager) executePulseFuncs() {
 					log.Printf("Panic in pulse function %d: %v", idx, r)
 				}
 			}()
-			log.Printf("[DEBUG] Starting pulse function %d", idx)
+			//log.Printf("[DEBUG] Starting pulse function %d", idx)
 			fn()
-			log.Printf("[DEBUG] Completed pulse function %d", idx)
+			//log.Printf("[DEBUG] Completed pulse function %d", idx)
 		}(f, i)
 	}
 }

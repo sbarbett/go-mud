@@ -41,89 +41,33 @@ func InitDB() {
 		log.Fatal("Failed to create players table:", err)
 	}
 
-	// Add new columns to the players table
-	_, err = db.Exec(`
-	ALTER TABLE players 
-	ADD COLUMN level INTEGER NOT NULL DEFAULT 1;
-	`)
-	if err != nil {
-		// Ignore error if column already exists
-		log.Printf("Note: level column may already exist: %v", err)
+	// Helper function to check if a column exists and add it if it doesn't
+	addColumnIfNotExists := func(columnName, columnDef string) {
+		var columnExists bool
+		err := db.QueryRow("SELECT COUNT(*) FROM pragma_table_info('players') WHERE name=?", columnName).Scan(&columnExists)
+		if err != nil {
+			log.Fatal("Failed to check if column exists:", columnName, err)
+		}
+		if !columnExists {
+			_, err := db.Exec("ALTER TABLE players ADD COLUMN " + columnName + " " + columnDef)
+			if err != nil {
+				log.Fatal("Failed to add column:", columnName, err)
+			}
+			log.Printf("Added column: %s", columnName)
+		}
 	}
 
-	_, err = db.Exec(`
-	ALTER TABLE players 
-	ADD COLUMN xp INTEGER NOT NULL DEFAULT 0;
-	`)
-	if err != nil {
-		log.Printf("Note: xp column may already exist: %v", err)
-	}
-
-	_, err = db.Exec(`
-	ALTER TABLE players 
-	ADD COLUMN next_level_xp INTEGER NOT NULL DEFAULT 1000;
-	`)
-	if err != nil {
-		log.Printf("Note: next_level_xp column may already exist: %v", err)
-	}
-
-	// Add HP and MP columns
-	_, err = db.Exec(`
-	ALTER TABLE players 
-	ADD COLUMN hp INTEGER NOT NULL DEFAULT 100;
-	`)
-	if err != nil {
-		log.Printf("Note: hp column may already exist: %v", err)
-	}
-
-	_, err = db.Exec(`
-	ALTER TABLE players 
-	ADD COLUMN max_hp INTEGER NOT NULL DEFAULT 100;
-	`)
-	if err != nil {
-		log.Printf("Note: max_hp column may already exist: %v", err)
-	}
-
-	_, err = db.Exec(`
-	ALTER TABLE players 
-	ADD COLUMN mp INTEGER NOT NULL DEFAULT 100;
-	`)
-	if err != nil {
-		log.Printf("Note: mp column may already exist: %v", err)
-	}
-
-	_, err = db.Exec(`
-	ALTER TABLE players 
-	ADD COLUMN max_mp INTEGER NOT NULL DEFAULT 100;
-	`)
-	if err != nil {
-		log.Printf("Note: max_mp column may already exist: %v", err)
-	}
-
-	_, err = db.Exec(`
-	ALTER TABLE players 
-	ADD COLUMN stamina INTEGER NOT NULL DEFAULT 100;
-	`)
-	if err != nil {
-		log.Printf("Note: stamina column may already exist: %v", err)
-	}
-
-	_, err = db.Exec(`
-	ALTER TABLE players 
-	ADD COLUMN max_stamina INTEGER NOT NULL DEFAULT 100;
-	`)
-	if err != nil {
-		log.Printf("Note: max_stamina column may already exist: %v", err)
-	}
-
-	// Add Gold column
-	_, err = db.Exec(`
-	ALTER TABLE players 
-	ADD COLUMN gold INTEGER NOT NULL DEFAULT 0;
-	`)
-	if err != nil {
-		log.Printf("Note: gold column may already exist: %v", err)
-	}
+	// Add all required columns
+	addColumnIfNotExists("level", "INTEGER NOT NULL DEFAULT 1")
+	addColumnIfNotExists("xp", "INTEGER")
+	addColumnIfNotExists("next_level_xp", "INTEGER")
+	addColumnIfNotExists("hp", "INTEGER")
+	addColumnIfNotExists("max_hp", "INTEGER")
+	addColumnIfNotExists("mp", "INTEGER")
+	addColumnIfNotExists("max_mp", "INTEGER")
+	addColumnIfNotExists("stamina", "INTEGER")
+	addColumnIfNotExists("max_stamina", "INTEGER")
+	addColumnIfNotExists("gold", "INTEGER")
 }
 
 // CreatePlayer adds a new player to the database with their stats

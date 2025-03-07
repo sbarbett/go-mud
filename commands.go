@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"log"
+	//"log"
 	"strconv"
 	"strings"
 )
@@ -128,8 +128,8 @@ func handleAttack(player *Player, args []string) string {
 		player.Name, mob.ShortDescription), player.Room, player)
 
 	// Log the combat initiation
-	log.Printf("[COMBAT] Player %s engaged Mob ID %d (%s)",
-		player.Name, mob.ID, mob.ShortDescription)
+	// log.Printf("[COMBAT] Player %s engaged Mob ID %d (%s)",
+	// 	player.Name, mob.ID, mob.ShortDescription)
 
 	// Return success message
 	return fmt.Sprintf("You attack the %s!\r\nThe %s turns to fight you!\r\n",
@@ -157,7 +157,7 @@ func handleFlee(player *Player, args []string) string {
 		player.Name, mobName), player.Room, player)
 
 	// Log the flee
-	log.Printf("[COMBAT] Player %s fled from combat", player.Name)
+	//log.Printf("[COMBAT] Player %s fled from combat", player.Name)
 
 	// Return success message
 	return fmt.Sprintf("You flee from the %s!\r\n", mobName)

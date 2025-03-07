@@ -90,12 +90,12 @@ func loadArea(path string) error {
 		room.ID = id
 		room.Area = areaName
 		rooms[id] = room
-		fmt.Printf("Loaded Room [%d]: %s (Area: %s)\n", id, room.Name, room.Area)
+		//fmt.Printf("Loaded Room [%d]: %s (Area: %s)\n", id, room.Name, room.Area)
 	}
 
 	// Load mobs from the mobiles section
 	for id, mob := range area.Mobiles {
-		fmt.Printf("Loading mob [%d]: %s\nLong Description: %s\n", id, mob.ShortDescription, mob.LongDescription)
+		//fmt.Printf("Loading mob [%d]: %s\nLong Description: %s\n", id, mob.ShortDescription, mob.LongDescription)
 		mob.ID = id
 		RegisterMob(mob)
 	}
@@ -114,6 +114,6 @@ func GetRoom(id int) (*Room, error) {
 	}
 
 	// Debug logging
-	fmt.Printf("Getting Room [%d]: %s (Area: %s)\n", id, room.Name, room.Area)
+	//fmt.Printf("Getting Room [%d]: %s (Area: %s)\n", id, room.Name, room.Area)
 	return room, nil
 }

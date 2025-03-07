@@ -2335,6 +2335,17 @@ rooms:
         description: "The stairs lead back down to the pub."
 
 mobiles:
+  3000:
+    keywords: ["wizard"]
+    short_description: "the wizard"
+    long_description: |
+      A wizard walks around behind the counter, talking to himself.
+    description: |
+      The wizard looks old and senile, and yet he looks like a very powerful
+      wizard. He is equipped with fine clothing, and is wearing many fine
+      rings and bracelets.
+    race: "human"
+    level: 23
   3001:
     keywords: ["baker"]
     short_description: "the baker"

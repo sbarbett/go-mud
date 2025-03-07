@@ -287,7 +287,7 @@ func (p *Player) RegenTick() {
 
 // PulseUpdate handles updates that occur every second
 func (p *Player) PulseUpdate() {
-	log.Printf("[DEBUG] PulseUpdate: Starting for player %s", p.Name)
+	//log.Printf("[DEBUG] PulseUpdate: Starting for player %s", p.Name)
 
 	// Check for low health notification
 	if p.HP > 0 && p.HP < p.MaxHP/5 {
@@ -297,15 +297,15 @@ func (p *Player) PulseUpdate() {
 	// Handle combat state - only if player is in combat
 	if p.IsInCombat() {
 		// Log combat processing for debugging
-		log.Printf("[DEBUG] PulseUpdate: Processing combat for player %s against %s",
-			p.Name, p.Target.ShortDescription)
+		// log.Printf("[DEBUG] PulseUpdate: Processing combat for player %s against %s",
+		// 	p.Name, p.Target.ShortDescription)
 
 		// Make a local copy of the target to avoid race conditions
 		target := p.Target
 
 		// Verify target is still valid
 		if target == nil {
-			log.Printf("[DEBUG] PulseUpdate: Target is nil for player %s", p.Name)
+			//log.Printf("[DEBUG] PulseUpdate: Target is nil for player %s", p.Name)
 			p.ExitCombat()
 			p.Conn.Write([]byte("\r\nYour target is no longer available.\r\n> "))
 			return
@@ -313,8 +313,8 @@ func (p *Player) PulseUpdate() {
 
 		// Verify target is still in the same room
 		if target.Room == nil || target.Room.ID != p.Room.ID {
-			log.Printf("[DEBUG] PulseUpdate: Target %s is not in the same room as player %s",
-				target.ShortDescription, p.Name)
+			// log.Printf("[DEBUG] PulseUpdate: Target %s is not in the same room as player %s",
+			// 	target.ShortDescription, p.Name)
 			p.ExitCombat()
 			p.Conn.Write([]byte("\r\nYour target has left the room.\r\n> "))
 			return
@@ -322,53 +322,53 @@ func (p *Player) PulseUpdate() {
 
 		// Check if target is dead
 		if target.HP <= 0 {
-			log.Printf("[DEBUG] PulseUpdate: Target %s is already dead", target.ShortDescription)
+			//log.Printf("[DEBUG] PulseUpdate: Target %s is already dead", target.ShortDescription)
 			p.Conn.Write([]byte(fmt.Sprintf("\r\nThe %s is dead!\r\n> ", target.ShortDescription)))
 			p.ExitCombat()
 			return
 		}
 
-		log.Printf("[DEBUG] PulseUpdate: Executing attack for player %s", p.Name)
+		//log.Printf("[DEBUG] PulseUpdate: Executing attack for player %s", p.Name)
 		// Execute player's attack
 		p.ExecuteAttack()
 
 		// Check if player is still in combat after their attack
 		// (they might have killed the target)
 		if !p.IsInCombat() || p.Target == nil {
-			log.Printf("[DEBUG] PulseUpdate: Player %s is no longer in combat after their attack", p.Name)
+			//log.Printf("[DEBUG] PulseUpdate: Player %s is no longer in combat after their attack", p.Name)
 			return
 		}
 
 		// Add a small delay to make combat easier to follow
 		time.Sleep(100 * time.Millisecond)
 
-		log.Printf("[DEBUG] PulseUpdate: Executing counter-attack against player %s", p.Name)
+		//log.Printf("[DEBUG] PulseUpdate: Executing counter-attack against player %s", p.Name)
 		// Execute mob's counter-attack if it's still alive
 		if p.Target != nil && p.Target.HP > 0 {
 			p.ReceiveAttack(p.Target)
 		}
 	}
 
-	log.Printf("[DEBUG] PulseUpdate: Completed for player %s", p.Name)
+	//log.Printf("[DEBUG] PulseUpdate: Completed for player %s", p.Name)
 }
 
 // ExecuteAttack performs the player's attack against their target
 func (p *Player) ExecuteAttack() {
 	// Safety check - ensure player is in combat and has a valid target
 	if !p.IsInCombat() || p.Target == nil {
-		log.Printf("[DEBUG] ExecuteAttack: Player %s is not in combat or has no target", p.Name)
+		//log.Printf("[DEBUG] ExecuteAttack: Player %s is not in combat or has no target", p.Name)
 		return
 	}
 
-	log.Printf("[DEBUG] ExecuteAttack: Player %s attacking %s (HP: %d/%d)",
-		p.Name, p.Target.ShortDescription, p.Target.HP, p.Target.MaxHP)
+	//log.Printf("[DEBUG] ExecuteAttack: Player %s attacking %s (HP: %d/%d)",
+	//	p.Name, p.Target.ShortDescription, p.Target.HP, p.Target.MaxHP)
 
 	// Calculate hit chance using the utility function
 	finalHitChance := CalculateHitChance(p.Level, p.Target.Level)
 
 	// Roll to hit
 	hitRoll := rand.Float64()
-	log.Printf("[DEBUG] ExecuteAttack: Hit chance %.2f, roll %.2f", finalHitChance, hitRoll)
+	//log.Printf("[DEBUG] ExecuteAttack: Hit chance %.2f, roll %.2f", finalHitChance, hitRoll)
 
 	if hitRoll <= finalHitChance {
 		// Hit! Calculate damage using the utility function
@@ -380,8 +380,8 @@ func (p *Player) ExecuteAttack() {
 			p.Target.HP = 0
 		}
 
-		log.Printf("[DEBUG] ExecuteAttack: Hit! Damage %d, Target HP now %d/%d",
-			damage, p.Target.HP, p.Target.MaxHP)
+		//log.Printf("[DEBUG] ExecuteAttack: Hit! Damage %d, Target HP now %d/%d",
+		//	damage, p.Target.HP, p.Target.MaxHP)
 
 		// Send hit message to player
 		p.Conn.Write([]byte(fmt.Sprintf("\r\nYou strike the %s for %d damage!\r\n> ",
@@ -392,12 +392,12 @@ func (p *Player) ExecuteAttack() {
 			p.Name, p.Target.ShortDescription, damage), p.Room, p)
 
 		// Log the attack
-		log.Printf("[COMBAT] Player %s hit Mob %s for %d damage (Mob HP: %d/%d)",
-			p.Name, p.Target.ShortDescription, damage, p.Target.HP, p.Target.MaxHP)
+		//log.Printf("[COMBAT] Player %s hit Mob %s for %d damage (Mob HP: %d/%d)",
+		//	p.Name, p.Target.ShortDescription, damage, p.Target.HP, p.Target.MaxHP)
 
 		// Check if target is dead
 		if p.Target.HP <= 0 {
-			log.Printf("[DEBUG] ExecuteAttack: Target %s is dead", p.Target.ShortDescription)
+			//log.Printf("[DEBUG] ExecuteAttack: Target %s is dead", p.Target.ShortDescription)
 
 			p.Conn.Write([]byte(fmt.Sprintf("\r\nYou have defeated the %s!\r\n> ",
 				p.Target.ShortDescription)))
@@ -407,15 +407,15 @@ func (p *Player) ExecuteAttack() {
 				p.Name, p.Target.ShortDescription), p.Room, p)
 
 			// Log the defeat
-			log.Printf("[COMBAT] Player %s defeated Mob %s",
-				p.Name, p.Target.ShortDescription)
+			// log.Printf("[COMBAT] Player %s defeated Mob %s",
+			// 	p.Name, p.Target.ShortDescription)
 
 			// Exit combat
 			p.ExitCombat()
 		}
 	} else {
 		// Miss
-		log.Printf("[DEBUG] ExecuteAttack: Miss!")
+		//log.Printf("[DEBUG] ExecuteAttack: Miss!")
 
 		p.Conn.Write([]byte(fmt.Sprintf("\r\nYou swing at the %s but miss!\r\n> ",
 			p.Target.ShortDescription)))
@@ -425,8 +425,8 @@ func (p *Player) ExecuteAttack() {
 			p.Name, p.Target.ShortDescription), p.Room, p)
 
 		// Log the miss
-		log.Printf("[COMBAT] Player %s missed attack against Mob %s",
-			p.Name, p.Target.ShortDescription)
+		// log.Printf("[COMBAT] Player %s missed attack against Mob %s",
+		// 	p.Name, p.Target.ShortDescription)
 	}
 }
 
@@ -434,20 +434,20 @@ func (p *Player) ExecuteAttack() {
 func (p *Player) ReceiveAttack(attacker *MobInstance) {
 	// Safety check - ensure player is in combat and has a valid target
 	if !p.IsInCombat() || p.Target == nil || p.Target != attacker {
-		log.Printf("[DEBUG] ReceiveAttack: Player %s is not in combat with %s",
-			p.Name, attacker.ShortDescription)
+		//log.Printf("[DEBUG] ReceiveAttack: Player %s is not in combat with %s",
+		//	p.Name, attacker.ShortDescription)
 		return
 	}
 
-	log.Printf("[DEBUG] ReceiveAttack: Mob %s attacking player %s (HP: %d/%d)",
-		attacker.ShortDescription, p.Name, p.HP, p.MaxHP)
+	//log.Printf("[DEBUG] ReceiveAttack: Mob %s attacking player %s (HP: %d/%d)",
+	//	attacker.ShortDescription, p.Name, p.HP, p.MaxHP)
 
 	// Calculate hit chance for the mob using the utility function
 	finalHitChance := CalculateHitChance(attacker.Level, p.Level)
 
 	// Roll to hit
 	hitRoll := rand.Float64()
-	log.Printf("[DEBUG] ReceiveAttack: Hit chance %.2f, roll %.2f", finalHitChance, hitRoll)
+	//log.Printf("[DEBUG] ReceiveAttack: Hit chance %.2f, roll %.2f", finalHitChance, hitRoll)
 
 	if hitRoll <= finalHitChance {
 		// Hit! Calculate damage using the utility function
@@ -459,8 +459,8 @@ func (p *Player) ReceiveAttack(attacker *MobInstance) {
 			p.HP = 0
 		}
 
-		log.Printf("[DEBUG] ReceiveAttack: Hit! Damage %d, Player HP now %d/%d",
-			damage, p.HP, p.MaxHP)
+		//log.Printf("[DEBUG] ReceiveAttack: Hit! Damage %d, Player HP now %d/%d",
+		//	damage, p.HP, p.MaxHP)
 
 		// Send hit message to player
 		p.Conn.Write([]byte(fmt.Sprintf("\r\nThe %s strikes you for %d damage!\r\n> ",
@@ -471,12 +471,12 @@ func (p *Player) ReceiveAttack(attacker *MobInstance) {
 			attacker.ShortDescription, p.Name, damage), p.Room, p)
 
 		// Log the attack
-		log.Printf("[COMBAT] Mob %s hit Player %s for %d damage (Player HP: %d/%d)",
-			attacker.ShortDescription, p.Name, damage, p.HP, p.MaxHP)
+		// log.Printf("[COMBAT] Mob %s hit Player %s for %d damage (Player HP: %d/%d)",
+		// 	attacker.ShortDescription, p.Name, damage, p.HP, p.MaxHP)
 
 		// Check if player is dead
 		if p.HP <= 0 {
-			log.Printf("[DEBUG] ReceiveAttack: Player %s is dead", p.Name)
+			//log.Printf("[DEBUG] ReceiveAttack: Player %s is dead", p.Name)
 
 			p.Conn.Write([]byte("\r\nYou have been defeated!\r\n> "))
 
@@ -491,12 +491,12 @@ func (p *Player) ReceiveAttack(attacker *MobInstance) {
 			p.HP = 1
 
 			// Log the defeat
-			log.Printf("[COMBAT] Player %s was defeated by Mob %s",
-				p.Name, attacker.ShortDescription)
+			// log.Printf("[COMBAT] Player %s was defeated by Mob %s",
+			// 	p.Name, attacker.ShortDescription)
 		}
 	} else {
 		// Miss
-		log.Printf("[DEBUG] ReceiveAttack: Miss!")
+		//log.Printf("[DEBUG] ReceiveAttack: Miss!")
 
 		p.Conn.Write([]byte(fmt.Sprintf("\r\nThe %s swings at you but misses!\r\n> ",
 			attacker.ShortDescription)))
@@ -506,8 +506,8 @@ func (p *Player) ReceiveAttack(attacker *MobInstance) {
 			attacker.ShortDescription, p.Name), p.Room, p)
 
 		// Log the miss
-		log.Printf("[COMBAT] Mob %s missed attack against Player %s",
-			attacker.ShortDescription, p.Name)
+		// log.Printf("[COMBAT] Mob %s missed attack against Player %s",
+		// 	attacker.ShortDescription, p.Name)
 	}
 }
 

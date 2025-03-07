@@ -17,8 +17,8 @@ import (
 //	A pointer to the new Room the player is moving to, or an error if movement is not possible
 func MovePlayer(player *Player, direction string) (*Room, error) {
 	currentRoom := player.Room
-	fmt.Printf("Debug - Current Room: ID=%d, Name=%s, Area=%s\n",
-		currentRoom.ID, currentRoom.Name, currentRoom.Area)
+	// fmt.Printf("Debug - Current Room: ID=%d, Name=%s, Area=%s\n",
+	// 	currentRoom.ID, currentRoom.Name, currentRoom.Area)
 
 	// Check if the exit in the specified direction exists
 	exit, exists := currentRoom.Exits[direction]
@@ -27,8 +27,8 @@ func MovePlayer(player *Player, direction string) (*Room, error) {
 	}
 
 	// Debug logging
-	fmt.Printf("Debug - MovePlayer: Moving from Room %d to %v\n",
-		currentRoom.ID, exit)
+	// fmt.Printf("Debug - MovePlayer: Moving from Room %d to %v\n",
+	// 	currentRoom.ID, exit)
 
 	// Handle different types of room movement based on exit ID type
 	switch exitID := exit.ID.(type) {
@@ -41,8 +41,8 @@ func MovePlayer(player *Player, direction string) (*Room, error) {
 		if err != nil {
 			return currentRoom, err
 		}
-		fmt.Printf("Debug - Moved to Room: ID=%d, Name=%s, Area=%s\n",
-			newRoom.ID, newRoom.Name, newRoom.Area)
+		// fmt.Printf("Debug - Moved to Room: ID=%d, Name=%s, Area=%s\n",
+		// 	newRoom.ID, newRoom.Name, newRoom.Area)
 		return newRoom, nil
 
 	case string:
@@ -66,8 +66,8 @@ func MovePlayer(player *Player, direction string) (*Room, error) {
 		if err != nil {
 			return currentRoom, err
 		}
-		fmt.Printf("Debug - Moved to Room (cross-area): ID=%d, Name=%s, Area=%s\n",
-			newRoom.ID, newRoom.Name, newRoom.Area)
+		// fmt.Printf("Debug - Moved to Room (cross-area): ID=%d, Name=%s, Area=%s\n",
+		// 	newRoom.ID, newRoom.Name, newRoom.Area)
 		return newRoom, nil
 	}
 
@@ -106,8 +106,8 @@ func HandleMovement(player *Player, command string) error {
 	}
 
 	// Debug logging
-	fmt.Printf("Debug - Movement: Player %s moving from Room %d (Area: %s) to Room %d (Area: %s)\n",
-		player.Name, oldRoom.ID, oldRoom.Area, newRoom.ID, newRoom.Area)
+	// fmt.Printf("Debug - Movement: Player %s moving from Room %d (Area: %s) to Room %d (Area: %s)\n",
+	// 	player.Name, oldRoom.ID, oldRoom.Area, newRoom.ID, newRoom.Area)
 
 	// Notify players in the old room about departure
 	playersMutex.Lock()
