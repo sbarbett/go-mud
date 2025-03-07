@@ -32,4 +32,4 @@ I wanted to recreate the experience of old-school MUDs while learning Go at the 
 
 ## License
 
-[MIT](LICENSE}
+[MIT](LICENSE)
