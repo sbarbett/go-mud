@@ -2502,7 +2502,7 @@ mobiles:
       stand stand female 0
       0 0 medium 0
     race: ""
-    level: 0
+    level: 50
   3023:
     keywords: ["guildmaster", "master"]
     short_description: "the guildmaster"
@@ -2649,7 +2649,7 @@ mobiles:
       The janitor is dressed in worn but clean coveralls. Though his job is humble,
       he takes pride in keeping the city clean and tidy.
     race: "human"
-    level: 1
+    level: 2
   3062:
     keywords: ["fido", "dog"]
     short_description: "the beastly fido"
@@ -2659,7 +2659,7 @@ mobiles:
       Fido is a small dog that has a foul smell and pieces of rotted meat hanging
       around its teeth.
     race: "fido"
-    level: 0
+    level: 1
   3063:
     keywords: ["vagabond"]
     short_description: "the vagabond"
@@ -2686,7 +2686,7 @@ mobiles:
     description: |
       The beggar looks like she is fed up with life.
     race: "human"
-    level: 1
+    level: 2
   3066:
     keywords: ["cat"]
     short_description: "an alley cat"
@@ -2695,7 +2695,7 @@ mobiles:
     description: |
       The alley cat is half starved and more than a little feral.
     race: "cat"
-    level: 0
+    level: 1
   3067:
     keywords: ["cityguard", "guard"]
     short_description: "the cityguard"
@@ -2850,7 +2850,7 @@ mobiles:
     description: |
       The white swan is very elegant.
     race: "water fowl"
-    level: 1
+    level: 2
   3122:
     keywords: ["duckling"]
     short_description: "the duckling"
@@ -2859,7 +2859,7 @@ mobiles:
     description: |
       The duckling is adorable, it looks most of all like a tiny furball.
     race: "water fowl"
-    level: 0
+    level: 1
   3123:
     keywords: ["sparrow"]
     short_description: "the sparrow"
@@ -2868,7 +2868,7 @@ mobiles:
     description: |
       The sparrow looks like it is enjoying life.
     race: "song bird"
-    level: 0
+    level: 1
   3124:
     keywords: ["duck"]
     short_description: "the duck"
@@ -2877,7 +2877,7 @@ mobiles:
     description: |
       The duck is quite fat.  It looks like it is enjoying life.
     race: "water fowl"
-    level: 1
+    level: 2
   3140:
     keywords: ["captain"]
     short_description: "the captain"
@@ -2924,7 +2924,7 @@ mobiles:
     description: |
       He is very good at his job - completely dissolved in tears.
     race: "human"
-    level: 1
+    level: 2
   3150:
     keywords: ["esme", "waitress"]
     short_description: "Esme"

@@ -456,3 +456,38 @@ func getOppositeDirection(dir string) string {
 		return "somewhere"
 	}
 }
+
+// RemoveMobFromRoom removes a mob instance from a room
+func RemoveMobFromRoom(mob *MobInstance) {
+	if mob == nil || mob.Room == nil {
+		return
+	}
+
+	mobMutex.Lock()
+	defer mobMutex.Unlock()
+
+	roomID := mob.Room.ID
+
+	// Find and remove the mob from the room's mob list
+	for i, m := range roomMobs[roomID] {
+		if m.InstanceID == mob.InstanceID {
+			// Remove by swapping with last element and truncating
+			roomMobs[roomID][i] = roomMobs[roomID][len(roomMobs[roomID])-1]
+			roomMobs[roomID] = roomMobs[roomID][:len(roomMobs[roomID])-1]
+			break
+		}
+	}
+
+	// Decrease the world count for this mob type
+	worldMobCounts[mob.ID]--
+	if worldMobCounts[mob.ID] < 0 {
+		worldMobCounts[mob.ID] = 0
+	}
+
+	// Remove from instances map
+	delete(mobInstances, mob.InstanceID)
+
+	// Log the removal
+	log.Printf("[MOB] Removed mob %s (ID: %d, Instance: %d) from room %d",
+		mob.ShortDescription, mob.ID, mob.InstanceID, roomID)
+}

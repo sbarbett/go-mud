@@ -38,6 +38,8 @@ var commandHandlers = map[string]CommandHandler{
 	"w":     handleMove,
 	"u":     handleMove,
 	"d":     handleMove,
+	// Death commands
+	"respawn": handleRespawn,
 }
 
 // HandleCommand processes a player's command and returns the appropriate response
@@ -48,6 +50,9 @@ func HandleCommand(player *Player, input string) string {
 		return ""
 	}
 
+	// Store the last command for reference
+	player.LastCommand = input
+
 	// Split the input into command and arguments
 	parts := strings.Fields(input)
 	if len(parts) == 0 {
@@ -57,13 +62,24 @@ func HandleCommand(player *Player, input string) string {
 	command := strings.ToLower(parts[0])
 	args := parts[1:]
 
+	// Check if player is dead
+	if player.IsDead {
+		// Only allow certain commands when dead
+		switch command {
+		case "look", "score", "quit", "respawn":
+			// These commands are allowed when dead
+		default:
+			return "You are dead and cannot do that. Type 'respawn' to return to life.\r\n"
+		}
+	}
+
 	// Look up the handler for this command
 	handler, exists := commandHandlers[command]
 	if !exists {
-		return "Unknown command.\r\n"
+		return fmt.Sprintf("Unknown command: %s\r\n", command)
 	}
 
-	// Execute the handler
+	// Execute the handler and return its response
 	return handler(player, args)
 }
 
@@ -118,6 +134,11 @@ func handleAttack(player *Player, args []string) string {
 	mob := FindMobInRoom(player.Room.ID, targetName)
 	if mob == nil {
 		return "You don't see that here.\r\n"
+	}
+
+	// Check if the mob is already dead
+	if mob.HP <= 0 {
+		return fmt.Sprintf("The %s is already dead!\r\n", mob.ShortDescription)
 	}
 
 	// Set the player's combat state
@@ -248,4 +269,16 @@ func handleDebug(player *Player, args []string) string {
 	default:
 		return "Unknown debug option.\r\n"
 	}
+}
+
+// handleRespawn allows a player to manually respawn if they're dead
+func handleRespawn(player *Player, args []string) string {
+	if !player.IsDead {
+		return "You are already alive!\r\n"
+	}
+
+	// Force immediate respawn
+	go player.ScheduleRespawn()
+
+	return "You feel your spirit being pulled back to the world of the living...\r\n"
 }
