@@ -13,7 +13,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"strconv"
 	"strings"
 	"sync"
@@ -29,6 +28,7 @@ type Mob struct {
 	Race             string   `yaml:"race"`
 	Level            int      `yaml:"level"`
 	Toughness        string   `yaml:"toughness"`
+	Wandering        bool     `yaml:"wandering"` // Whether this mob wanders around
 
 	// Derived stats
 	HP    int
@@ -146,6 +146,7 @@ func SpawnMob(mobID int, room *Room) (*MobInstance, error) {
 			Race:             mobTemplate.Race,
 			Level:            mobTemplate.Level,
 			Toughness:        mobTemplate.Toughness,
+			Wandering:        mobTemplate.Wandering,
 			MaxHP:            mobTemplate.MaxHP,
 			HP:               mobTemplate.MaxHP,
 			Room:             room,
@@ -259,7 +260,7 @@ func ProcessMobResets() {
 	for mobID, resets := range mobResetsByID {
 		// Check if the mob exists in the registry
 		if mobRegistry[mobID] == nil {
-			log.Printf("Skipping resets for mob %d: not found in registry", mobID)
+			//log.Printf("Skipping resets for mob %d: not found in registry", mobID)
 			continue
 		}
 
@@ -286,81 +287,140 @@ func ProcessMobResets() {
 			resets[i], resets[j] = resets[j], resets[i]
 		})
 
-		// Process each reset until we reach the world limit
-		for _, reset := range resets {
-			if remainingAllowed <= 0 {
-				break
-			}
+		// For mobs with multiple spawn points (like janitors), distribute them evenly
+		// rather than filling up one room before moving to the next
+		if len(resets) > 1 && remainingAllowed > 1 {
+			// First pass: try to spawn one mob per reset location until we reach the limit
+			for i := 0; i < len(resets) && remainingAllowed > 0; i++ {
+				reset := resets[i]
+				room, err := GetRoom(reset.RoomVnum)
+				if err != nil {
+					//log.Printf("Error getting room %d for mob reset: %v", reset.RoomVnum, err)
+					continue
+				}
 
-			room, err := GetRoom(reset.RoomVnum)
-			if err != nil {
-				log.Printf("Error getting room %d for mob reset: %v", reset.RoomVnum, err)
-				continue
-			}
+				// Check if this room already has this type of mob
+				roomHasMob := false
+				for _, instance := range roomMobs[room.ID] {
+					if instance.ID == mobID {
+						roomHasMob = true
+						break
+					}
+				}
 
-			// Randomize the number of mobs to spawn, between 1 and the limit
-			count := rng.Intn(reset.Limit) + 1
-			if count > reset.Limit {
-				count = reset.Limit
-			}
-			if count > remainingAllowed {
-				count = remainingAllowed
-			}
+				// If room doesn't have this mob yet and room limit allows, spawn one
+				if !roomHasMob && reset.Limit > 0 {
+					// Get the mob template
+					mobTemplate := mobRegistry[mobID]
 
-			// Check room limit
-			roomLimit := GetMobRoomLimit(mobID, room.ID)
-			roomCount := 0
-			for _, instance := range roomMobs[room.ID] {
-				if instance.ID == mobID {
-					roomCount++
+					// Create a new instance
+					instance := &MobInstance{
+						Mob: &Mob{
+							ID:               mobTemplate.ID,
+							Keywords:         mobTemplate.Keywords,
+							ShortDescription: mobTemplate.ShortDescription,
+							LongDescription:  strings.TrimSpace(mobTemplate.LongDescription),
+							Description:      strings.TrimSpace(mobTemplate.Description),
+							Race:             mobTemplate.Race,
+							Level:            mobTemplate.Level,
+							Toughness:        mobTemplate.Toughness,
+							Wandering:        mobTemplate.Wandering,
+							MaxHP:            mobTemplate.MaxHP,
+							HP:               mobTemplate.MaxHP,
+							Room:             room,
+						},
+						InstanceID: nextMobInstanceID,
+					}
+					nextMobInstanceID++
+
+					// Add to tracking maps
+					mobInstances[instance.InstanceID] = instance
+					worldMobCounts[mobID]++
+
+					// Add to room
+					if roomMobs[room.ID] == nil {
+						roomMobs[room.ID] = make([]*MobInstance, 0)
+					}
+					roomMobs[room.ID] = append(roomMobs[room.ID], instance)
+
+					remainingAllowed--
 				}
 			}
+		}
 
-			// Adjust count based on room limit
-			if roomCount+count > roomLimit {
-				count = roomLimit - roomCount
-				if count <= 0 {
-					continue // Skip this room, it's already at or over limit
-				}
-			}
-
-			// Spawn the mobs directly without calling SpawnMob to avoid double-checking limits
-			for i := 0; i < count; i++ {
-				// Get the mob template
-				mobTemplate := mobRegistry[mobID]
-
-				// Create a new instance
-				instance := &MobInstance{
-					Mob: &Mob{
-						ID:               mobTemplate.ID,
-						Keywords:         mobTemplate.Keywords,
-						ShortDescription: mobTemplate.ShortDescription,
-						LongDescription:  strings.TrimSpace(mobTemplate.LongDescription),
-						Description:      strings.TrimSpace(mobTemplate.Description),
-						Race:             mobTemplate.Race,
-						Level:            mobTemplate.Level,
-						Toughness:        mobTemplate.Toughness,
-						MaxHP:            mobTemplate.MaxHP,
-						HP:               mobTemplate.MaxHP,
-						Room:             room,
-					},
-					InstanceID: nextMobInstanceID,
-				}
-				nextMobInstanceID++
-
-				// Add to tracking maps
-				mobInstances[instance.InstanceID] = instance
-				worldMobCounts[mobID]++
-
-				// Add to room
-				if roomMobs[room.ID] == nil {
-					roomMobs[room.ID] = make([]*MobInstance, 0)
-				}
-				roomMobs[room.ID] = append(roomMobs[room.ID], instance)
-
-				remainingAllowed--
+		// Second pass: traditional processing for any remaining mobs to spawn
+		if remainingAllowed > 0 {
+			// Process each reset until we reach the world limit
+			for _, reset := range resets {
 				if remainingAllowed <= 0 {
 					break
+				}
+
+				room, err := GetRoom(reset.RoomVnum)
+				if err != nil {
+					//log.Printf("Error getting room %d for mob reset: %v", reset.RoomVnum, err)
+					continue
+				}
+
+				// Check room limit
+				roomLimit := reset.Limit
+				roomCount := 0
+				for _, instance := range roomMobs[room.ID] {
+					if instance.ID == mobID {
+						roomCount++
+					}
+				}
+
+				// Skip if room is already at or over limit
+				if roomCount >= roomLimit {
+					continue
+				}
+
+				// Calculate how many more can be spawned in this room
+				roomRemaining := roomLimit - roomCount
+				if roomRemaining > remainingAllowed {
+					roomRemaining = remainingAllowed
+				}
+
+				// Spawn the mobs
+				for i := 0; i < roomRemaining; i++ {
+					// Get the mob template
+					mobTemplate := mobRegistry[mobID]
+
+					// Create a new instance
+					instance := &MobInstance{
+						Mob: &Mob{
+							ID:               mobTemplate.ID,
+							Keywords:         mobTemplate.Keywords,
+							ShortDescription: mobTemplate.ShortDescription,
+							LongDescription:  strings.TrimSpace(mobTemplate.LongDescription),
+							Description:      strings.TrimSpace(mobTemplate.Description),
+							Race:             mobTemplate.Race,
+							Level:            mobTemplate.Level,
+							Toughness:        mobTemplate.Toughness,
+							Wandering:        mobTemplate.Wandering,
+							MaxHP:            mobTemplate.MaxHP,
+							HP:               mobTemplate.MaxHP,
+							Room:             room,
+						},
+						InstanceID: nextMobInstanceID,
+					}
+					nextMobInstanceID++
+
+					// Add to tracking maps
+					mobInstances[instance.InstanceID] = instance
+					worldMobCounts[mobID]++
+
+					// Add to room
+					if roomMobs[room.ID] == nil {
+						roomMobs[room.ID] = make([]*MobInstance, 0)
+					}
+					roomMobs[room.ID] = append(roomMobs[room.ID], instance)
+
+					remainingAllowed--
+					if remainingAllowed <= 0 {
+						break
+					}
 				}
 			}
 		}
@@ -404,6 +464,12 @@ func MoveMob(mob *MobInstance, direction string) error {
 	destRoom, err := GetRoom(destRoomID)
 	if err != nil {
 		return err
+	}
+
+	// Check if the destination room has the NoWandering flag set
+	// If it does, prevent mobs from wandering into it
+	if destRoom.NoWandering {
+		return fmt.Errorf("room has no_wandering flag set")
 	}
 
 	// Remove from current room
@@ -498,6 +564,55 @@ func RemoveMobFromRoom(mob *MobInstance) {
 	delete(mobInstances, mob.InstanceID)
 
 	// Log the removal
-	log.Printf("[MOB] Removed mob %s (ID: %d, Instance: %d) from room %d",
-		mob.ShortDescription, mob.ID, mob.InstanceID, roomID)
+	//log.Printf("[MOB] Removed mob %s (ID: %d, Instance: %d) from room %d",
+	//	mob.ShortDescription, mob.ID, mob.InstanceID, roomID)
+}
+
+// ProcessMobWandering makes certain mobs wander randomly between rooms
+func ProcessMobWandering() {
+	mobMutex.Lock()
+	defer mobMutex.Unlock()
+
+	// Process each mob instance
+	for _, mob := range mobInstances {
+		// Skip if this mob type shouldn't wander
+		if !mob.Wandering {
+			continue
+		}
+
+		// Only move some of the time (5% chance instead of 25%)
+		// This makes mobs move much less frequently
+		if rng.Intn(100) >= 5 {
+			continue
+		}
+
+		// Get available exits from the current room
+		if mob.Room == nil {
+			continue
+		}
+
+		availableExits := make([]string, 0)
+		for dir := range mob.Room.Exits {
+			availableExits = append(availableExits, dir)
+		}
+
+		// Skip if no exits
+		if len(availableExits) == 0 {
+			continue
+		}
+
+		// Choose a random direction
+		randomDir := availableExits[rng.Intn(len(availableExits))]
+
+		// Unlock the mutex before calling MoveMob to avoid deadlock
+		// since MoveMob will acquire the lock
+		mobMutex.Unlock()
+		err := MoveMob(mob, randomDir)
+		mobMutex.Lock() // Re-acquire the lock
+
+		if err != nil {
+			//log.Printf("Error moving mob %s: %v", mob.ShortDescription, err)
+			continue
+		}
+	}
 }

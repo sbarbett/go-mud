@@ -39,6 +39,7 @@ rooms:
           Russ Taylor (ROM 2.4)
 
           A new chapter begins here.
+    no_wandering: true
   3002:
     name: "Cleric's Inner Sanctum"
     description: |
@@ -694,6 +695,9 @@ rooms:
       north:
         id: 3267
         description: "Wall road heads north along the city wall."
+      west:
+        id: 3016
+        description: "You see Main Street."
     environment:
       - keywords: ["gate"]
         description: |
@@ -956,6 +960,7 @@ rooms:
       up:
         id: 1215
         description: "Bifrost, the Rainbow Bridge, hangs in the sky above you."
+    no_wandering: true
     environment:
       - keywords: ["statue", "Mota", "king", "god"]
         description: |
@@ -2640,6 +2645,7 @@ mobiles:
       A big, strong, helpful, trustworthy guard.
     race: "human"
     level: 15
+    wandering: true
   3061:
     keywords: ["janitor"]
     short_description: "the janitor"
@@ -2650,6 +2656,7 @@ mobiles:
       he takes pride in keeping the city clean and tidy.
     race: "human"
     level: 2
+    wandering: true
   3062:
     keywords: ["fido", "dog"]
     short_description: "the beastly fido"
@@ -2660,6 +2667,7 @@ mobiles:
       around its teeth.
     race: "fido"
     level: 1
+    wandering: true
   3063:
     keywords: ["vagabond"]
     short_description: "the vagabond"
@@ -2669,6 +2677,7 @@ mobiles:
       He looks pretty mean.
     race: "human"
     level: 5
+    wandering: true
   3064:
     keywords: ["drunk"]
     short_description: "the drunk"
@@ -2678,6 +2687,7 @@ mobiles:
       A drunk who seems to be too happy, and to carry too much money.
     race: "human"
     level: 2
+    wandering: true
   3065:
     keywords: ["beggar"]
     short_description: "the beggar"
@@ -2687,15 +2697,17 @@ mobiles:
       The beggar looks like she is fed up with life.
     race: "human"
     level: 2
+    wandering: true
   3066:
     keywords: ["cat"]
     short_description: "an alley cat"
     long_description: |
-      An alley cat hisses at you.
+      An alley cat is here.
     description: |
-      The alley cat is half starved and more than a little feral.
+      The cat looks like it has survived many fights.
     race: "cat"
     level: 1
+    wandering: true
   3067:
     keywords: ["cityguard", "guard"]
     short_description: "the cityguard"
@@ -2705,6 +2717,7 @@ mobiles:
       A big, strong, helpful, trustworthy guard.
     race: "human"
     level: 15
+    wandering: true
   3068:
     keywords: ["cityguard", "guard"]
     short_description: "the cityguard"
@@ -2714,6 +2727,7 @@ mobiles:
       A big, strong, helpful, trustworthy guard.
     race: "human"
     level: 15
+    wandering: true
   3069:
     keywords: ["cityguard", "guard"]
     short_description: "the cityguard"
@@ -2723,6 +2737,7 @@ mobiles:
       A big, strong, helpful, trustworthy guard.
     race: "human"
     level: 20
+    wandering: true
   3070:
     keywords: ["shopkeeper", "old", "man"]
     short_description: "the ancient potion-brewer"
@@ -2742,6 +2757,7 @@ mobiles:
       A big, strong, helpful, trustworthy guard.
     race: "human"
     level: 15
+    wandering: true
   3072:
     keywords: ["cityguard", "guard"]
     short_description: "the cityguard"
@@ -2751,6 +2767,7 @@ mobiles:
       A big, strong, helpful, trustworthy guard.
     race: "human"
     level: 15
+    wandering: true
   3090:
     keywords: ["kitten", "cat", "pet"]
     short_description: "the kitten"
@@ -2760,6 +2777,7 @@ mobiles:
       The kitten looks like a cute, little, fierce fighter.
     race: "cat"
     level: 1
+    wandering: true
   3091:
     keywords: ["puppy", "dog", "pet"]
     short_description: "the puppy"
@@ -2769,6 +2787,7 @@ mobiles:
       The puppy looks like a cute, little, fierce fighter.
     race: "dog"
     level: 3
+    wandering: true
   3092:
     keywords: ["beagle", "dog", "pet"]
     short_description: "the beagle"
@@ -3242,7 +3261,7 @@ mob_resets:
     comment: "an alley cat"
   - mob_vnum: 3061
     room_vnum: 3006
-    limit: 5
+    limit: 1
     max_world: 5
     comment: "the janitor"
   - mob_vnum: 3090
@@ -3402,6 +3421,31 @@ mob_resets:
     comment: "the town crier"
   - mob_vnum: 3012
     room_vnum: 3054
-    limit: 5
-    max_world: 5
+    limit: 1
+    max_world: 1
     comment: "the healer"
+  - mob_vnum: 3061
+    room_vnum: 3006
+    limit: 1
+    max_world: 5
+    comment: "the janitor"
+  - mob_vnum: 3061
+    room_vnum: 3014
+    limit: 1
+    max_world: 5
+    comment: "the janitor"
+  - mob_vnum: 3061
+    room_vnum: 3021
+    limit: 1
+    max_world: 5
+    comment: "the janitor"
+  - mob_vnum: 3061
+    room_vnum: 3046
+    limit: 1
+    max_world: 5
+    comment: "the janitor"
+  - mob_vnum: 3061
+    room_vnum: 3053
+    limit: 1
+    max_world: 5
+    comment: "the janitor"

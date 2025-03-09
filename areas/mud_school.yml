@@ -19,6 +19,7 @@ rooms:
       down:
         id: 3001
         desription: "You see the Temple of Midgaard."
+    no_wandering: true
   3701:
     name: "A Room in Mud School"
     description: |
@@ -1100,3 +1101,316 @@ rooms:
       up:
         id: 3001
         description: "You see the Temple of Midgaard."
+    no_wandering: true
+mobiles:
+  3700:
+    keywords: ["acolyte", "cleric"]
+    short_description: "the acolyte of Zump"
+    long_description: |
+      An acolyte of Zump welcomes you to mud school.
+    description: |
+      He's big and bad.  Don't mess with him.
+    race: "human"
+    level: 30
+  3701:
+    keywords: ["blob"]
+    short_description: "the blob"
+    long_description: |
+      The blob is here, waiting to eat you up.
+    description: |
+      He is big, he is bad.  You don't want to fight him when he isn't chained up.
+      Perhaps now would be a good time to flee from him!!!  If you don't flee, you
+      would really suffer the consequences.
+    race: "unique"
+    level: 5
+  3702:
+    keywords: ["monster"]
+    short_description: "the monster"
+    long_description: |
+      There is a monster leashed here.
+    description: |
+      He looks mean, but you feel comfortable that you can kill him, especially since
+      he is leashed up, and you are not.
+    race: "school monster"
+    level: 2
+  3703:
+    keywords: ["monster", "wimpy"]
+    short_description: "the wimpy monster"
+    long_description: |
+      There is a wimpy monster leashed here.
+    description: |
+      He looks wimpy.  You feel comfortable that you can kill him, especially since
+      he is leashed up, and you are not.
+    race: "school monster"
+    level: 2
+  3704:
+    keywords: ["monster", "aggressive"]
+    short_description: "the aggressive monster"
+    long_description: |
+      There is an aggressive monster leashed here.
+    description: |
+      He looks mean, but you feel comfortable that you can kill him, especially since
+      he is leashed up, and you are not.
+    race: "school monster"
+    level: 2
+  3705:
+    keywords: ["monster", "wimpy", "aggressive"]
+    short_description: "the wimpy aggressive monster"
+    long_description: |
+      There is a wimpy aggressive monster leashed here.
+    description: |
+      He looks mean, but you feel comfortable that you can kill him, especially since
+      he is leashed up, and you are not.
+    race: "school monster"
+    level: 2
+  3706:
+    keywords: ["big", "creature"]
+    short_description: "the big creature"
+    long_description: |
+      There is a big creature hulking over your form.
+    description: |
+      He looks mean, and you just might have a small problem killing him, but he
+      looks like a great prize!!!
+    race: "school monster"
+    level: 2
+  3707:
+    keywords: ["adept", "cleric"]
+    short_description: "the adept of Satin"
+    long_description: |
+      An adept of the mighty goddess Satin is here, contemplating your progress.
+    description: |
+      She is big and bad.  Don't mess with her.
+    race: "human"
+    level: 30
+  3708:
+    keywords: ["adept"]
+    short_description: "the adept of Alander"
+    long_description: |
+      An adept of Alander is here, smiling at you.
+    description: |
+      He is big and bad.  Don't mess with him.
+    race: "human"
+    level: 30
+  3709:
+    keywords: ["rabbit"]
+    short_description: "the rabbit"
+    long_description: |
+      A rabbit is bouncing around here.
+    description: |
+      The rabbit smiles at you, completely harmless!
+    race: "rabbit"
+    level: 2
+    wandering: true
+  3710:
+    keywords: ["lizard"]
+    short_description: "the lizard"
+    long_description: |
+      A lizard slithers up to you.
+    description: |
+      It smiles at you, and tries to eat your leg.
+    race: "lizard"
+    level: 2
+    wandering: true
+  3711:
+    keywords: ["boar"]
+    short_description: "the boar"
+    long_description: |
+      A boar tries to run you over.
+    description: |
+      It grunts at you.
+    race: "pig"
+    level: 3
+    wandering: true
+  3712:
+    keywords: ["fox"]
+    short_description: "the fox"
+    long_description: |
+      A fox is here staring at you.
+    description: |
+      It's fur might be worth money.
+    race: "fox"
+    level: 2
+    wandering: true
+  3713:
+    keywords: ["snail"]
+    short_description: "the snail"
+    long_description: |
+      A snail is trying to get out of your way.
+    description: |
+      You don't see much but slime about it.
+    race: "unique"
+    level: 1
+    wandering: true
+  3714:
+    keywords: ["beast"]
+    short_description: "the beast"
+    long_description: |
+      A beast tries to feed off of you.
+    description: |
+      It looks mean.  You'd better run.
+    race: "school monster"
+    level: 5
+    wandering: true
+  3715:
+    keywords: ["bear"]
+    short_description: "the bear"
+    long_description: |
+      A bear is here growling at you.
+    description: |
+      The bear must be bigger than you!  It wants to rip your head off.
+    race: "bear"
+    level: 4
+    wandering: true
+  3716:
+    keywords: ["wolf"]
+    short_description: "the wolf"
+    long_description: |
+      A wolf is here snarling at you.
+    description: |
+      The wolf doesn't want to be bothered.
+    race: "wolf"
+    level: 4
+    wandering: true
+  3717:
+    keywords: ["adept", "cleric"]
+    short_description: "the adept of Selene"
+    long_description: |
+      An adept of Selene is here, grinning and selling you things.
+    description: |
+      He is big and bad.  Don't mess with him.
+    race: "human"
+    level: 30
+  3718:
+    keywords: ["adept", "cleric"]
+    short_description: "the adept of Furey"
+    long_description: |
+      An adept of Furey is here, training young students.
+    description: |
+      He is big and bad.  Don't mess with him.
+    race: "human"
+    level: 30
+  3719:
+    keywords: ["priest", "cleric"]
+    short_description: "the priest of Circe"
+    long_description: |
+      The priest of Circe is ready to help you practice.
+    description: |
+      He is big and bad.  Don't mess with him.
+    race: "human"
+    level: 30
+  3720:
+    keywords: ["diploma", "beast"]
+    short_description: "the diploma beast"
+    long_description: |
+      The hideous diploma beast is here, holding your graduation present!
+    description: |
+      This horrible creature is your final test for mud school.  Kill him, and the
+      diploma is yours.
+    race: "school monster"
+    level: 3
+mob_resets:
+  - mob_vnum: 3720
+    room_vnum: 3721
+    limit: 1
+    max_world: 1
+    comment: "the diploma beast"
+  - mob_vnum: 3700
+    room_vnum: 3701
+    limit: 1
+    max_world: 1
+    comment: "the acolyte of Zump"
+  - mob_vnum: 3701
+    room_vnum: 3710
+    limit: 1
+    max_world: 1
+    comment: "the blob"
+  - mob_vnum: 3702
+    room_vnum: 3716
+    limit: 1
+    max_world: 1
+    comment: "the monster"
+  - mob_vnum: 3703
+    room_vnum: 3715
+    limit: 1
+    max_world: 1
+    comment: "the wimpy monster"
+  - mob_vnum: 3704
+    room_vnum: 3713
+    limit: 1
+    max_world: 1
+    comment: "the aggressive monster"
+  - mob_vnum: 3705
+    room_vnum: 3714
+    limit: 1
+    max_world: 1
+    comment: "the wimpy aggressive monster"
+  - mob_vnum: 3717
+    room_vnum: 3718
+    limit: 1
+    max_world: 1
+    comment: "the adept of Selene"
+  - mob_vnum: 3706
+    room_vnum: 3720
+    limit: 1
+    max_world: 1
+    comment: "the big creature"
+  - mob_vnum: 3709
+    room_vnum: 3734
+    limit: 4
+    max_world: 4
+    comment: "the rabbit"
+  - mob_vnum: 3710
+    room_vnum: 3742
+    limit: 3
+    max_world: 3
+    comment: "the lizard"
+  - mob_vnum: 3711
+    room_vnum: 3746
+    limit: 3
+    max_world: 3
+    comment: "the boar"
+  - mob_vnum: 3712
+    room_vnum: 3726
+    limit: 3
+    max_world: 3
+    comment: "the fox"
+  - mob_vnum: 3713
+    room_vnum: 3724
+    limit: 5
+    max_world: 5
+    comment: "the snail"
+  - mob_vnum: 3714
+    room_vnum: 3749
+    limit: 1
+    max_world: 1
+    comment: "the beast"
+  - mob_vnum: 3715
+    room_vnum: 3751
+    limit: 2
+    max_world: 2
+    comment: "the bear"
+  - mob_vnum: 3716
+    room_vnum: 3754
+    limit: 2
+    max_world: 2
+    comment: "the wolf"
+  - mob_vnum: 3707
+    room_vnum: 3712
+    limit: 1
+    max_world: 1
+    comment: "the adept of Satin"
+  - mob_vnum: 3708
+    room_vnum: 3721
+    limit: 1
+    max_world: 1
+    comment: "the adept of Alander"
+  - mob_vnum: 3718
+    room_vnum: 3758
+    limit: 1
+    max_world: 1
+    comment: "the adept of Furey"
+  - mob_vnum: 3719
+    room_vnum: 3759
+    limit: 1
+    max_world: 1
+    comment: "the priest of Circe"

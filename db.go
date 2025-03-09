@@ -246,3 +246,16 @@ func UpdatePlayerTitle(name string, title string) error {
 	_, err := db.Exec("UPDATE players SET title = ? WHERE name = ?", title, name)
 	return err
 }
+
+// UpdatePlayerXP updates a player's XP and NextLevelXP in the database
+func UpdatePlayerXP(playerName string, xp int, nextLevelXP int) error {
+	// Update the player's XP and NextLevelXP in the database
+	_, err := db.Exec("UPDATE players SET xp = ?, next_level_xp = ? WHERE name = ?",
+		xp, nextLevelXP, playerName)
+	if err != nil {
+		log.Printf("Error updating player XP: %v", err)
+		return err
+	}
+
+	return nil
+}

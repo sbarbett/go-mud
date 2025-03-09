@@ -300,6 +300,18 @@ func main() {
 		}
 	})
 
+	// Register periodic mob resets (every 5 minutes)
+	tickCounter := 0
+	timeManager.RegisterTickFunc(func() {
+		tickCounter++
+
+		// Process mob resets every 5 minutes
+		if tickCounter >= 5 {
+			tickCounter = 0
+			ProcessMobResets()
+		}
+	})
+
 	// Register player pulse updates - ensure this is properly registered
 	timeManager.RegisterPulseFunc(func() {
 		// Log that the pulse is running for debugging
@@ -327,6 +339,9 @@ func main() {
 			}(player)
 		}
 	})
+
+	// Register mob wandering behavior
+	timeManager.RegisterPulseFunc(ProcessMobWandering)
 
 	// Start the time manager
 	timeManager.Start()

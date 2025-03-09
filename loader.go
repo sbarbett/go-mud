@@ -12,12 +12,10 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"     // Package for reading files
 	"log"           // Package for logging errors
+	"os"            // Package for OS functionality, including file operations
 	"path/filepath" // Package for manipulating filename paths
-
-	// Package for converting strings to numeric types
-	"strings" // Package for string manipulation
+	"strings"       // Package for string manipulation
 
 	"gopkg.in/yaml.v3" // Package for parsing YAML files
 )
@@ -42,6 +40,7 @@ type Room struct {
 	Area        string                 `yaml:"-"`
 	Exits       map[string]*Exit       `yaml:"exits"`
 	Environment []EnvironmentAttribute `yaml:"environment,omitempty"`
+	NoWandering bool                   `yaml:"no_wandering,omitempty"` // If true, mobs cannot wander into this room
 }
 
 // Area represents a collection of rooms
@@ -60,7 +59,7 @@ func LoadAreas() error {
 	areaDir := "areas" // Directory containing area YAML files
 
 	// Read the directory to get list of files.
-	files, err := ioutil.ReadDir(areaDir)
+	files, err := os.ReadDir(areaDir)
 	if err != nil {
 		// Return an error if the directory cannot be read.
 		return fmt.Errorf("failed to read areas directory: %v", err)
@@ -84,7 +83,7 @@ func LoadAreas() error {
 // LoadArea loads a single area file
 func loadArea(path string) error {
 	areaName := filepath.Base(path)
-	data, err := ioutil.ReadFile(path)
+	data, err := os.ReadFile(path)
 	if err != nil {
 		return err
 	}

@@ -57,7 +57,7 @@ func NewTimeManager() *TimeManager {
 // Start begins the time management system
 func (tm *TimeManager) Start() {
 	if tm.running {
-		log.Println("TimeManager is already running")
+		//log.Println("TimeManager is already running")
 		return
 	}
 
@@ -111,7 +111,7 @@ func (tm *TimeManager) Start() {
 	// Process events from the channels
 	go tm.processEvents()
 
-	log.Println("TimeManager started successfully")
+	//log.Println("TimeManager started successfully")
 }
 
 // Stop halts all time-related processing
@@ -122,7 +122,7 @@ func (tm *TimeManager) Stop() {
 
 	close(tm.stopChan)
 	tm.running = false
-	log.Println("TimeManager stopped")
+	//log.Println("TimeManager stopped")
 }
 
 // processEvents handles events from all time channels
@@ -146,7 +146,7 @@ func (tm *TimeManager) RegisterTickFunc(f func()) {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()
 	tm.tickFuncs = append(tm.tickFuncs, f)
-	log.Println("Registered new tick function")
+	//log.Println("Registered new tick function")
 }
 
 // RegisterPulseFunc adds a function to be called every pulse (1 second)
@@ -154,7 +154,7 @@ func (tm *TimeManager) RegisterPulseFunc(f func()) {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()
 	tm.pulseFuncs = append(tm.pulseFuncs, f)
-	log.Println("Registered new pulse function")
+	//log.Println("Registered new pulse function")
 }
 
 // RegisterHeartbeatFunc adds a function to be called every heartbeat (100ms)
@@ -162,7 +162,7 @@ func (tm *TimeManager) RegisterHeartbeatFunc(f func()) {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()
 	tm.heartFuncs = append(tm.heartFuncs, f)
-	log.Println("Registered new heartbeat function")
+	//log.Println("Registered new heartbeat function")
 }
 
 // executeTickFuncs runs all registered tick functions
@@ -170,7 +170,7 @@ func (tm *TimeManager) executeTickFuncs() {
 	tm.mu.RLock()
 	defer tm.mu.RUnlock()
 
-	log.Println("Executing tick functions")
+	//log.Println("Executing tick functions")
 	for _, f := range tm.tickFuncs {
 		// Execute each function in its own goroutine to prevent blocking
 		go func(fn func()) {

@@ -651,8 +651,7 @@ func (p *Player) ScheduleRespawn() {
 
 	// Update player stats in database
 	UpdatePlayerHPMP(p.Name, p.HP, p.MaxHP, p.MP, p.MaxMP)
-	// We would need to implement UpdatePlayerXP or use an existing function
-	log.Printf("Updating XP for player %s: %d", p.Name, p.XP)
+	UpdatePlayerXP(p.Name, p.XP, p.NextLevelXP)
 }
 
 // CalculateHitChance determines the chance to hit based on level difference
