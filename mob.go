@@ -29,6 +29,7 @@ type Mob struct {
 	Level            int      `yaml:"level"`
 	Toughness        string   `yaml:"toughness"`
 	Wandering        bool     `yaml:"wandering"` // Whether this mob wanders around
+	HomeArea         string   // The area this mob belongs to and should stay within
 
 	// Derived stats
 	HP    int
@@ -147,6 +148,7 @@ func SpawnMob(mobID int, room *Room) (*MobInstance, error) {
 			Level:            mobTemplate.Level,
 			Toughness:        mobTemplate.Toughness,
 			Wandering:        mobTemplate.Wandering,
+			HomeArea:         room.Area,
 			MaxHP:            mobTemplate.MaxHP,
 			HP:               mobTemplate.MaxHP,
 			Room:             room,
@@ -325,6 +327,7 @@ func ProcessMobResets() {
 							Level:            mobTemplate.Level,
 							Toughness:        mobTemplate.Toughness,
 							Wandering:        mobTemplate.Wandering,
+							HomeArea:         room.Area,
 							MaxHP:            mobTemplate.MaxHP,
 							HP:               mobTemplate.MaxHP,
 							Room:             room,
@@ -399,6 +402,7 @@ func ProcessMobResets() {
 							Level:            mobTemplate.Level,
 							Toughness:        mobTemplate.Toughness,
 							Wandering:        mobTemplate.Wandering,
+							HomeArea:         room.Area,
 							MaxHP:            mobTemplate.MaxHP,
 							HP:               mobTemplate.MaxHP,
 							Room:             room,
@@ -470,6 +474,12 @@ func MoveMob(mob *MobInstance, direction string) error {
 	// If it does, prevent mobs from wandering into it
 	if destRoom.NoWandering {
 		return fmt.Errorf("room has no_wandering flag set")
+	}
+
+	// Check if the mob is trying to leave its home area
+	// Only apply this restriction if the mob has a home area set
+	if mob.HomeArea != "" && destRoom.Area != mob.HomeArea {
+		return fmt.Errorf("mob cannot leave its home area")
 	}
 
 	// Remove from current room
@@ -570,6 +580,12 @@ func RemoveMobFromRoom(mob *MobInstance) {
 
 // ProcessMobWandering makes certain mobs wander randomly between rooms
 func ProcessMobWandering() {
+	// Global chance to process wandering at all (15% chance per pulse)
+	// This means wandering will only be considered in 15% of pulses
+	if rng.Intn(100) >= 15 {
+		return
+	}
+
 	mobMutex.Lock()
 	defer mobMutex.Unlock()
 
@@ -580,9 +596,9 @@ func ProcessMobWandering() {
 			continue
 		}
 
-		// Only move some of the time (5% chance instead of 25%)
-		// This makes mobs move much less frequently
-		if rng.Intn(100) >= 5 {
+		// Individual mob chance to move (20% chance when wandering is processed)
+		// Combined with the global 20% chance, this gives a 1% effective chance per pulse
+		if rng.Intn(100) >= 20 {
 			continue
 		}
 
