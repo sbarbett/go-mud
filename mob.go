@@ -527,6 +527,11 @@ func MoveMob(mob *MobInstance, direction string) error {
 		return fmt.Errorf("no exit in that direction")
 	}
 
+	// Check if there's a closed door blocking the way
+	if exit.Door != nil && exit.Door.Closed {
+		return fmt.Errorf("the %s is closed", exit.Door.ShortDescription)
+	}
+
 	// Get the destination room
 	var destRoomID int
 	switch exitID := exit.ID.(type) {
@@ -598,31 +603,11 @@ func MoveMob(mob *MobInstance, direction string) error {
 	for _, p := range activePlayers {
 		if p.Room == destRoom {
 			p.Conn.Write([]byte(fmt.Sprintf("%s arrives from the %s.\r\n",
-				mob.ShortDescription, getOppositeDirection(direction))))
+				mob.ShortDescription, GetOppositeDirection(direction))))
 		}
 	}
 
 	return nil
-}
-
-// getOppositeDirection returns the opposite of a given direction
-func getOppositeDirection(dir string) string {
-	switch dir {
-	case "north":
-		return "south"
-	case "south":
-		return "north"
-	case "east":
-		return "west"
-	case "west":
-		return "east"
-	case "up":
-		return "down"
-	case "down":
-		return "up"
-	default:
-		return "somewhere"
-	}
 }
 
 // RemoveMobFromRoom removes a mob instance from a room
@@ -690,7 +675,11 @@ func ProcessMobWandering() {
 		}
 
 		availableExits := make([]string, 0)
-		for dir := range mob.Room.Exits {
+		for dir, exit := range mob.Room.Exits {
+			// Skip exits with closed doors
+			if exit.Door != nil && exit.Door.Closed {
+				continue
+			}
 			availableExits = append(availableExits, dir)
 		}
 

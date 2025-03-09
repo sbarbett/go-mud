@@ -63,6 +63,9 @@ var commandHandlers = map[string]CommandHandler{
 	"who": handleWho,
 	// Help command
 	"help": handleHelp,
+	// Door commands
+	"open":  handleOpen,
+	"close": handleClose,
 }
 
 // HandleCommand processes a player's command and returns the appropriate response
@@ -513,4 +516,160 @@ func handleWho(player *Player, args []string) string {
 	output += fmt.Sprintf("{Y}Total players online: {W}%d{x}\r\n", len(activePlayers))
 
 	return output
+}
+
+// handleOpen processes the open command
+func handleOpen(player *Player, args []string) string {
+	if len(args) == 0 {
+		return "Open what?"
+	}
+
+	// Get the target to open (direction or keyword)
+	target := strings.ToLower(args[0])
+
+	// Check if the target is a direction
+	if fullDirection, isAlias := DirectionAliases[target]; isAlias {
+		target = fullDirection
+	}
+
+	// Check if the target is a valid direction
+	exit, exists := player.Room.Exits[target]
+	if exists {
+		// Check if there's a door in that direction
+		if exit.Door == nil {
+			return fmt.Sprintf("There is no door to the %s.", target)
+		}
+
+		// Check if the door is already open
+		if !exit.Door.Closed {
+			return fmt.Sprintf("The %s %s is already open.", target, exit.Door.ShortDescription)
+		}
+
+		// Check if the door is locked
+		if exit.Door.Locked {
+			return fmt.Sprintf("The %s %s is locked.", target, exit.Door.ShortDescription)
+		}
+
+		// Open the door
+		exit.Door.Closed = false
+
+		// Synchronize with the connected room's door
+		SynchronizeDoor(player.Room.ID, target, false)
+
+		// Notify the player
+		message := fmt.Sprintf("You open the %s.", exit.Door.ShortDescription)
+
+		// Notify other players in the room
+		BroadcastToRoom(fmt.Sprintf("%s opens the %s.", player.Name, exit.Door.ShortDescription), player.Room, player)
+
+		return message
+	}
+
+	// If not a direction, check if it's a door keyword
+	for direction, exit := range player.Room.Exits {
+		if exit.Door != nil {
+			for _, keyword := range exit.Door.Keywords {
+				if strings.ToLower(keyword) == target {
+					// Check if the door is already open
+					if !exit.Door.Closed {
+						return fmt.Sprintf("The %s is already open.", exit.Door.ShortDescription)
+					}
+
+					// Check if the door is locked
+					if exit.Door.Locked {
+						return fmt.Sprintf("The %s is locked.", exit.Door.ShortDescription)
+					}
+
+					// Open the door
+					exit.Door.Closed = false
+
+					// Synchronize with the connected room's door
+					SynchronizeDoor(player.Room.ID, direction, false)
+
+					// Notify the player
+					message := fmt.Sprintf("You open the %s to the %s.", exit.Door.ShortDescription, direction)
+
+					// Notify other players in the room
+					BroadcastToRoom(fmt.Sprintf("%s opens the %s to the %s.", player.Name, exit.Door.ShortDescription, direction), player.Room, player)
+
+					return message
+				}
+			}
+		}
+	}
+
+	return "You don't see that here."
+}
+
+// handleClose processes the close command
+func handleClose(player *Player, args []string) string {
+	if len(args) == 0 {
+		return "Close what?"
+	}
+
+	// Get the target to close (direction or keyword)
+	target := strings.ToLower(args[0])
+
+	// Check if the target is a direction
+	if fullDirection, isAlias := DirectionAliases[target]; isAlias {
+		target = fullDirection
+	}
+
+	// Check if the target is a valid direction
+	exit, exists := player.Room.Exits[target]
+	if exists {
+		// Check if there's a door in that direction
+		if exit.Door == nil {
+			return fmt.Sprintf("There is no door to the %s.", target)
+		}
+
+		// Check if the door is already closed
+		if exit.Door.Closed {
+			return fmt.Sprintf("The %s %s is already closed.", target, exit.Door.ShortDescription)
+		}
+
+		// Close the door
+		exit.Door.Closed = true
+
+		// Synchronize with the connected room's door
+		SynchronizeDoor(player.Room.ID, target, true)
+
+		// Notify the player
+		message := fmt.Sprintf("You close the %s.", exit.Door.ShortDescription)
+
+		// Notify other players in the room
+		BroadcastToRoom(fmt.Sprintf("%s closes the %s.", player.Name, exit.Door.ShortDescription), player.Room, player)
+
+		return message
+	}
+
+	// If not a direction, check if it's a door keyword
+	for direction, exit := range player.Room.Exits {
+		if exit.Door != nil {
+			for _, keyword := range exit.Door.Keywords {
+				if strings.ToLower(keyword) == target {
+					// Check if the door is already closed
+					if exit.Door.Closed {
+						return fmt.Sprintf("The %s is already closed.", exit.Door.ShortDescription)
+					}
+
+					// Close the door
+					exit.Door.Closed = true
+
+					// Synchronize with the connected room's door
+					SynchronizeDoor(player.Room.ID, direction, true)
+
+					// Notify the player
+					message := fmt.Sprintf("You close the %s to the %s.", exit.Door.ShortDescription, direction)
+
+					// Notify other players in the room
+					BroadcastToRoom(fmt.Sprintf("%s closes the %s to the %s.", player.Name, exit.Door.ShortDescription, direction), player.Room, player)
+
+					return message
+				}
+			}
+		}
+	}
+
+	return "You don't see that here."
 }

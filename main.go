@@ -300,18 +300,6 @@ func main() {
 		}
 	})
 
-	// Register periodic mob resets (every 5 minutes)
-	tickCounter := 0
-	timeManager.RegisterTickFunc(func() {
-		tickCounter++
-
-		// Process mob resets every 5 minutes
-		if tickCounter >= 5 {
-			tickCounter = 0
-			ProcessMobResets()
-		}
-	})
-
 	// Register player pulse updates - ensure this is properly registered
 	timeManager.RegisterPulseFunc(func() {
 		// Log that the pulse is running for debugging
@@ -343,6 +331,9 @@ func main() {
 	// Register mob wandering behavior
 	timeManager.RegisterPulseFunc(ProcessMobWandering)
 
+	// Schedule periodic resets (doors and mobs)
+	ScheduleResets(timeManager)
+
 	// Start the time manager
 	timeManager.Start()
 
@@ -357,7 +348,7 @@ func main() {
 	}
 
 	// Process mob resets after loading areas
-	ProcessMobResets()
+	ResetMobs()
 
 	// Start the MUD server
 	listener, err := net.Listen("tcp", "0.0.0.0:4000")

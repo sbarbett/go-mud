@@ -32,10 +32,30 @@ The grand town hall stands before you, its doors open to the public.
 Exits: south
 ```
 
+## Doors
+
+Some exits may be blocked by doors, which are shown in parentheses in the exits list:
+
+```
+Available exits: [north, (west)]
+```
+
+In this example, the west exit has a closed door. You must open the door before you can move through it:
+
+```
+> open west
+You open the gate.
+
+> west
+You move west.
+```
+
+See `help doors` for more information about doors.
+
 ## Movement Restrictions
 
 Your movement may be restricted by:
-- Locked doors
+- Closed or locked doors
 - Terrain obstacles
 - Being in combat
 - Being dead

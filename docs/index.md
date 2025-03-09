@@ -11,6 +11,7 @@ Welcome to the Go-MUD help system! This system provides information about game m
 - **commands** - List of available commands
 - **combat** - Information about the combat system
 - **movement** - How to navigate the game world
+- **doors** - Information about doors and how to interact with them
 - **stats** - Understanding character statistics
 - **colors** - Using colors in the game
 

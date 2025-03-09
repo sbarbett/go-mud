@@ -15,6 +15,7 @@ import (
 	"log"           // Package for logging errors
 	"os"            // Package for OS functionality, including file operations
 	"path/filepath" // Package for manipulating filename paths
+	"strconv"       // Package for string conversion
 	"strings"       // Package for string manipulation
 
 	"gopkg.in/yaml.v3" // Package for parsing YAML files
@@ -22,8 +23,17 @@ import (
 
 // Exit represents a direction-specific exit from a room
 type Exit struct {
-	ID          interface{} `yaml:"id"`          // Can be int or string (for cross-area references)
-	Description string      `yaml:"description"` // Optional description of what's visible in that direction
+	ID          interface{} `yaml:"id"`             // Can be int or string (for cross-area references)
+	Description string      `yaml:"description"`    // Optional description of what's visible in that direction
+	Door        *Door       `yaml:"door,omitempty"` // Optional door information
+}
+
+// Door represents a door that can be opened, closed, and locked
+type Door struct {
+	ShortDescription string   `yaml:"short_description"` // Short description of the door
+	Keywords         []string `yaml:"keywords"`          // Keywords that can be used to refer to the door
+	Locked           bool     `yaml:"locked"`            // Whether the door is locked
+	Closed           bool     `yaml:"closed,omitempty"`  // Whether the door is closed (defaults to true if door exists)
 }
 
 // EnvironmentAttribute represents a lookable object or detail in a room
@@ -98,8 +108,84 @@ func loadArea(path string) error {
 	for id, room := range area.Rooms {
 		room.ID = id
 		room.Area = areaName
+
+		// Set default closed state for doors
+		for _, exit := range room.Exits {
+			if exit.Door != nil && !exit.Door.Closed {
+				exit.Door.Closed = true // Default to closed if door exists
+			}
+		}
+
 		rooms[id] = room
 		//fmt.Printf("Loaded Room [%d]: %s (Area: %s)\n", id, room.Name, room.Area)
+	}
+
+	// After all rooms are loaded, ensure door consistency between connected rooms
+	for id, room := range area.Rooms {
+		for direction, exit := range room.Exits {
+			if exit.Door != nil {
+				// Get the destination room
+				var destRoomID int
+				switch exitID := exit.ID.(type) {
+				case int:
+					destRoomID = exitID
+				case string:
+					// Handle cross-area references
+					roomInfo := strings.Split(exitID, ":")
+					if len(roomInfo) != 2 {
+						continue
+					}
+					var err error
+					destRoomID, err = strconv.Atoi(roomInfo[1])
+					if err != nil {
+						continue
+					}
+				default:
+					continue
+				}
+
+				// Get the destination room
+				destRoom, exists := rooms[destRoomID]
+				if !exists {
+					continue // Destination room not loaded yet
+				}
+
+				// Find the opposite direction
+				oppositeDirection := GetOppositeDirection(direction)
+
+				// Check if the destination room has a corresponding exit
+				destExit, exists := destRoom.Exits[oppositeDirection]
+				if !exists {
+					// Create a corresponding exit with a door
+					log.Printf("[WARNING] Room %d has a door to %d, but %d has no exit back. Adding reciprocal exit.",
+						id, destRoomID, destRoomID)
+					destRoom.Exits[oppositeDirection] = &Exit{
+						ID:          id,
+						Description: fmt.Sprintf("You see %s.", room.Name),
+						Door: &Door{
+							ShortDescription: exit.Door.ShortDescription,
+							Keywords:         exit.Door.Keywords,
+							Locked:           exit.Door.Locked,
+							Closed:           exit.Door.Closed,
+						},
+					}
+				} else if destExit.Door == nil {
+					// Add a door to the destination exit
+					log.Printf("[WARNING] Room %d has a door to %d, but %d has no door back. Adding reciprocal door.",
+						id, destRoomID, destRoomID)
+					destExit.Door = &Door{
+						ShortDescription: exit.Door.ShortDescription,
+						Keywords:         exit.Door.Keywords,
+						Locked:           exit.Door.Locked,
+						Closed:           exit.Door.Closed,
+					}
+				} else {
+					// Ensure door states are synchronized
+					destExit.Door.Closed = exit.Door.Closed
+					destExit.Door.Locked = exit.Door.Locked
+				}
+			}
+		}
 	}
 
 	// Load mobs from the mobiles section

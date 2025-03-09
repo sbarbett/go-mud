@@ -25,6 +25,10 @@ Here's a list of the most commonly used commands in Go-MUD:
 - `who` - See who is currently online
 - `help <topic>` - Get help on a specific topic
 
+## Interaction Commands
+- `open <direction/keyword>` - Open a door
+- `close <direction/keyword>` - Close a door
+
 ## System Commands
 - `color` - Toggle ANSI color on/off
 - `title <new title>` - Change your character's title

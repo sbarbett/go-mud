@@ -13,6 +13,7 @@ package main
 
 import (
 	"fmt"     // Importing the fmt package for formatted I/O operations
+	"log"     // Importing the log package for logging
 	"strconv" // Importing the strconv package for converting strings to integers
 	"strings" // Importing the strings package for string manipulation functions
 )
@@ -35,6 +36,11 @@ func MovePlayer(player *Player, direction string) (*Room, error) {
 	exit, exists := currentRoom.Exits[direction]
 	if !exists {
 		return currentRoom, fmt.Errorf("you can't go that way")
+	}
+
+	// Check if there's a closed door blocking the way
+	if exit.Door != nil && exit.Door.Closed {
+		return currentRoom, fmt.Errorf("the %s is closed", exit.Door.ShortDescription)
 	}
 
 	// Debug logging
@@ -143,3 +149,75 @@ func HandleMovement(player *Player, command string) error {
 
 	return nil
 }
+
+// SynchronizeDoor ensures that a door's state is synchronized between connected rooms
+// Parameters:
+//
+//	sourceRoomID - the ID of the room where the door state was changed
+//	direction - the direction of the exit with the door
+//	closed - the new state of the door (true = closed, false = open)
+func SynchronizeDoor(sourceRoomID int, direction string, closed bool) {
+	// Get the source room
+	sourceRoom, err := GetRoom(sourceRoomID)
+	if err != nil {
+		log.Printf("[ERROR] Failed to get source room %d: %v", sourceRoomID, err)
+		return
+	}
+
+	// Get the exit in the specified direction
+	exit, exists := sourceRoom.Exits[direction]
+	if !exists || exit.Door == nil {
+		return // No exit or no door in that direction
+	}
+
+	// Get the destination room
+	var destRoomID int
+	switch exitID := exit.ID.(type) {
+	case int:
+		destRoomID = exitID
+	case string:
+		// Handle cross-area references
+		roomInfo := strings.Split(exitID, ":")
+		if len(roomInfo) != 2 {
+			return
+		}
+		var err error
+		destRoomID, err = strconv.Atoi(roomInfo[1])
+		if err != nil {
+			return
+		}
+	default:
+		return
+	}
+
+	destRoom, err := GetRoom(destRoomID)
+	if err != nil {
+		log.Printf("[ERROR] Failed to get destination room %d: %v", destRoomID, err)
+		return
+	}
+
+	// Find the opposite direction
+	oppositeDirection := GetOppositeDirection(direction)
+
+	// Update the door state in the destination room
+	destExit, exists := destRoom.Exits[oppositeDirection]
+	if exists && destExit.Door != nil {
+		destExit.Door.Closed = closed
+
+		// Notify players in the destination room about the door state change
+		playersMutex.Lock()
+		for _, p := range activePlayers {
+			if p.Room != nil && p.Room.ID == destRoomID {
+				if closed {
+					p.Send(fmt.Sprintf("The %s closes.", destExit.Door.ShortDescription))
+				} else {
+					p.Send(fmt.Sprintf("The %s opens.", destExit.Door.ShortDescription))
+				}
+			}
+		}
+		playersMutex.Unlock()
+	}
+}
+
+// getOppositeDirection returns the opposite of a given direction
+// ... existing code ...

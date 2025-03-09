@@ -321,6 +321,10 @@ rooms:
       east:
         id: 3041
         description: "You see the city gate."
+        door:
+          short_description: "east gate"
+          keywords: ["gate"]
+          locked: false
       south:
         id: 3021
         description: "You see the swordsmen's guild."
@@ -698,6 +702,10 @@ rooms:
       west:
         id: 3016
         description: "You see Main Street."
+        door:
+          short_description: "east gate"
+          keywords: ["gate"]
+          locked: false
     environment:
       - keywords: ["gate"]
         description: |

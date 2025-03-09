@@ -37,3 +37,23 @@ func StripColorCodes(text string) string {
 func LengthWithoutColorCodes(text string) int {
 	return len(StripColorCodes(text))
 }
+
+// GetOppositeDirection returns the opposite of a given direction
+func GetOppositeDirection(dir string) string {
+	switch dir {
+	case "north":
+		return "south"
+	case "south":
+		return "north"
+	case "east":
+		return "west"
+	case "west":
+		return "east"
+	case "up":
+		return "down"
+	case "down":
+		return "up"
+	default:
+		return "somewhere"
+	}
+}

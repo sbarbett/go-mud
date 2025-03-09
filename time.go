@@ -14,6 +14,8 @@ package main
 import (
 	"fmt"
 	"log"
+	"strconv"
+	"strings"
 	"sync"
 	"time"
 )
@@ -237,4 +239,99 @@ func DebugPulse() {
 // DebugHeartbeat prints a message when a heartbeat occurs
 func DebugHeartbeat() {
 	fmt.Println("HEARTBEAT: 100ms has passed")
+}
+
+// ResetDoors closes all doors in the game world
+func ResetDoors() {
+	log.Println("[TIME] Resetting doors to closed state (15-minute interval)")
+
+	// Track which doors have already been processed to avoid duplicates
+	processedDoors := make(map[string]bool)
+
+	// Iterate through all rooms
+	for roomID, room := range rooms {
+		// Check each exit for doors
+		for direction, exit := range room.Exits {
+			if exit.Door != nil && !exit.Door.Closed {
+				// Create a unique key for this door connection
+				var destRoomID int
+				switch exitID := exit.ID.(type) {
+				case int:
+					destRoomID = exitID
+				case string:
+					// Handle cross-area references
+					roomInfo := strings.Split(exitID, ":")
+					if len(roomInfo) != 2 {
+						continue
+					}
+					var err error
+					destRoomID, err = strconv.Atoi(roomInfo[1])
+					if err != nil {
+						continue
+					}
+				default:
+					continue
+				}
+
+				// Create a unique key for this door (smaller room ID first)
+				doorKey := ""
+				if roomID < destRoomID {
+					doorKey = fmt.Sprintf("%d:%d", roomID, destRoomID)
+				} else {
+					doorKey = fmt.Sprintf("%d:%d", destRoomID, roomID)
+				}
+
+				// Skip if we've already processed this door
+				if processedDoors[doorKey] {
+					continue
+				}
+
+				// Mark this door as processed
+				processedDoors[doorKey] = true
+
+				// Close the door in both rooms
+				exit.Door.Closed = true
+
+				// Use SynchronizeDoor to update the connected room
+				SynchronizeDoor(roomID, direction, true)
+
+				// Notify players in this room
+				playersMutex.Lock()
+				for _, p := range activePlayers {
+					if p.Room != nil && p.Room.ID == roomID {
+						p.Send(fmt.Sprintf("The %s closes.", exit.Door.ShortDescription))
+					}
+				}
+				playersMutex.Unlock()
+			}
+		}
+	}
+}
+
+// ResetMobs respawns mobs according to the reset configuration
+func ResetMobs() {
+	log.Println("[TIME] Resetting mobs in the world (15-minute interval)")
+	ProcessMobResets()
+}
+
+// ScheduleResets registers the periodic reset functions with the TimeManager
+func ScheduleResets(tm *TimeManager) {
+	// Counter for 15-minute resets
+	resetCounter := 0
+
+	// Register a tick function to handle resets every 15 minutes
+	tm.RegisterTickFunc(func() {
+		resetCounter++
+
+		// Process resets every 15 minutes (15 ticks)
+		if resetCounter >= 15 {
+			resetCounter = 0
+
+			// Reset doors
+			ResetDoors()
+
+			// Reset mobs
+			ResetMobs()
+		}
+	})
 }

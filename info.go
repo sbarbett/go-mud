@@ -20,8 +20,13 @@ import (
 func DescribeRoom(room *Room, viewer *Player) string {
 	// Get available exits and sort them
 	var exits []string
-	for direction := range room.Exits {
-		exits = append(exits, direction)
+	for direction, exit := range room.Exits {
+		if exit.Door != nil && exit.Door.Closed {
+			// Show closed doors in parentheses
+			exits = append(exits, fmt.Sprintf("(%s)", direction))
+		} else {
+			exits = append(exits, direction)
+		}
 	}
 	sort.Strings(exits)
 
