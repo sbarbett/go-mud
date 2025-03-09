@@ -57,6 +57,10 @@ var commandHandlers = map[string]CommandHandler{
 	"color": handleColor,
 	// Recall command
 	"recall": handleRecall,
+	// Title command
+	"title": handleTitle,
+	// Who command
+	"who": handleWho,
 }
 
 // HandleCommand processes a player's command and returns the appropriate response
@@ -308,8 +312,8 @@ func handleRespawn(player *Player, args []string) string {
 	player.HP = player.MaxHP / 2 // Respawn with half health
 	player.MP = player.MaxMP / 2 // Respawn with half mana
 
-	// Get the respawn room (Temple of Midgaard)
-	respawnRoomID := 3001 // Temple of Midgaard
+	// Get the respawn room
+	respawnRoomID := RespawnRoomID // Use the constant from player.go
 	startRoom, err := GetRoom(respawnRoomID)
 	if err != nil {
 		log.Printf("Error getting respawn room: %v", err)
@@ -367,17 +371,17 @@ func handleColor(player *Player, args []string) string {
 	}
 }
 
-// handleRecall processes a player's attempt to recall to Room 3001 (Temple Square)
+// handleRecall processes a player's attempt to recall to the respawn point (RespawnRoomID)
 func handleRecall(player *Player, args []string) string {
 	// Check if player is in combat
 	if player.IsInCombat() {
 		return "You cannot recall while fighting!"
 	}
 
-	// Get the destination room (Room 3001)
-	destRoom, err := GetRoom(3001)
+	// Get the destination room
+	destRoom, err := GetRoom(RespawnRoomID)
 	if err != nil {
-		log.Printf("[ERROR] Recall destination Room 3001 not found: %v", err)
+		log.Printf("[ERROR] Recall destination Room %d not found: %v", RespawnRoomID, err)
 		return "The recall magic fizzles. The destination seems to be missing."
 	}
 
@@ -385,7 +389,7 @@ func handleRecall(player *Player, args []string) string {
 	oldRoom := player.Room
 
 	// Update player's room in the database
-	err = UpdatePlayerRoom(player.Name, 3001)
+	err = UpdatePlayerRoom(player.Name, RespawnRoomID)
 	if err != nil {
 		log.Printf("[ERROR] Failed to update player room during recall: %v", err)
 		return "The recall magic fizzles. Something went wrong."
@@ -395,7 +399,7 @@ func handleRecall(player *Player, args []string) string {
 	player.Room = destRoom
 
 	// Log the recall event
-	log.Printf("[RECALL] Player %s recalled to Room 3001.", player.Name)
+	log.Printf("[RECALL] Player %s recalled to Room %d.", player.Name, RespawnRoomID)
 
 	// Notify players in the old room about departure
 	playersMutex.Lock()
@@ -420,4 +424,90 @@ func handleRecall(player *Player, args []string) string {
 	player.Send(DescribeRoom(destRoom, player))
 
 	return ""
+}
+
+// handleTitle processes the title command
+func handleTitle(player *Player, args []string) string {
+	// If no arguments, remove the title
+	if len(args) == 0 {
+		player.Title = ""
+		// Update the title in the database
+		if err := UpdatePlayerTitle(player.Name, ""); err != nil {
+			log.Printf("Error updating player title in database: %v", err)
+		}
+		return "Your title has been removed."
+	}
+
+	// Combine all arguments into a single title
+	title := strings.Join(args, " ")
+
+	// Trim any trailing spaces
+	title = strings.TrimSpace(title)
+
+	// Check if the title is too long (40 characters max, excluding color codes)
+	if LengthWithoutColorCodes(title) > 40 {
+		return "Titles must be no longer than 40 characters."
+	}
+
+	// Ensure the title ends with a color reset code
+	if !strings.HasSuffix(title, "{x}") {
+		// Check if any color code was used
+		hasColorCode := false
+		for code := range ColorMap {
+			if strings.Contains(title, code) {
+				hasColorCode = true
+				break
+			}
+		}
+
+		// Add reset code at the end if any color code was used
+		if hasColorCode {
+			title += "{x}"
+		}
+	}
+
+	// Set the player's title
+	player.Title = title
+
+	// Update the title in the database
+	if err := UpdatePlayerTitle(player.Name, title); err != nil {
+		log.Printf("Error updating player title in database: %v", err)
+	}
+
+	return fmt.Sprintf("Your title is now: %s", title)
+}
+
+// handleWho displays a list of all players currently online
+func handleWho(player *Player, args []string) string {
+	playersMutex.Lock()
+	defer playersMutex.Unlock()
+
+	// Check if there are any players online
+	if len(activePlayers) == 0 {
+		return "There are no players currently online."
+	}
+
+	// Build the header for the who list
+	output := "{Y}Players currently online:{x}\r\n"
+	output += "{C}----------------------------------------{x}\r\n"
+
+	// Format each player's information
+	for _, p := range activePlayers {
+		// Format the player's race, class, and level within brackets
+		bracketInfo := fmt.Sprintf("[{G}%-6s{x} {B}%-8s{x} {M}%-3d{x}]",
+			p.Race, p.Class, p.Level)
+
+		// Add the player's name and title (if they have one)
+		if p.Title != "" {
+			output += fmt.Sprintf("%s {W}%s{x} %s\r\n", bracketInfo, p.Name, p.Title)
+		} else {
+			output += fmt.Sprintf("%s {W}%s{x}\r\n", bracketInfo, p.Name)
+		}
+	}
+
+	// Add a footer with the total count
+	output += "{C}----------------------------------------{x}\r\n"
+	output += fmt.Sprintf("{Y}Total players online: {W}%d{x}\r\n", len(activePlayers))
+
+	return output
 }

@@ -32,7 +32,12 @@ func DescribeRoom(room *Room, viewer *Player) string {
 		if p != viewer && // Not the viewing player
 			p.Room != nil && viewer.Room != nil && // Both rooms exist
 			p.Room == viewer.Room { // Exact same room instance
-			otherPlayers = append(otherPlayers, p.Name)
+			// Include the player's title if they have one
+			if p.Title != "" {
+				otherPlayers = append(otherPlayers, fmt.Sprintf("%s %s", p.Name, p.Title))
+			} else {
+				otherPlayers = append(otherPlayers, p.Name)
+			}
 		}
 	}
 	playersMutex.Unlock()
@@ -170,6 +175,14 @@ func GetScorecard(player *Player) string {
 	sb.WriteString("-------------------------------------------------\n")
 	sb.WriteString(fmt.Sprintf(" Name:         %-12s  Level:     %-6d\n", player.Name, player.Level))
 	sb.WriteString(fmt.Sprintf(" Race:         %-12s  Class:     %-6s\n", player.Race, player.Class))
+
+	// Display title or [not set] if empty
+	titleToShow := player.Title
+	if titleToShow == "" {
+		titleToShow = "[not set]"
+	}
+	sb.WriteString(fmt.Sprintf(" Title:        %s\n", titleToShow))
+
 	sb.WriteString(fmt.Sprintf(" XP:           %-12s  Gold:      %-6d\n", fmt.Sprintf("%d / %d", player.XP, player.NextLevelXP), player.Gold))
 	sb.WriteString(fmt.Sprintf(" Status:       %-32s\n", status))
 	sb.WriteString("-------------------------------------------------\n")

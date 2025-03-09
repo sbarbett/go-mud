@@ -138,6 +138,7 @@ func CreateNewCharacter(conn net.Conn, reader *bufio.Reader, name string) (*Play
 		Name:         name,
 		Race:         race,
 		Class:        class,
+		Title:        "the Newbie",
 		Room:         room,
 		Conn:         conn,
 		STR:          stats["STR"],

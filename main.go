@@ -128,7 +128,7 @@ func handleConnection(conn net.Conn) {
 		return
 	}
 	// Player already exists; load their existing information from the database
-	race, class, roomID, str, dex, con, int_, wis, pre, level, xp, nextLevelXP, hp, maxHP, mp, maxMP, stamina, maxStamina, gold, dbColorEnabled, err := LoadPlayer(name)
+	race, class, title, roomID, str, dex, con, int_, wis, pre, level, xp, nextLevelXP, hp, maxHP, mp, maxMP, stamina, maxStamina, gold, dbColorEnabled, err := LoadPlayer(name)
 	if err != nil {
 		log.Printf("Error loading player %s: %v", name, err)
 		conn.Write([]byte("Error loading character.\r\n")) // Handle loading errors
@@ -143,13 +143,12 @@ func handleConnection(conn net.Conn) {
 		return
 	}
 
-	// Initialize the player object with loaded data
+	// Create a new player with the loaded information
 	player := &Player{
 		Name:         name,
 		Race:         race,
 		Class:        class,
-		Room:         room,
-		Conn:         conn,
+		Title:        title,
 		STR:          str,
 		DEX:          dex,
 		CON:          con,
@@ -166,7 +165,9 @@ func handleConnection(conn net.Conn) {
 		Stamina:      stamina,
 		MaxStamina:   maxStamina,
 		Gold:         gold,
-		ColorEnabled: colorEnabled, // Use the color preference from the initial prompt
+		Room:         room,
+		Conn:         conn,
+		ColorEnabled: dbColorEnabled,
 	}
 
 	// Update the player's color preference in the database if it's different from the stored value

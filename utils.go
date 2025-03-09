@@ -10,6 +10,10 @@
 
 package main
 
+import (
+	"strings"
+)
+
 // stringInSlice checks if a string exists in a list
 func stringInSlice(str string, list []string) bool {
 	for _, v := range list {
@@ -18,4 +22,18 @@ func stringInSlice(str string, list []string) bool {
 		}
 	}
 	return false
+}
+
+// StripColorCodes removes all color codes from a string
+func StripColorCodes(text string) string {
+	result := text
+	for code := range ColorMap {
+		result = strings.ReplaceAll(result, code, "")
+	}
+	return result
+}
+
+// LengthWithoutColorCodes returns the length of a string without counting color codes
+func LengthWithoutColorCodes(text string) int {
+	return len(StripColorCodes(text))
 }

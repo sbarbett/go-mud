@@ -11,12 +11,18 @@ This system implements ROM-style color codes for text output in the MUD.
 Players can toggle colors on/off using the 'color' command.
 
 Color Codes:
-  {R} - Red
-  {G} - Green
-  {Y} - Yellow
-  {B} - Blue
-  {M} - Magenta
-  {C} - Cyan
+  {R} - Bold Red
+  {r} - Red
+  {G} - Bold Green
+  {g} - Green
+  {Y} - Bold Yellow
+  {y} - Yellow
+  {B} - Bold Blue
+  {b} - Blue
+  {M} - Bold Magenta
+  {m} - Magenta
+  {C} - Bold Cyan
+  {c} - Cyan
   {W} - White
   {D} - Dark Gray
   {x} - Reset (default color)
@@ -69,13 +75,20 @@ const (
 
 // ColorMap maps ROM-style color codes to ANSI escape sequences
 var ColorMap = map[string]string{
-	"{R}": Red,
-	"{G}": Green,
-	"{Y}": Yellow,
-	"{B}": Blue,
-	"{M}": Magenta,
-	"{C}": Cyan,
-	"{W}": White,
+	"{r}": Red,
+	"{R}": BoldRed,
+	"{g}": Green,
+	"{G}": BoldGreen,
+	"{y}": Yellow,
+	"{Y}": BoldYellow,
+	"{b}": Blue,
+	"{B}": BoldBlue,
+	"{m}": Magenta,
+	"{M}": BoldMagenta,
+	"{c}": Cyan,
+	"{C}": BoldCyan,
+	"{w}": White,
+	"{W}": BoldWhite,
 	"{D}": DarkGray,
 	"{x}": Reset,
 }

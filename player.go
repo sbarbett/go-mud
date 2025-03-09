@@ -26,6 +26,7 @@ type Player struct {
 	Name  string
 	Race  string
 	Class string
+	Title string // Player's custom title
 	// Core Stats
 	STR         int
 	DEX         int
