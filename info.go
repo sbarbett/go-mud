@@ -50,10 +50,11 @@ func DescribeRoom(room *Room, viewer *Player) string {
 	// Add mobs in the room
 	mobMutex.RLock()
 	mobs := GetMobsInRoom(room.ID)
-	mobMutex.RUnlock()
 
 	if len(mobs) > 0 {
 		description += "\n" // Single newline before mobs
+
+		// Display mobs without numbering in the description
 		for _, mob := range mobs {
 			if mob != nil {
 				// Check if this mob is in combat with any player
@@ -75,6 +76,7 @@ func DescribeRoom(room *Room, viewer *Player) string {
 			}
 		}
 	}
+	mobMutex.RUnlock()
 
 	// Add exits after mobs
 	description += fmt.Sprintf("\n{G}Available exits:{x} [%s]", strings.Join(exits, ", "))
@@ -109,7 +111,10 @@ func HandleLook(player *Player, args []string) string {
 
 	// Check if looking at a mob
 	lookTarget := strings.ToLower(strings.Join(args, " "))
-	mob := FindMobInRoom(player.Room.ID, lookTarget)
+
+	// Find the mob using our helper function
+	mob := FindMobByTarget(player.Room.ID, lookTarget)
+
 	if mob != nil {
 		// Check if this mob is the player's combat target
 		combatStatus := ""

@@ -191,6 +191,11 @@ func GetMobsInRoom(roomID int) []*MobInstance {
 
 // FindMobInRoom finds a mob in a room by name or keyword
 func FindMobInRoom(roomID int, searchTerm string) *MobInstance {
+	// First, check if the search term has a numeric prefix
+	if mob := FindMobInRoomByNumericPrefix(roomID, searchTerm); mob != nil {
+		return mob
+	}
+
 	mobMutex.RLock()
 	defer mobMutex.RUnlock()
 
@@ -200,20 +205,97 @@ func FindMobInRoom(roomID int, searchTerm string) *MobInstance {
 	}
 
 	searchTerm = strings.ToLower(searchTerm)
+
+	// Group mobs by keyword/short description for potential numbering
+	mobGroups := make(map[string][]*MobInstance)
+
+	// First pass: group mobs by keywords and short descriptions
 	for _, mob := range mobs {
-		// Check if the search term matches the mob's short description
+		// Check keywords
+		for _, keyword := range mob.Keywords {
+			lowerKeyword := strings.ToLower(keyword)
+			mobGroups[lowerKeyword] = append(mobGroups[lowerKeyword], mob)
+		}
+
+		// Also group by short description
+		shortDesc := strings.ToLower(mob.ShortDescription)
+		mobGroups[shortDesc] = append(mobGroups[shortDesc], mob)
+	}
+
+	// Second pass: check if the search term matches any group
+	for groupKey, group := range mobGroups {
+		if groupKey == searchTerm {
+			// If there's a direct match, return the first mob in the group
+			return group[0]
+		}
+	}
+
+	// Third pass: check for partial matches in short descriptions
+	for _, mob := range mobs {
 		if strings.Contains(strings.ToLower(mob.ShortDescription), searchTerm) {
 			return mob
 		}
+	}
 
-		// Check if the search term matches any of the mob's keywords
-		for _, keyword := range mob.Keywords {
-			if strings.ToLower(keyword) == searchTerm {
-				return mob
+	return nil
+}
+
+// FindMobInRoomByNumericPrefix finds a mob in a room by numeric prefix and keyword
+// Format: "2.cityguard" would find the second cityguard in the room
+func FindMobInRoomByNumericPrefix(roomID int, searchTerm string) *MobInstance {
+	mobMutex.RLock()
+	defer mobMutex.RUnlock()
+
+	mobs := roomMobs[roomID]
+	if len(mobs) == 0 {
+		return nil
+	}
+
+	// Check if the search term has a numeric prefix
+	parts := strings.SplitN(searchTerm, ".", 2)
+	if len(parts) != 2 {
+		// No numeric prefix, use the standard FindMobInRoom function
+		return nil
+	}
+
+	// Parse the numeric prefix
+	index, err := strconv.Atoi(parts[0])
+	if err != nil || index < 1 {
+		// Invalid numeric prefix
+		return nil
+	}
+
+	// Get the actual search term (without the numeric prefix)
+	keyword := strings.ToLower(parts[1])
+
+	// Create a slice to hold matching mobs
+	var matchingMobs []*MobInstance
+
+	// First, try to match by exact keyword
+	for _, mob := range mobs {
+		for _, mobKeyword := range mob.Keywords {
+			if strings.ToLower(mobKeyword) == keyword {
+				matchingMobs = append(matchingMobs, mob)
+				break
 			}
 		}
 	}
 
+	// If no exact keyword matches, try partial matches in short description
+	if len(matchingMobs) == 0 {
+		for _, mob := range mobs {
+			if strings.Contains(strings.ToLower(mob.ShortDescription), keyword) {
+				matchingMobs = append(matchingMobs, mob)
+			}
+		}
+	}
+
+	// Check if the index is valid for the matching mobs
+	if index <= len(matchingMobs) {
+		return matchingMobs[index-1] // Convert to 0-based index
+	}
+
+	// Index is out of range or no matching mobs found
 	return nil
 }
 
@@ -631,4 +713,19 @@ func ProcessMobWandering() {
 			continue
 		}
 	}
+}
+
+// FindMobByTarget is a helper function that abstracts the mob finding logic
+// It first tries to find a mob by numeric prefix, then falls back to standard search
+// This function should be used by all commands that need to target mobs
+func FindMobByTarget(roomID int, targetName string) *MobInstance {
+	// First try to find by numeric prefix
+	mob := FindMobInRoomByNumericPrefix(roomID, targetName)
+
+	// If not found by numeric prefix, try standard search
+	if mob == nil {
+		mob = FindMobInRoom(roomID, targetName)
+	}
+
+	return mob
 }

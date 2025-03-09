@@ -160,8 +160,9 @@ func handleAttack(player *Player, args []string) string {
 	// Get the target name from args
 	targetName := strings.ToLower(strings.Join(args, " "))
 
-	// Find the mob in the current room
-	mob := FindMobInRoom(player.Room.ID, targetName)
+	// Find the mob using our helper function
+	mob := FindMobByTarget(player.Room.ID, targetName)
+
 	if mob == nil {
 		return "You don't see that here.\r\n"
 	}

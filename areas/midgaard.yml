@@ -2717,7 +2717,6 @@ mobiles:
       A big, strong, helpful, trustworthy guard.
     race: "human"
     level: 15
-    wandering: true
   3068:
     keywords: ["cityguard", "guard"]
     short_description: "the cityguard"
@@ -2727,7 +2726,6 @@ mobiles:
       A big, strong, helpful, trustworthy guard.
     race: "human"
     level: 15
-    wandering: true
   3069:
     keywords: ["cityguard", "guard"]
     short_description: "the cityguard"
@@ -2737,7 +2735,6 @@ mobiles:
       A big, strong, helpful, trustworthy guard.
     race: "human"
     level: 20
-    wandering: true
   3070:
     keywords: ["shopkeeper", "old", "man"]
     short_description: "the ancient potion-brewer"
@@ -2757,7 +2754,6 @@ mobiles:
       A big, strong, helpful, trustworthy guard.
     race: "human"
     level: 15
-    wandering: true
   3072:
     keywords: ["cityguard", "guard"]
     short_description: "the cityguard"
@@ -2767,7 +2763,6 @@ mobiles:
       A big, strong, helpful, trustworthy guard.
     race: "human"
     level: 15
-    wandering: true
   3090:
     keywords: ["kitten", "cat", "pet"]
     short_description: "the kitten"
@@ -2915,6 +2910,7 @@ mobiles:
       A big, strong, angry guard.
     race: "human"
     level: 15
+    wandering: true
   3142:
     keywords: ["secretary"]
     short_description: "the secretary"
