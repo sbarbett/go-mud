@@ -32,6 +32,7 @@ Here's a list of the most commonly used commands in Go-MUD:
 ## System Commands
 - `color` - Toggle ANSI color on/off
 - `title <new title>` - Change your character's title
+- `save` - Save your character's progress
 - `quit` - Exit the game
 
 ## Other Commands

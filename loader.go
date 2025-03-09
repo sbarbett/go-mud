@@ -11,7 +11,7 @@
 package main
 
 import (
-	"fmt"
+	"fmt"           // Package for formatting strings
 	"log"           // Package for logging errors
 	"os"            // Package for OS functionality, including file operations
 	"path/filepath" // Package for manipulating filename paths

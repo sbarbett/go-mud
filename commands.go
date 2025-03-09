@@ -30,6 +30,7 @@ var commandHandlers = map[string]CommandHandler{
 	"score":     handleScore,
 	"scorecard": handleScore,
 	"gainxp":    handleGainXP,
+	"save":      handleSave,
 	// Combat commands
 	"attack": handleAttack,
 	"kill":   handleAttack,
@@ -112,7 +113,20 @@ func HandleCommand(player *Player, input string) string {
 // Individual command handlers
 
 func handleQuit(player *Player, args []string) string {
-	return "Goodbye!"
+	// Save player's progress before quitting
+	if err := UpdatePlayerXP(player.Name, player.XP, player.NextLevelXP); err != nil {
+		log.Printf("Error saving player XP on quit: %v", err)
+	}
+
+	if err := UpdatePlayerHPMP(player.Name, player.HP, player.MaxHP, player.MP, player.MaxMP); err != nil {
+		log.Printf("Error saving player HP/MP on quit: %v", err)
+	}
+
+	if err := UpdatePlayerStats(player.Name, player.HP, player.MaxHP, player.MP, player.MaxMP, player.Stamina, player.MaxStamina); err != nil {
+		log.Printf("Error saving player stats on quit: %v", err)
+	}
+
+	return "Your progress has been saved. Goodbye!"
 }
 
 func handleScore(player *Player, args []string) string {
@@ -127,6 +141,26 @@ func handleGainXP(player *Player, args []string) string {
 		}
 	}
 	return "Usage: gainxp <amount>"
+}
+
+func handleSave(player *Player, args []string) string {
+	// Save player's current state to the database
+	if err := UpdatePlayerXP(player.Name, player.XP, player.NextLevelXP); err != nil {
+		log.Printf("Error saving player XP: %v", err)
+		return "Error saving your progress."
+	}
+
+	if err := UpdatePlayerHPMP(player.Name, player.HP, player.MaxHP, player.MP, player.MaxMP); err != nil {
+		log.Printf("Error saving player HP/MP: %v", err)
+		return "Error saving your progress."
+	}
+
+	if err := UpdatePlayerStats(player.Name, player.HP, player.MaxHP, player.MP, player.MaxMP, player.Stamina, player.MaxStamina); err != nil {
+		log.Printf("Error saving player stats: %v", err)
+		return "Error saving your progress."
+	}
+
+	return "Your progress has been saved."
 }
 
 func handleMove(player *Player, args []string) string {

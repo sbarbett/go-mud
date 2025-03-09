@@ -181,6 +181,11 @@ func (p *Player) GainXP(amount int) {
 			log.Printf("Error updating player HP/MP: %v", err)
 		}
 	}
+
+	// Always update XP in the database, even if the player didn't level up
+	if err := UpdatePlayerXP(p.Name, p.XP, p.NextLevelXP); err != nil {
+		log.Printf("Error updating player XP: %v", err)
+	}
 }
 
 // Add healing and mana restoration methods
@@ -379,6 +384,9 @@ func (p *Player) PulseUpdate() {
 			p.ReceiveAttack(p.Target)
 		}
 	}
+
+	// Regeneration is now handled only in the tick function (once per minute)
+	// p.RegenTick() - Removed to prevent healing every second
 }
 
 // ExecuteAttack handles a player's attack against a mob
@@ -740,4 +748,29 @@ func CalculateXPGain(playerLevel, mobLevel int) int {
 
 	// Calculate final XP
 	return int(float64(baseXP) * levelModifier)
+}
+
+// AutoSave saves the player's current progress to the database
+func (p *Player) AutoSave() {
+	// Save XP and level information
+	if err := UpdatePlayerXP(p.Name, p.XP, p.NextLevelXP); err != nil {
+		log.Printf("Error auto-saving player XP: %v", err)
+	}
+
+	// Save HP and MP
+	if err := UpdatePlayerHPMP(p.Name, p.HP, p.MaxHP, p.MP, p.MaxMP); err != nil {
+		log.Printf("Error auto-saving player HP/MP: %v", err)
+	}
+
+	// Save other stats
+	if err := UpdatePlayerStats(p.Name, p.HP, p.MaxHP, p.MP, p.MaxMP, p.Stamina, p.MaxStamina); err != nil {
+		log.Printf("Error auto-saving player stats: %v", err)
+	}
+
+	// Save room location
+	if p.Room != nil {
+		if err := UpdatePlayerRoom(p.Name, p.Room.ID); err != nil {
+			log.Printf("Error auto-saving player room: %v", err)
+		}
+	}
 }

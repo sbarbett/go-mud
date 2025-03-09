@@ -10,10 +10,6 @@
 
 package main
 
-import (
-	"log"
-)
-
 // CalculateEvasionChance determines the chance to dodge an attack based on level difference
 func CalculateEvasionChance(defenderLevel, attackerLevel int) float64 {
 	baseEvasionChance := 0.05 // 5% base evasion chance
@@ -76,8 +72,8 @@ func ProcessEvasion(defenderLevel, attackerLevel int) bool {
 
 	// Log the evasion check
 	if evasionRoll <= evasionChance {
-		log.Printf("Combat: Evasion successful (roll: %.2f, chance: %.2f, defender level: %d, attacker level: %d)",
-			evasionRoll, evasionChance, defenderLevel, attackerLevel)
+		// log.Printf("Combat: Evasion successful (roll: %.2f, chance: %.2f, defender level: %d, attacker level: %d)",
+		// 	evasionRoll, evasionChance, defenderLevel, attackerLevel)
 		return true
 	}
 
@@ -92,8 +88,8 @@ func ProcessCriticalHit(attackerLevel, defenderLevel int) bool {
 
 	// Log the critical hit check
 	if critRoll <= critChance {
-		log.Printf("Combat: Critical hit successful (roll: %.2f, chance: %.2f, attacker level: %d, defender level: %d)",
-			critRoll, critChance, attackerLevel, defenderLevel)
+		// log.Printf("Combat: Critical hit successful (roll: %.2f, chance: %.2f, attacker level: %d, defender level: %d)",
+		// 	critRoll, critChance, attackerLevel, defenderLevel)
 		return true
 	}
 

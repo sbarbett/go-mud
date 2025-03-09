@@ -126,7 +126,7 @@ func LoadPlayer(name string) (race string, class string, title string, roomID in
 	gold = 0
 	colorEnabled = true // Default to true if not found in DB
 
-	log.Printf("Loading player data for: %s", name)
+	//log.Printf("Loading player data for: %s", name)
 
 	// Check if the title column exists
 	var titleColumnExists bool

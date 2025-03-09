@@ -521,6 +521,11 @@ func MoveMob(mob *MobInstance, direction string) error {
 		return fmt.Errorf("mob is not in a room")
 	}
 
+	// Check if the mob is in combat - if so, prevent movement
+	if IsMobInCombat(mob) {
+		return fmt.Errorf("mob cannot move while in combat")
+	}
+
 	// Check if the exit exists
 	exit, exists := mob.Room.Exits[direction]
 	if !exists {
@@ -645,6 +650,19 @@ func RemoveMobFromRoom(mob *MobInstance) {
 	//	mob.ShortDescription, mob.ID, mob.InstanceID, roomID)
 }
 
+// IsMobInCombat checks if any player is currently fighting this mob
+func IsMobInCombat(mob *MobInstance) bool {
+	playersMutex.Lock()
+	defer playersMutex.Unlock()
+
+	for _, player := range activePlayers {
+		if player.IsInCombat() && player.Target == mob {
+			return true
+		}
+	}
+	return false
+}
+
 // ProcessMobWandering makes certain mobs wander randomly between rooms
 func ProcessMobWandering() {
 	// Global chance to process wandering at all (15% chance per pulse)
@@ -660,6 +678,11 @@ func ProcessMobWandering() {
 	for _, mob := range mobInstances {
 		// Skip if this mob type shouldn't wander
 		if !mob.Wandering {
+			continue
+		}
+
+		// Skip if this mob is in combat with any player
+		if IsMobInCombat(mob) {
 			continue
 		}
 

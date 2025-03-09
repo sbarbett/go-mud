@@ -243,7 +243,7 @@ func DebugHeartbeat() {
 
 // ResetDoors closes all doors in the game world
 func ResetDoors() {
-	log.Println("[TIME] Resetting doors to closed state (15-minute interval)")
+	//log.Println("[TIME] Resetting doors to closed state (15-minute interval)")
 
 	// Track which doors have already been processed to avoid duplicates
 	processedDoors := make(map[string]bool)
@@ -310,18 +310,34 @@ func ResetDoors() {
 
 // ResetMobs respawns mobs according to the reset configuration
 func ResetMobs() {
-	log.Println("[TIME] Resetting mobs in the world (15-minute interval)")
+	//log.Println("[TIME] Resetting mobs in the world (15-minute interval)")
 	ProcessMobResets()
 }
 
-// ScheduleResets registers the periodic reset functions with the TimeManager
+// AutoSaveAllPlayers saves the progress of all active players
+func AutoSaveAllPlayers() {
+	playersMutex.Lock()
+	defer playersMutex.Unlock()
+
+	//log.Printf("Auto-saving progress for %d active players", len(activePlayers))
+
+	for _, player := range activePlayers {
+		player.AutoSave()
+	}
+}
+
+// ScheduleResets registers all the reset functions with the time manager
 func ScheduleResets(tm *TimeManager) {
 	// Counter for 15-minute resets
 	resetCounter := 0
 
+	// Counter for 5-minute auto-saves
+	saveCounter := 0
+
 	// Register a tick function to handle resets every 15 minutes
 	tm.RegisterTickFunc(func() {
 		resetCounter++
+		saveCounter++
 
 		// Process resets every 15 minutes (15 ticks)
 		if resetCounter >= 15 {
@@ -332,6 +348,14 @@ func ScheduleResets(tm *TimeManager) {
 
 			// Reset mobs
 			ResetMobs()
+		}
+
+		// Auto-save player progress every 5 minutes (5 ticks)
+		if saveCounter >= 5 {
+			saveCounter = 0
+
+			// Save all players' progress
+			AutoSaveAllPlayers()
 		}
 	})
 }
