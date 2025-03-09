@@ -61,6 +61,8 @@ var commandHandlers = map[string]CommandHandler{
 	"title": handleTitle,
 	// Who command
 	"who": handleWho,
+	// Help command
+	"help": handleHelp,
 }
 
 // HandleCommand processes a player's command and returns the appropriate response

@@ -45,7 +45,7 @@ func handleConnection(conn net.Conn) {
 	// Now display the splash screen with or without colors
 	if colorEnabled {
 		conn.Write([]byte("\x1b[1;36m" +
-			"  ▄████  ▒█████      ███▄ ▄███▓ █    ██ ▓█████▄ \r\n" +
+			"  ▄████  ▒█████      ███▄ ▄███▓  █    ██ ▓█████▄ \r\n" +
 			"  ██▒ ▀█▒▒██▒  ██▒   ▓██▒▀█▀ ██▒ ██  ▓██▒▒██▀ ██▌\r\n" +
 			" ▒██░▄▄▄░▒██░  ██▒   ▓██    ▓██░▓██  ▒██░░██   █▌\r\n" +
 			" ░▓█  ██▓▒██   ██░   ▒██    ▒██ ▓▓█  ░██░░▓█▄   ▌\r\n" +
@@ -63,7 +63,7 @@ func handleConnection(conn net.Conn) {
 			"  GO-MUD\r\n\r\n" +
 			"  Welcome to Go-MUD!\r\n" +
 			"  A text-based multiplayer adventure\r\n\r\n" +
-			"  Created with ❤️ by shanevapid\r\n\r\n"))
+			"  Created with <3 by shanevapid\r\n\r\n"))
 	}
 
 	// Prompt the player to enter their character name
@@ -345,6 +345,10 @@ func main() {
 
 	// Start the time manager
 	timeManager.Start()
+
+	// Initialize the help system
+	fmt.Println("Initializing help system...")
+	InitHelpSystem()
 
 	// Load all areas from YAML
 	fmt.Println("Loading areas...")
