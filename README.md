@@ -23,9 +23,10 @@ docker compose up --build
 
 ## Example
 
-![Screeenshot of login](./img/ss2.jpg)
-![Screeenshot of combat](./img/ss3.jpg)
-![Screeenshot of scorecard](./img/ss4.jpg)
+![Screeenshot of login](./img/ss5.jpg)
+![Screeenshot of movement](./img/ss6.jpg)
+![Screeenshot of combat](./img/ss7.jpg)
+![Screeenshot of scorecard](./img/ss8.jpg)
 
 ## Why?
 I wanted to recreate the experience of old-school MUDs while learning Go at the same time. This project is primarily for **fun and nostalgia**—but if it turns into something functional, cool.
