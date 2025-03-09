@@ -1,3 +1,13 @@
+/*
+ * loader.go
+ *
+ * This file handles loading game world data from YAML files.
+ * It defines the data structures for rooms, exits, areas, and environment
+ * attributes, and provides functions for loading area files from the
+ * filesystem. The file implements the core world-building functionality
+ * by parsing area definitions and making them available to the game engine.
+ */
+
 package main
 
 import (

@@ -1,9 +1,19 @@
+/*
+ * player.go
+ *
+ * This file implements the player system for the MUD.
+ * It defines the Player struct and associated methods for managing player
+ * characters, including combat mechanics, attribute management, experience
+ * and leveling, communication, and state management. The file handles all
+ * aspects of player interaction with the game world, from basic movement
+ * to complex combat calculations and death/respawn mechanics.
+ */
+
 package main
 
 import (
 	"fmt"
 	"log"
-	"math/rand"
 	"net"
 	"strings"
 	"sync"
@@ -385,7 +395,7 @@ func (p *Player) ExecuteAttack() {
 
 	// Calculate hit chance
 	hitChance := CalculateHitChance(p.Level, p.Target.Level)
-	hitRoll := rand.Float64()
+	hitRoll := rng.Float64()
 
 	// Check if attack misses
 	if hitRoll > hitChance {
@@ -471,7 +481,7 @@ func (p *Player) ReceiveAttack(attacker *MobInstance) {
 	finalHitChance := CalculateHitChance(attacker.Level, p.Level)
 
 	// Roll to hit
-	hitRoll := rand.Float64()
+	hitRoll := rng.Float64()
 
 	if hitRoll <= finalHitChance {
 		// Hit! Calculate damage using the utility function
@@ -612,14 +622,8 @@ func (p *Player) ScheduleRespawn() {
 
 		// Remove from current room
 		if p.Room != nil {
-			for i, name := range GetPlayersInRoom(p.Room) {
-				if name == p.Name {
-					// This is a bit inefficient but works for now
-					players := GetPlayersInRoom(p.Room)
-					players = append(players[:i], players[i+1:]...)
-					break
-				}
-			}
+			// No need to modify the players list since GetPlayersInRoom returns a new slice each time
+			// and we're not storing the list of players in rooms anywhere
 
 			// Broadcast departure from old room if it's different from respawn room
 			if oldRoom != startRoom {

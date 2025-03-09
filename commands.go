@@ -1,3 +1,14 @@
+/*
+ * commands.go
+ *
+ * This file contains the command handling system for the MUD.
+ * It defines the CommandHandler type and maps command names to their
+ * respective handler functions. The file implements handlers for various
+ * player commands including movement, combat, character information,
+ * and system commands. The main HandleCommand function processes player
+ * input and routes it to the appropriate handler.
+ */
+
 package main
 
 import (
@@ -44,6 +55,8 @@ var commandHandlers = map[string]CommandHandler{
 	"respawn": handleRespawn,
 	// Color commands
 	"color": handleColor,
+	// Recall command
+	"recall": handleRecall,
 }
 
 // HandleCommand processes a player's command and returns the appropriate response
@@ -352,4 +365,59 @@ func handleColor(player *Player, args []string) string {
 	default:
 		return "Usage: color [on|off]"
 	}
+}
+
+// handleRecall processes a player's attempt to recall to Room 3001 (Temple Square)
+func handleRecall(player *Player, args []string) string {
+	// Check if player is in combat
+	if player.IsInCombat() {
+		return "You cannot recall while fighting!"
+	}
+
+	// Get the destination room (Room 3001)
+	destRoom, err := GetRoom(3001)
+	if err != nil {
+		log.Printf("[ERROR] Recall destination Room 3001 not found: %v", err)
+		return "The recall magic fizzles. The destination seems to be missing."
+	}
+
+	// Store the old room for notifications
+	oldRoom := player.Room
+
+	// Update player's room in the database
+	err = UpdatePlayerRoom(player.Name, 3001)
+	if err != nil {
+		log.Printf("[ERROR] Failed to update player room during recall: %v", err)
+		return "The recall magic fizzles. Something went wrong."
+	}
+
+	// Update player's room in memory
+	player.Room = destRoom
+
+	// Log the recall event
+	log.Printf("[RECALL] Player %s recalled to Room 3001.", player.Name)
+
+	// Notify players in the old room about departure
+	playersMutex.Lock()
+	for _, p := range activePlayers {
+		if p != player && p.Room == oldRoom {
+			p.Send(fmt.Sprintf("%s disappears in a flash of light.", player.Name))
+		}
+	}
+	playersMutex.Unlock()
+
+	// Notify players in the new room about arrival
+	playersMutex.Lock()
+	for _, p := range activePlayers {
+		if p != player && p.Room == destRoom {
+			p.Send(fmt.Sprintf("%s appears in a flash of light.", player.Name))
+		}
+	}
+	playersMutex.Unlock()
+
+	// Send success message and room description to the player
+	player.Send("A bright flash surrounds you, and you find yourself back at the Temple Square.")
+	player.Send(DescribeRoom(destRoom, player))
+
+	return ""
 }

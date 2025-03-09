@@ -1,3 +1,14 @@
+/*
+ * db.go
+ *
+ * This file handles database operations for the MUD.
+ * It provides functions for initializing the SQLite database connection,
+ * creating and managing database tables, and performing CRUD operations
+ * on player data. The file includes functions for creating new players,
+ * loading player information, updating player attributes, and checking
+ * if players exist in the database.
+ */
+
 package main
 
 import (

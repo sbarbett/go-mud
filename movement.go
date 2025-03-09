@@ -1,3 +1,14 @@
+/*
+ * movement.go
+ *
+ * This file implements the movement system for players in the MUD.
+ * It provides functions for handling player movement between rooms,
+ * processing direction commands, and managing the transitions between
+ * different areas of the game world. The file includes logic for
+ * validating movement requests and updating player locations in both
+ * memory and the database.
+ */
+
 package main
 
 import (

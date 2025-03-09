@@ -1,3 +1,13 @@
+/*
+ * comm.go
+ *
+ * This file implements the communication systems for the MUD.
+ * It contains the OOCManager which handles out-of-character (OOC)
+ * communication between players. The OOCManager provides functionality
+ * for processing OOC commands and broadcasting messages to all connected
+ * players, with options to exclude specific players from broadcasts.
+ */
+
 package main
 
 import (

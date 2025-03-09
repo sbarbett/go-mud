@@ -1,3 +1,13 @@
+/*
+ * info.go
+ *
+ * This file contains functions for displaying information to players.
+ * It implements room descriptions, the look command, direction viewing,
+ * and player scorecard functionality. The file handles formatting output
+ * with appropriate colors and organizing information in a readable way
+ * for players to understand their surroundings and character status.
+ */
+
 package main
 
 import (

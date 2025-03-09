@@ -1,9 +1,19 @@
+/*
+ * mob.go
+ *
+ * This file implements the mobile entity (mob) system for the MUD.
+ * It defines data structures and functions for creating, managing, and
+ * interacting with NPCs in the game world. The file handles mob spawning,
+ * movement, combat, and reset mechanics. It includes functionality for
+ * tracking mob instances, finding mobs in rooms, and processing mob resets
+ * to maintain the game world's population.
+ */
+
 package main
 
 import (
 	"fmt"
 	"log"
-	"math/rand"
 	"strconv"
 	"strings"
 	"sync"
@@ -271,8 +281,8 @@ func ProcessMobResets() {
 		// Calculate how many more we can spawn based on world limit
 		remainingAllowed := maxWorld - currentWorldCount
 
-		// Shuffle the resets to randomize which rooms get mobs when we can't spawn all
-		rand.Shuffle(len(resets), func(i, j int) {
+		// Shuffle the resets to avoid predictable spawn patterns
+		rng.Shuffle(len(resets), func(i, j int) {
 			resets[i], resets[j] = resets[j], resets[i]
 		})
 
@@ -288,8 +298,8 @@ func ProcessMobResets() {
 				continue
 			}
 
-			// Determine how many to spawn (random up to limit, but not exceeding remaining allowed)
-			count := rand.Intn(reset.Limit) + 1
+			// Randomize the number of mobs to spawn, between 1 and the limit
+			count := rng.Intn(reset.Limit) + 1
 			if count > reset.Limit {
 				count = reset.Limit
 			}

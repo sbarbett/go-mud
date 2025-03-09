@@ -1,3 +1,13 @@
+/*
+ * stats.go
+ *
+ * This file defines the character statistics system for the MUD.
+ * It contains the base statistics for different races, functions for
+ * retrieving and validating character stats, and constants for character
+ * creation. The file provides the foundation for the attribute system
+ * that influences character capabilities and performance in the game.
+ */
+
 package main
 
 // BaseStats defines the starting stats for each race

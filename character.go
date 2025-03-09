@@ -1,3 +1,13 @@
+/*
+ * character.go
+ *
+ * This file contains functions related to character creation and customization.
+ * It handles the character creation process including race and class selection,
+ * stat allocation, and initializing player objects with appropriate attributes.
+ * The main function CreateNewCharacter guides players through the character
+ * creation process, calculating derived stats based on race and class choices.
+ */
+
 package main
 
 import (

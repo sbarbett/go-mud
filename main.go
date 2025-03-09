@@ -1,3 +1,13 @@
+/*
+ * main.go
+ *
+ * This file contains the main entry point and core server functionality for the MUD.
+ * It handles server initialization, connection management, player authentication,
+ * and the main game loop. The file implements functions for handling new connections,
+ * processing player input, managing the game state, and gracefully shutting down
+ * the server when needed.
+ */
+
 package main
 
 import (
@@ -16,6 +26,9 @@ import (
 // Global variables
 var oocManager *OOCManager
 var timeManager *TimeManager
+
+// Global random number generator
+var rng = rand.New(rand.NewSource(time.Now().UnixNano()))
 
 // handleConnection manages player login and the overall lifecycle of the player's session
 func handleConnection(conn net.Conn) {
@@ -258,8 +271,8 @@ func main() {
 	// Setup signal handler for graceful shutdown
 	setupSignalHandler()
 
-	// Initialize the random number generator with a time-based seed
-	rand.Seed(time.Now().UnixNano())
+	// No need to seed the global rand anymore as we're using our own rng instance
+	// rand.Seed(time.Now().UnixNano())
 
 	// Initialize the database
 	InitDB()

@@ -1,3 +1,14 @@
+/*
+ * time.go
+ *
+ * This file implements the time management system for the MUD.
+ * It defines the TimeManager struct which handles game time events at
+ * different intervals (ticks, pulses, and heartbeats). The file provides
+ * functionality for registering callback functions to be executed at these
+ * intervals, allowing for scheduled events like combat rounds, regeneration,
+ * and world updates to occur at appropriate times.
+ */
+
 package main
 
 import (

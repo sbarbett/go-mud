@@ -1,8 +1,17 @@
+/*
+ * combat.go
+ *
+ * This file contains functions related to the combat system in the MUD.
+ * It implements mechanics for calculating and processing combat outcomes,
+ * including evasion chances, critical hit chances, and related combat
+ * calculations. The functions handle the randomized aspects of combat
+ * while accounting for level differences between combatants.
+ */
+
 package main
 
 import (
 	"log"
-	"math/rand"
 )
 
 // CalculateEvasionChance determines the chance to dodge an attack based on level difference
@@ -63,7 +72,7 @@ func CalculateCriticalChance(attackerLevel, defenderLevel int) float64 {
 // Returns true if the attack is evaded, false otherwise
 func ProcessEvasion(defenderLevel, attackerLevel int) bool {
 	evasionChance := CalculateEvasionChance(defenderLevel, attackerLevel)
-	evasionRoll := rand.Float64()
+	evasionRoll := rng.Float64()
 
 	// Log the evasion check
 	if evasionRoll <= evasionChance {
@@ -79,7 +88,7 @@ func ProcessEvasion(defenderLevel, attackerLevel int) bool {
 // Returns true if the attack is a critical hit, false otherwise
 func ProcessCriticalHit(attackerLevel, defenderLevel int) bool {
 	critChance := CalculateCriticalChance(attackerLevel, defenderLevel)
-	critRoll := rand.Float64()
+	critRoll := rng.Float64()
 
 	// Log the critical hit check
 	if critRoll <= critChance {
