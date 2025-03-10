@@ -67,6 +67,8 @@ var commandHandlers = map[string]CommandHandler{
 	// Door commands
 	"open":  handleOpen,
 	"close": handleClose,
+	// Teleport command
+	"goto": handleGoto,
 }
 
 // HandleCommand processes a player's command and returns the appropriate response
@@ -706,4 +708,40 @@ func handleClose(player *Player, args []string) string {
 	}
 
 	return "You don't see that here."
+}
+
+// handleGoto teleports a player to a specified room ID
+func handleGoto(player *Player, args []string) string {
+	// Check if a room ID was provided
+	if len(args) < 1 {
+		return "Goto where? Please specify a room ID."
+	}
+
+	// Parse the room ID
+	roomID, err := strconv.Atoi(args[0])
+	if err != nil {
+		return "Invalid room ID. Please specify a numeric room ID."
+	}
+
+	// Check if the room exists
+	newRoom, err := GetRoom(roomID)
+	if err != nil {
+		return fmt.Sprintf("Room %d does not exist.", roomID)
+	}
+
+	// Update the player's location in the database
+	err = UpdatePlayerRoom(player.Name, roomID)
+	if err != nil {
+		log.Printf("Error updating player room: %v", err)
+		return "An error occurred while teleporting."
+	}
+
+	// Update the player's room in memory
+	player.Room = newRoom
+
+	// Log the teleportation for debugging
+	log.Printf("Player %s teleported to room %d (%s)", player.Name, roomID, newRoom.Name)
+
+	// Return success message
+	return fmt.Sprintf("You teleport to Room %d (%s).", roomID, newRoom.Name)
 }

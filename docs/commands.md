@@ -34,6 +34,7 @@ Here's a list of the most commonly used commands in Go-MUD:
 - `title <new title>` - Change your character's title
 - `save` - Save your character's progress
 - `quit` - Exit the game
+- `goto <room_id>` - Teleport to a specific room ID
 
 ## Other Commands
 - `recall` - Return to the starting area

@@ -321,10 +321,6 @@ rooms:
       east:
         id: 3041
         description: "You see the city gate."
-        door:
-          short_description: "east gate"
-          keywords: ["gate"]
-          locked: false
       south:
         id: 3021
         description: "You see the swordsmen's guild."
@@ -678,6 +674,13 @@ rooms:
       south:
         id: 3042
         description: "You see the road running along the inner side of the city wall.  You notice that it is called Wall Road."
+      west:
+        id: 3052
+        description: "You see the west gate."
+        door:
+          short_description: "heavy wooden gate"
+          keywords: ["gate"]
+          locked: false
     environment:
       - keywords: ["gate"]
         description: |
@@ -702,8 +705,11 @@ rooms:
       west:
         id: 3016
         description: "You see Main Street."
+      east:
+        id: 3053
+        description: "You see the east gate."
         door:
-          short_description: "east gate"
+          short_description: "heavy wooden gate"
           keywords: ["gate"]
           locked: false
     environment:
@@ -906,6 +912,13 @@ rooms:
       north:
         id: 3900
         description: "The trail continues around the City of Midgaard."
+      east:
+        id: 3040
+        description: "You see the west gate."
+        door:
+          short_description: "heavy wooden gate"
+          keywords: ["gate"]
+          locked: false
     environment:
       - keywords: ["wall"]
         description: |
@@ -935,6 +948,13 @@ rooms:
       north:
         id: 3908
         description: "The trail continues around the City of Midgaard."
+      west:
+        id: 3041
+        description: "You see the east gate."
+        door:
+          short_description: "heavy wooden gate"
+          keywords: ["gate"]
+          locked: false
     environment:
       - keywords: ["wall"]
         description: |
@@ -1170,6 +1190,21 @@ rooms:
     description: |
       You are inside a tidy office.  A big desk made from dark wood is standing
       in the centre of the room.
+    exits:
+      east:
+        id: 3111
+        description: "You see the park road."
+        door:
+          short_description: "door"
+          keywords: ["door"]
+          locked: false
+      west:
+        id: 3142
+        description: "You see a sign saying 'KEEP OUT'."
+        door:
+          short_description: "door"
+          keywords: ["door"]
+          locked: true
   3111:
     name: "Park Road"
     description: |
@@ -1185,6 +1220,13 @@ rooms:
       south:
         id: 3118
         description: "Park Road continues south."
+      west:
+        id: 3110
+        description: "You see the cityguard headquarter"
+        door:
+          short_description: "door"
+          keywords: ["door"]
+          locked: false
   3112:
     name: "Western Park Entrance"
     description: |
@@ -1371,6 +1413,13 @@ rooms:
       east:
         id: 3273
         description: "You see the concourse."
+      south:
+        id: 3600
+        description: "You see the graveyard."
+        door:
+          short_description: "rusty grate"
+          keywords: ["grate"]
+          locked: false
     environment:
       - keywords: ["elm", "tree"]
         description: |
@@ -1609,6 +1658,21 @@ rooms:
     description: |
       You are in the Office of the Captain of the Guard.  The Midgaard Coat of
       Arms is hanging on the north wall and a heavy steel door is to the south.
+    exits:
+      east:
+        id: 3110
+        description: "You see the cityguard headquarter"
+        door:
+          short_description: "door"
+          keywords: ["door"]
+          locked: true
+      south:
+        id: 3143
+        description: "You see the heavy steel door."
+        door:
+          short_description: "heavy steel door"
+          keywords: ["door"]
+          locked: true
     environment:
       - keywords: ["arms"]
         description: |
@@ -1618,6 +1682,14 @@ rooms:
     description: |
       You are in a dark and humid jail.  The dark stone walls are hard and cold
       to the touch.  A heavy steel door is to the north.
+    exits:
+      north:
+        id: 3142
+        description: "You see the heavy steel door."
+        door:
+          short_description: "heavy steel door"
+          keywords: ["door"]
+          locked: true
   3144:
     name: "The end of Elm Street"
     description: |
@@ -1680,6 +1752,13 @@ rooms:
       south:
         id: 3024
         description: "To the south is the Poor Alley.  Across the alley, you see the Grubby Inn."
+      north:
+        id: 3161
+        description: "A sign on the door says, 'Unauthorized Personnel Prohibited'."
+        door:
+          short_description: "door"
+          keywords: ["door"]
+          locked: true
     environment:
       - keywords: ["window"]
         description: |
@@ -1697,6 +1776,14 @@ rooms:
       full of Melancholy's trappings from her adventuring days.  On a small table
       under a window to the east is a vase with a single white rose.  Other than
       that, the room is quite bare.  
+    exits:
+      south:
+        id: 3160
+        description: "A small door to the south leads out into the map shop."
+        door:
+          short_description: "door"
+          keywords: ["door"]
+          locked: true
     environment:
       - keywords: ["chest"]
         description: |
@@ -1887,6 +1974,10 @@ rooms:
       south:
         id: 3256
         description: "You see the southern gate."
+        door:
+          short_description: "heavy wooden gate"
+          keywords: ["gate"]
+          locked: false
       west:
         id: 3128
         description: "The concourse heads west along the inside of the city wall."
@@ -1902,6 +1993,10 @@ rooms:
       north:
         id: 3255
         description: "You see the southern gate."
+        door:
+          short_description: "heavy wooden gate"
+          keywords: ["gate"]
+          locked: false
       south:
         id: 3505
         description: "The green forests of the Miden'nir are south, hiding countless goblin warriors."
@@ -1986,6 +2081,10 @@ rooms:
       north:
         id: 3268
         description: "The northern plains are visible through the gate."
+        door:
+          short_description: "heavy wooden gate"
+          keywords: ["gate"]
+          locked: false
       east:
         id: 3263
         description: "Wall road continues to the east, alongside the northern wall."
@@ -2075,6 +2174,10 @@ rooms:
       south:
         id: 3262
         description: "You see the north gate of Midgaard."
+        door:
+          short_description: "heavy wooden gate"
+          keywords: ["gate"]
+          locked: false
   3270:
     name: "On the Concourse"
     description: |
